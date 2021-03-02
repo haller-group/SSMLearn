@@ -102,9 +102,9 @@ opts_embd
 
 % Split in training and testing dataset
 ind_test = [1 5];
-X_train = X_embd_traj;
+ind_train = setdiff(1:N_traj, ind_test);
+X_train = X_embd_traj(ind_train,:);
 X_test = X_embd_traj(ind_test,:);
-X_train(ind_test,:)=[];
 
 %%
 % Polynomial degree of the parametrization
@@ -186,6 +186,7 @@ R_info = Maps_info.R
 %% Error of the dynamics
 
 % Error on training trajectory
+ii = 1;
 t_i = Y_train{ii,1};
 y_i = Y_train{ii,2};
 y_sim = iterate_map(R,length(t_i),y_i(:,1));

@@ -81,33 +81,23 @@ set(gca,'fontsize',18)
 
 %% Datadriven SSM
 
-X_sim_train = cell(N_traj-length(ind_test),2);
-X_sim_test  = cell(length(ind_test),2);
-cc_test = 0; cc_train = 0;
-for ii = 1:N_traj
-    x_i = [X_sim{ii,2}];
-    if isempty(find(ind_test-ii==0, 1))==1
-        cc_train = cc_train +1;
-        X_sim_train{cc_train,1} = t_dd;
-        X_sim_train{cc_train,2} = x_i;
-    else
-        cc_test = cc_test +1;
-        X_sim_test{cc_test,1} = t_dd;
-        X_sim_test{cc_test,2} = x_i;
-    end
-end
-
 % Data embedding
 SSM_dim = 2;
-[X_data,t_data,opts_embd] = coordinates_embedding(X_sim_train,SSM_dim);
+[X_embd_traj,opts_embd] = coordinates_embedding(X_sim,SSM_dim);
 opts_embd
+
+% Split in training and testing dataset
+ind_test = [1 5];
+ind_train = setdiff(1:N_traj, ind_test);
+X_sim_train = X_embd_traj(ind_train,:);
+X_sim_test = X_embd_traj(ind_test,:);
 %%
 % Polynomial degree of the parametrization
 ParamDeg = 7; 
 % Eigenspace
 V = V_real(:,1:2);
 % Optimization
-[V_ort_data,SSM_func,IM_para_info] = IMparametrization(X_data,SSM_dim,ParamDeg,V);
+[V_ort_data,SSM_func,IM_para_info] = IMparametrization(X_sim_train,SSM_dim,ParamDeg,V);
 
 % Plot and validation
 %sqrt(sum((V_ort_data'*V_ort).^2))
@@ -315,8 +305,8 @@ N_info = Maps_info.N
 % Error of the dynamics
 
 % Error on training trajectory
-t_i = Y_train{ii,1}; 
-y_i = Y_train{ii,2}; 
+t_i = Y_train{ii,1};
+y_i = Y_train{ii,2};
 t_i=t_i(4:end); y_i=y_i(:,4:end);
 [t_sim,y_sim] = ode45(@(t,x) R(x),t_i,y_i(:,1)); y_sim = transpose(y_sim);
 figure(41); clf;

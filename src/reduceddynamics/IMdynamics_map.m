@@ -6,7 +6,7 @@ function [R,iT,N,T,Maps_info] = IMdynamics_map(Q_traj,varargin)
 % via a weighted ridge regression. R(x) = W_r * phi(x) where phi is a
 % k-variate polynomial from order 1 to order M. Cross-validation can be
 % performed on random folds or on the trajectories.
-% Upon request, the dynamics is returned via a coordinate modal 
+% Upon request, the dynamics is returned via a modal 
 % coordinate change, i.e.
 %
 %                         R = iT o N o T
