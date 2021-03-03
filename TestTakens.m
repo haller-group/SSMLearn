@@ -97,14 +97,14 @@ end
 %%
 % Data embedding
 SSM_dim = 2; over_embd = 50 ;
-[X_embd_traj,opts_embd] = coordinates_embedding(X_obs_traj,SSM_dim,'OverEmbedding',over_embd);
+[X_data,opts_embd] = coordinates_embedding(X_obs_traj,SSM_dim,'OverEmbedding',over_embd);
 opts_embd
 
 % Split in training and testing dataset
 ind_test = [1 5];
 ind_train = setdiff(1:N_traj, ind_test);
-X_train = X_embd_traj(ind_train,:);
-X_test = X_embd_traj(ind_test,:);
+X_train = X_data(ind_train,:);
+X_test = X_data(ind_test,:);
 
 %%
 % Polynomial degree of the parametrization

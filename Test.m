@@ -1,11 +1,11 @@
-% Test Code for data driven invarian manifolds
+% Test Code for data driven invariant manifolds
 %
 % Reconstruction of slow 2D SSM of a 3 Dof mechanical system observing
 % the full state space. Do not change the variables in the first section
 % otherwise the SSM initial condition in the .mat file won't be valid
 % anymore
 
-clear all
+clearvars
 close all
 format shortg
 clc
@@ -83,21 +83,21 @@ set(gca,'fontsize',18)
 
 % Data embedding
 SSM_dim = 2;
-[X_embd_traj,opts_embd] = coordinates_embedding(X_sim,SSM_dim);
+[X_data,opts_embd] = coordinates_embedding(X_sim,SSM_dim);
 opts_embd
 
 % Split in training and testing dataset
 ind_test = [1 5];
 ind_train = setdiff(1:N_traj, ind_test);
-X_sim_train = X_embd_traj(ind_train,:);
-X_sim_test = X_embd_traj(ind_test,:);
+X_train = X_data(ind_train,:);
+X_test = X_data(ind_test,:);
 %%
 % Polynomial degree of the parametrization
 ParamDeg = 7; 
 % Eigenspace
 V = V_real(:,1:2);
 % Optimization
-[V_ort_data,SSM_func,IM_para_info] = IMparametrization(X_sim_train,SSM_dim,ParamDeg,V);
+[V_ort_data,SSM_func,IM_para_info] = IMparametrization(X_train,SSM_dim,ParamDeg,V);
 
 % Plot and validation
 %sqrt(sum((V_ort_data'*V_ort).^2))
@@ -109,7 +109,7 @@ Err_rec = []; rho_max = 0;
 coordplot = [1 4 6];
 for ii = 1:length(ind_test)
     % Get reduced coordinates of testing data
-    x = X_sim_test{ii,2};
+    x = X_test{ii,2};
     y = transpose(V_ort_data)*x; 
     % Reconstruction of testing Trajectory
     x_rec = SSM_func(y);
@@ -152,14 +152,14 @@ set(gca,'fontsize',18)
 
 % Arrange trajectories
 Y_train = cell(N_traj-length(ind_test),2);
-for ii = 1:size(X_sim_train,1)
-    Y_train{ii,1} = [X_sim_train{ii,1}];
-    Y_train{ii,2} = transpose(V_ort_data)*[X_sim_train{ii,2}];
+for ii = 1:size(X_train,1)
+    Y_train{ii,1} = X_train{ii,1};
+    Y_train{ii,2} = transpose(V_ort_data)*X_train{ii,2};
 end
 Y_test  = cell(length(ind_test),2);
-for ii = 1:size(X_sim_test,1)
-    Y_test{ii,1} = [X_sim_test{ii,1}];
-    Y_test{ii,2} = transpose(V_ort_data)*[X_sim_test{ii,2}];
+for ii = 1:size(X_test,1)
+    Y_test{ii,1} = X_test{ii,1};
+    Y_test{ii,2} = transpose(V_ort_data)*X_test{ii,2};
 end
 
 % Dynamics identification
@@ -264,8 +264,8 @@ RMSE = mean(sqrt(sum( (y_i-y_sim).*conj(y_i-y_sim) )))
 
 coordplot = 1; i_test = 1;
 % Error on testing trajectory
-t_i = X_sim_test{i_test,1};
-x_i = X_sim_test{i_test,2};
+t_i = X_test{i_test,1};
+x_i = X_test{i_test,2};
 y_i = transpose(V_ort_data)*x_i;
 y_ROM = iterate_map(R,length(t_i),y_i(:,1));
 x_ROM = SSM_func(y_ROM);
@@ -401,8 +401,8 @@ RMSE = mean(sqrt(sum( (y_i-y_sim).*conj(y_i-y_sim) )))
 coordplot = 1; i_test = 1;
 
 % Error on testing trajectory
-t_i = X_sim_test{i_test,1};
-x_i = X_sim_test{i_test,2};
+t_i = X_test{i_test,1};
+x_i = X_test{i_test,2};
 y_i = transpose(V_ort_data)*x_i;
 [~,y_ROM] = ode45(@(t,x) R(x),t_i,y_i(:,1)); y_ROM = transpose(y_ROM);
 x_ROM = SSM_func(y_ROM);
