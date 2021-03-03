@@ -1,5 +1,5 @@
 function V_M = multivariate_polynomial_lintransf(V,k,M)
-% Given phi a k-variate polynomial of order M and a transformation x = V*y,
+% Given phi, a k-variate polynomial of order M, and a transformation x = V*y,
 % this code gets the matrix V_M such that phi(x) = phi(V*y) = V_M * phi(y)
 Exp_mat = []; phi_sym = [];
 phi_info = cell(M,2); u = sym('u',[1 k]);

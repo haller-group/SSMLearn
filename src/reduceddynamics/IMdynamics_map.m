@@ -1,4 +1,4 @@
-function [R,iT,N,T,Maps_info] = IMdynamics_map(Q_traj,varargin)
+function [R,iT,N,T,Maps_info] = IMdynamics_map(Y_data,varargin)
 % Identification of the reduced dynamics in k coordinates, i.e. the map
 %
 %                        x_{k+1} = R(x_k)
@@ -15,7 +15,7 @@ function [R,iT,N,T,Maps_info] = IMdynamics_map(Q_traj,varargin)
 % diagonal matrix.
 %
 % INPUT 
-% Q_traj - cell array of dimension (N_traj,2) where the first column 
+% Y_data - cell array of dimension (N_traj,2) where the first column 
 %          contains time instances (1 x mi each) and the second column the 
 %          trajectories (k x mi each). Sampling time is assumed to be
 %          constant
@@ -42,9 +42,9 @@ end
 t   = []; % time values
 X   = []; % coordinates at time k
 X_1 = []; % coordinates at time k + 1
-ind_traj = cell(1,size(Q_traj,1)); idx_end = 0;
-for ii = 1:size(Q_traj,1)
-    t_i = Q_traj{ii,1}; Q_i = Q_traj{ii,2};
+ind_traj = cell(1,size(Y_data,1)); idx_end = 0;
+for ii = 1:size(Y_data,1)
+    t_i = Y_data{ii,1}; Q_i = Y_data{ii,2};
     t = [t t_i(1:end-1)]; X = [X Q_i(:,1:end-1)]; X_1 = [X_1 Q_i(:,2:end)];
     ind_traj{ii} = idx_end+[1:length(t_i)]; idx_end = length(t);
 end
@@ -118,6 +118,7 @@ if nargin_o > 2
             for ii = 1:options.n_folds-1
                 idx_folds{ii} = ind_perm(1+(ii-1)*fold_size:ii*fold_size);
             end
+            ii = ii + 1;
             idx_folds{ii} = ind_perm(1+(ii-1)*fold_size:length(ind_perm));
         end
         options = setfield(options,'idx_folds',idx_folds);
