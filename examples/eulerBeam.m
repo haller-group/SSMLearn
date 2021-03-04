@@ -10,7 +10,7 @@ nElements = 5;
 kappa = 4; % cubic spring
 gamma = 0; % cubic damping
 [M,C,K,fnl] = build_model(kappa, gamma, nElements);
-[IC, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTraj, ICRadius)
+[IC, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTraj, ICRadius);
 
 Minv = inv(M);
 f = @(q,qdot) [zeros(DS.n-2,1); kappa*q(DS.n-1).^3; 0];
