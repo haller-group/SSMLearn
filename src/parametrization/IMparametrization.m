@@ -47,7 +47,8 @@ function [V,IM_para,IM_param_info] = IMparametrization(X,k,M,varargin)
 %           (1+c1*exp(-c2*t)).^(-1), default 0
 %    'c2' - error coefficient for slow manifolds weighting
 %           (1+c1*exp(-c2*t)).^(-1), default 0
-%    't'  - time instances at which X data points are known, default 1
+%    't'  - time instances at which X data points are known, default 1.
+%           Is set automatically if X is a cell array.
 %    'V0' - optimizer initial condition for V, default []. Unless
 %           specified, the algorithm uses the weighted k-dim. PCA of the data
 %    'H0' - optimizer initial condition for H, default []. Unless
@@ -86,7 +87,6 @@ if nargin > 4
         opts_para = setfield(opts_para,varargin{2*ii-1},varargin{2*ii});
     end
 end
-L = (1+opts_para.c1*exp(-opts_para.c2*opts_para.t)).^(-1);
 if iscell(X)==1
 X_cell = X; X = []; t = [];
   for ii = 1:size(X_cell,1)
@@ -94,6 +94,7 @@ X_cell = X; X = []; t = [];
   end
   opts_para.t = t;
 end
+L = (1+opts_para.c1*exp(-opts_para.c2*opts_para.t)).^(-1);
 
 %- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 V = opts_para.V;
