@@ -5,7 +5,7 @@
 % otherwise the SSM initial condition in the .mat file won't be valid
 % anymore
 
-clear all
+clearvars
 close all
 format shortg
 clc

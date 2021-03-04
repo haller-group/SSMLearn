@@ -5,7 +5,7 @@
 % otherwise the SSM initial condition in the .mat file won't be valid
 % anymore
 
-clearvarsmax(abs(X),[],1)max(abs(X),[],1)max(abs(X),[],1)
+clearvars
 close all
 format shortg
 clc
