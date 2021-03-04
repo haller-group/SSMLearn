@@ -27,16 +27,4 @@ G = @(x) [zeros(N,1);
          -M\f(x(1:N),x(N+1:2*N))];
 F = @(t,x) A*x + G(x);
 
-DS = DynamicalSystem();
-set(DS, 'M', M, 'C', C, 'K', K, 'fnl', fnl);
-set(DS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
-S = SSM(DS);
-set(S.Options, 'reltol', 0.1,'notation','multiindex')
-S.choose_E([1,2]);
-mfd = S.compute_whisker(20);
-
-IC = zeros(2*N, nTraj);
-for iTraj = 1:nTraj
-    z = 0.4*(-1)^(2*iTraj/nTraj);
-    IC(:,iTraj) = real(getIC(mfd, [z; conj(z)]));
-end
+IC = getSSMIC(M, C, K, fnl, nTraj, 0.4);

@@ -9,7 +9,9 @@ function p = getManifoldPoint(mfd, z)
     n = size(mfd{1}.coeffs,1);
     p = zeros(n,1);
     for i=1:length(mfd)
-        p = p + mfd{i}.coeffs*phi(z,i);
+        if ~isempty(mfd{i}.coeffs)
+            p = p + mfd{i}.coeffs*phi(z,i);
+        end
     end
 
 end
