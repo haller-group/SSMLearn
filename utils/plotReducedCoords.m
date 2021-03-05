@@ -1,5 +1,5 @@
 function plotReducedCoords(xData, V)
-% Plot the two components of V'*xData for a cell array of trajectories
+% Plot the (first) two components of V'*xData for a cell array of trajectories
 % xData against each other. 
 
 figure
@@ -11,6 +11,6 @@ end
 
 xlabel('$\eta_1$', 'Interpreter', 'latex')
 ylabel('$\eta_2$', 'Interpreter', 'latex')
-title('Test set trajectories in reduced model coordinates')
+title({'Test set trajectories in', 'reduced model coordinates'})
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)

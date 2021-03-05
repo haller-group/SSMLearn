@@ -1,4 +1,4 @@
-function [F, IC] = oscillator(N, nTraj)
+function [F, IC] = oscillator(N, nTraj, SSMDim)
 % Example dynamical system
 % Oscillator chain
 % Returns the anonynous evolution function and initial conditions
@@ -27,4 +27,4 @@ G = @(x) [zeros(N,1);
          -M\f(x(1:N),x(N+1:2*N))];
 F = @(t,x) A*x + G(x);
 
-IC = getSSMIC(M, C, K, fnl, nTraj, 0.4);
+IC = getSSMIC(M, C, K, fnl, nTraj, 0.4, SSMDim);

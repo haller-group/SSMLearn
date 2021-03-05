@@ -15,8 +15,8 @@ rho=1780*10^(-9);                       %Density [kg/mm^3]
 m0=b*h*rho;                             %Mass inertia
 I=h^3*b/12;                             %Area moment of inertia
 co = 0.125;
-alpha=0.001*co;                         %Structural Damping Parameters
-beta=0.002*co;
+alpha=0.003*co;                         %Structural Damping Parameters
+beta=0.006*co;
 k=1;                                    %Nonlinear damping constant
 
 

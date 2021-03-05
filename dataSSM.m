@@ -4,17 +4,17 @@ close all
 nTraj = 6;
 indTest = [1 2];
 indTrain = setdiff(1:nTraj, indTest);
+SSMDim = 4;
 
-% [F, IC] = oscillator(3, nTraj);
-[F, IC] = parabolicSyst(nTraj, 0.8, -0.01, 1, -0.13, [0,0,0], @(t,x) -[0;10*x(1,:).^3]);
+[F, IC] = oscillator(3, nTraj, SSMDim);
+% [F, IC] = parabolicSyst(nTraj, 0.8, -0.01, 1, -0.13, [0,0,0], @(t,x) -[0;10*x(1,:).^3]);
 
-observable = @(x) x(1, :);
+observable = @(x) x;
 tEnd = 500;
 nSamp = 10000;
 
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 
-SSMDim = 2;
 overEmbed = 0;
 SSMOrder = 3;
 
@@ -28,6 +28,6 @@ RRMS = getRMS(xData(indTest,2), SSMFunction, V)
 
 plotReconstructedTrajectory(xData{indTest(1),1}, xData{indTest(1),2}, SSMFunction, V, 2)
 
-plotSSMWithTrajectories(xData(indTrain,2), SSMFunction, [1,2,3], 0.8)
+plotSSMWithTrajectories(xData(indTest,2), SSMFunction, [1,2,5], 0.8, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
