@@ -24,18 +24,18 @@ F = @(t,x) A*x + G(x);
 
 % F = @(t,x) DS.odefun(t,x);
 
-observable = @(x) x(9,:);
+observable = @(x) x;
 tEnd = 100;
 nSamp = 15000;
 
 % xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
-load bernoulli4dend
+load bernoulli4dfull
 %%
 overEmbed = 0;
 SSMOrder = 3;
 
-% xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
-xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
+xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
+% xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 1000, 'c2', 0.1);
 %%
@@ -45,9 +45,9 @@ plotReducedCoords(yData(indTest,:));
 RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 %%
 xLifted = liftReducedTrajs(yData, SSMFunction);
-plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 1)
+plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 9)
 %%
-plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [1,3,5], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [5,9,19], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 
@@ -62,7 +62,6 @@ RMSE = mean(reducedTrajDist(indTest))
 RRMSE = mean(fullTrajDist(indTest))
 
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
-plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1)
+plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 9)
 
-reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))
-DSEigenvalues = DS.spectrum.Lambda(1:2)
+computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))

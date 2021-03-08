@@ -5,16 +5,16 @@ nTraj = 6;
 indTest = [1 2];
 indTrain = setdiff(1:nTraj, indTest);
 
-[F, IC] = parabolicSyst(nTraj, 0.8, -0.01, 1, -0.13, [0.5,0,0], @(t,x) -[0;10*x(1,:).^3]);
+[F, IC] = parabolicSyst(nTraj, 0.8, -0.01, 1, -0.13, [0.1,0,0], @(t,x) -[0;10*x(1,:).^3]);
 
-observable = @(x) x(3,:);
+observable = @(x) x(1,:);
 tEnd = 500;
 nSamp = 3000;
 
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 
 SSMDim = 2;
-overEmbed = 100;
+overEmbed = 0;
 SSMOrder = 3;
 
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
