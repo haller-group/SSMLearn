@@ -32,21 +32,13 @@ plotSSMWithTrajectories(xData(indTrain,2), SSMFunction, [1,3,5], V, 50, 'SSMDime
 % axis equal
 view(50, 30)
 %% Reduced dynamics
-yData = cell(size(xData));
-for iTraj = 1:nTraj
-    yData{iTraj,1} = xData{iTraj,1};
-    yData{iTraj,2} = V'*xData{iTraj,2};
-end
+yData = getProjectedTrajs(xData, V);
+
 [R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTest,:), 'R_PolyOrd', SSMOrder, 'style', 'modal');
 
-yRec = cell(nTraj,1); xRec = cell(nTraj,1);
-reducedTrajDist = zeros(nTraj,1); fullTrajDist = zeros(nTraj,1); 
-for iTraj = 1:nTraj
-    nPoints = length(yData{iTraj,1});
-    yRec{iTraj} = iterate_map(R, nPoints, yData{iTraj,2}(:,1));
-    reducedTrajDist(iTraj) = norm(yRec{iTraj} - yData{iTraj,2}) / nPoints;
-    xRec{iTraj} = SSMFunction(yRec{iTraj});
-    fullTrajDist(iTraj) = norm(xRec{iTraj} - xData{iTraj,2}) / nPoints;
-end
+[yRec, xRec] = iterateMaps(R, yData, SSMFunction);
+
+[reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRec, xRec, yData, xData);
+
 RMSE = mean(reducedTrajDist(indTest))
 RRMSE = mean(fullTrajDist(indTest))
