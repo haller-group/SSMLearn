@@ -11,7 +11,7 @@ nElements = 5;
 kappa = 4; % cubic spring
 gamma = 0; % cubic damping
 [M,C,K,fnl] = build_model(kappa, gamma, nElements);
-[IC, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTraj, ICRadius, 2*SSMDim)
+[IC, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTraj, ICRadius, SSMDim)
 
 Minv = inv(M);
 f = @(q,qdot) [zeros(DS.n-2,1); kappa*q(DS.n-1).^3; 0];
@@ -24,7 +24,7 @@ F = @(t,x) A*x + G(x);
 
 % F = @(t,x) DS.odefun(t,x);
 
-observable = @(x) x(10,:);
+observable = @(x) x;
 tEnd = 100;
 nSamp = 15000;
 
@@ -32,11 +32,11 @@ xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 % load bernoullidata
 % load bernoullidata4d
 %%
-overEmbed = 6;
+overEmbed = 0;
 SSMOrder = 3;
 
-% xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
-xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
+xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
+% xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 1000, 'c2', 0.1);
 %%

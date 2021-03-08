@@ -24,7 +24,7 @@ else
     disp("SSM plotting only available for 2D manifolds")
 end
 
-for iTraj = 1:length(xData)
+for iTraj = 1:size(xData,1)
     plot3(xData{iTraj,2}(plotInds(1),:), xData{iTraj,2}(plotInds(2),:), xData{iTraj,2}(plotInds(3),:))
 end
 
