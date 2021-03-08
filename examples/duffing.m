@@ -21,12 +21,14 @@ xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 100, 'c2', 0.03);
 
-plotReducedCoords(xData(indTest,2), V);
+yData = getProjectedTrajs(xData, V);
+plotReducedCoords(yData(indTest,:));
 
-RRMS = getRMS(xData(indTest,2), SSMFunction, V)
+RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 
-plotReconstructedTrajectory(xData{indTest(1),1}, xData{indTest(1),2}, SSMFunction, V, 2)
+xLifted = liftReducedTrajs(yData, SSMFunction);
+plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 2)
 
-plotSSMWithTrajectories(xData(indTrain,2), SSMFunction, [1,2,3], V, 10)
+plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,3,5], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)

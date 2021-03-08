@@ -11,7 +11,7 @@ SSMDim = 2;
 
 observable = @(x) x;
 tEnd = 500;
-nSamp = 10000;
+nSamp = 1000;
 
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 
@@ -21,19 +21,19 @@ SSMOrder = 3;
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 100, 'c2', 0.03);
+%%
+yData = getProjectedTrajs(xData, V);
+plotReducedCoords(yData(indTest,:));
 
-plotReducedCoords(xData(indTest,2), V);
+RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 
-RRMS = getRMS(xData(indTest,2), SSMFunction, V)
+xLifted = liftReducedTrajs(yData, SSMFunction);
+plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 2)
 
-plotReconstructedTrajectory(xData{indTest(1),1}, xData{indTest(1),2}, SSMFunction, V, 2)
-
-plotSSMWithTrajectories(xData(indTrain,2), SSMFunction, [1,3,5], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,3,5], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 %% Reduced dynamics
-yData = getProjectedTrajs(xData, V);
-
 [R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTest,:), 'R_PolyOrd', SSMOrder, 'style', 'modal');
 
 [yRec, xRec] = iterateMaps(R, yData, SSMFunction);
@@ -42,3 +42,6 @@ yData = getProjectedTrajs(xData, V);
 
 RMSE = mean(reducedTrajDist(indTest))
 RRMSE = mean(fullTrajDist(indTest))
+
+plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
+plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 2)

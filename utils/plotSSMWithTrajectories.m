@@ -18,14 +18,14 @@ figure
 hold on
 
 if opts.SSMDimension == 2
-    yData = V'* cat(2,xData{:});
+    yData = V'* cat(2,xData{:,2});
     plot_2dSSM_surf(plotInds, yData, SSMFunction, radiusIncr, 50, 0);
 else
     disp("SSM plotting only available for 2D manifolds")
 end
 
 for iTraj = 1:length(xData)
-    plot3(xData{iTraj}(plotInds(1),:), xData{iTraj}(plotInds(2),:), xData{iTraj}(plotInds(3),:))
+    plot3(xData{iTraj,2}(plotInds(1),:), xData{iTraj,2}(plotInds(2),:), xData{iTraj,2}(plotInds(3),:))
 end
 
 xlabel(['$q_{' num2str(plotInds(1)) '}$'], 'Interpreter', 'latex')
@@ -35,3 +35,4 @@ title('Computed manifold with test set trajectories')
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)
 grid on
+hold off

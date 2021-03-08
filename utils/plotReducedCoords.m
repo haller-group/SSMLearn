@@ -1,12 +1,19 @@
-function plotReducedCoords(xData, V)
-% Plot the (first) two components of V'*xData for a cell array of trajectories
-% xData against each other. 
+function plotReducedCoords(yData, varargin)
+% Plot the (first) two components of yData for a cell array of trajectories
+% yData against each other. 
+
+if ~isempty(varargin)
+    yRec = varargin{1};
+end
 
 figure
 hold on
-for i = 1:length(xData)
-    y = V'*xData{i};
-    plot(y(1,:), y(2,:))
+nTraj = size(yData,1);
+for iTraj = 1:nTraj
+    plot(yData{iTraj,2}(1,:), yData{iTraj,2}(2,:))
+    if ~isempty(varargin)
+        plot(yRec{iTraj,2}(1,:), yRec{iTraj,2}(2,:), ':', 'LineWidth', 2)
+    end
 end
 
 xlabel('$\eta_1$', 'Interpreter', 'latex')
@@ -14,3 +21,4 @@ ylabel('$\eta_2$', 'Interpreter', 'latex')
 title({'Test set trajectories in', 'reduced model coordinates'})
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)
+hold off
