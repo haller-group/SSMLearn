@@ -5,7 +5,6 @@ nTraj = 6;
 indTest = [1 2];
 indTrain = setdiff(1:nTraj, indTest);
 
-% [F, IC] = oscillator(3, nTraj);
 [F, IC] = parabolicSyst(nTraj, 0.8, -0.01, 1, -0.13, [0.5,0,0], @(t,x) -[0;10*x(1,:).^3]);
 
 observable = @(x) x(3,:);
@@ -28,6 +27,6 @@ RRMS = getRMS(xData(indTest,2), SSMFunction, V)
 
 plotReconstructedTrajectory(xData{indTest(1),1}, xData{indTest(1),2}, SSMFunction, V, 2)
 
-plotSSMWithTrajectories(xData(indTrain,2), SSMFunction, [1,2,3], 0.8)
+plotSSMWithTrajectories(xData(indTrain,2), SSMFunction, [1,2,3], V, 10)
 % axis equal
 view(50, 30)

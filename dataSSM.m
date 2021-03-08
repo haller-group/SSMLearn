@@ -28,6 +28,7 @@ RRMS = getRMS(xData(indTest,2), SSMFunction, V)
 
 plotReconstructedTrajectory(xData{indTest(1),1}, xData{indTest(1),2}, SSMFunction, V, 2)
 
-plotSSMWithTrajectories(xData(indTrain,2), SSMFunction, [1,2,3], 0.8)
+plotSSMWithTrajectories(xData(indTrain,2), SSMFunction, [1,2,3], V, 50)
 % axis equal
 view(50, 30)
+

@@ -36,7 +36,7 @@ SSMOrder = 3;
 
 xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
 
-[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 0, 'c2', 0.03);
+[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 100, 'c2', 0.03);
 
 plotReducedCoords(xData(indTest,2), V);
 
@@ -44,6 +44,6 @@ RRMS = getRMS(xData(indTest,2), SSMFunction, V)
 
 plotReconstructedTrajectory(xData{indTest(1),1}, xData{indTest(1),2}, SSMFunction, V, 2)
 
-plotSSMWithTrajectories(xData(indTest,2), SSMFunction, [1,17,19], ICRadius)
+plotSSMWithTrajectories(xData(indTest,2), SSMFunction, [1,17,19], V, 30)
 % axis equal
 view(50, 30)
