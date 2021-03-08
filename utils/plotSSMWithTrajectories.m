@@ -2,11 +2,27 @@ function plotSSMWithTrajectories(xData, SSMFunction, plotInds, V, radiusIncr, va
 % Draws the shape of an SSM as well as trajectories in cell array xData, 
 % in the space of components plotInds.
 
+opts = struct('SSMDimension',2);
+if rem(length(varargin),2) > 0 && length(varargin) > 1
+    error('Error on input arguments. Missing or extra arguments.')
+end
+% Custom options
+if nargin > 3
+    for ii = 1:length(varargin)/2
+        opts = setfield(opts,varargin{2*ii-1},...
+            varargin{2*ii});
+    end
+end
+
 figure
 hold on
 
-yData = V(:,1:2)'* cat(2,xData{:});
-plot_2dSSM_surf(plotInds, yData, SSMFunction, radiusIncr, 50, 0);
+if opts.SSMDimension == 2
+    yData = V'* cat(2,xData{:});
+    plot_2dSSM_surf(plotInds, yData, SSMFunction, radiusIncr, 50, 0);
+else
+    disp("SSM plotting only available for 2D manifolds")
+end
 
 for iTraj = 1:length(xData)
     plot3(xData{iTraj}(plotInds(1),:), xData{iTraj}(plotInds(2),:), xData{iTraj}(plotInds(3),:))

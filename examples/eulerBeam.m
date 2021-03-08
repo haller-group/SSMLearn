@@ -15,7 +15,7 @@ gamma = 0; % cubic damping
 
 Minv = inv(M);
 f = @(q,qdot) [zeros(DS.n-2,1); kappa*q(DS.n-1).^3; 0];
-           
+
 A = [zeros(DS.n), eye(DS.n);
     -Minv*K,     -Minv*C];
 G = @(x) [zeros(DS.n,1);
@@ -38,7 +38,7 @@ SSMOrder = 3;
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
-[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 0, 'c2', 0.03);
+[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 100, 'c2', 0.03);
 %%
 plotReducedCoords(xData(indTest,2), V);
 
