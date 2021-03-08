@@ -12,6 +12,7 @@ SSMDim = 2;
 observable = @(x) x;
 tEnd = 500;
 nSamp = 1000;
+dt = tEnd/(nSamp-1);
 
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 
@@ -45,3 +46,5 @@ RRMSE = mean(fullTrajDist(indTest))
 
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
 plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 2)
+
+computeEigenvaluesMap(Maps_info, dt)
