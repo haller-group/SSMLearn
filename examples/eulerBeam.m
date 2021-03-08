@@ -24,7 +24,7 @@ F = @(t,x) A*x + G(x);
 
 % F = @(t,x) DS.odefun(t,x);
 
-observable = @(x) x(1,:);
+observable = @(x) x(10,:);
 tEnd = 100;
 nSamp = 15000;
 
@@ -46,7 +46,6 @@ RRMS = getRMS(xData(indTest,2), SSMFunction, V)
 %%
 plotReconstructedTrajectory(xData{indTest(1),1}, xData{indTest(1),2}, SSMFunction, V, 5)
 %%
-% plotSSMWithTrajectories(xData(indTest,2), SSMFunction, [9,15,19], 30*ICRadius, 'SSMDimension', SSMDim)
-plotSSMWithTrajectories(xData(indTest,2), SSMFunction, [1,4,5], 10*ICRadius, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(xData(indTest,2), SSMFunction, [1,17,19], V, 30, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
