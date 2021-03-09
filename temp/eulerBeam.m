@@ -4,14 +4,16 @@ close all
 nTraj = 4;
 indTest = [1];
 indTrain = setdiff(1:nTraj, indTest);
-ICRadius = 0.15;
-SSMDim = 4;
+ICRadius = 0.5;
+SSMDim = 2;
 
 nElements = 5;
 kappa = 4; % cubic spring
 gamma = 0; % cubic damping
 [M,C,K,fnl] = build_model(kappa, gamma, nElements);
 [IC, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTraj, ICRadius, SSMDim)
+noise = 0.3;
+IC = IC .* (1 + noise * (1-2*rand(size(IC)))/2);
 
 Minv = inv(M);
 f = @(q,qdot) [zeros(DS.n-2,1); kappa*q(DS.n-1).^3; 0];
@@ -45,9 +47,9 @@ plotReducedCoords(yData(indTest,:));
 RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 %%
 xLifted = liftReducedTrajs(yData, SSMFunction);
-plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 9)
+plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 1)
 %%
-plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [5,9,19], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [1,2,3], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 
@@ -62,6 +64,6 @@ RMSE = mean(reducedTrajDist(indTest))
 RRMSE = mean(fullTrajDist(indTest))
 
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
-plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 9)
+plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1)
 
 computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))
