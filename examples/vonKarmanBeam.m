@@ -1,37 +1,27 @@
 clearvars
 close all
 
-nTraj = 4;
+nTraj = 5;
 indTest = [1];
 indTrain = setdiff(1:nTraj, indTest);
-ICRadius = 0.4;
+ICRadius = 0.01;
 SSMDim = 2;
 
 nElements = 5;
-kappa = 4; % cubic spring
-gamma = 0; % cubic damping
-[M,C,K,fnl] = build_model(kappa, gamma, nElements);
+kappa = 1000; % material damping modulus
+E = 70; % Young's modulus (Pa)
+[M,C,K,fnl] = von_karman_model(nElements, E, kappa);
 n = size(M,1); % mechanical dofs
 [IC, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTraj, ICRadius, SSMDim, 1)
 % noise = 0.3;
 % IC = IC .* (1 + noise * (1-2*rand(size(IC)))/2);
-% IC = ICRadius * pickPointsOnHypersphere(nTraj, 2*n, 1)
+IC = ICRadius * pickPointsOnHypersphere(nTraj, 2*n, 1)
 
-Minv = inv(M);
-f = @(q,qdot) [zeros(n-2,1); kappa*q(n-1).^3; 0];
+F = @(t,x) DS.odefun(t,x);
 
-A = [zeros(n), eye(n);
-    -Minv*K,     -Minv*C];
-G = @(x) [zeros(n,1);
-         -Minv*f(x(1:n),x(n+1:2*n))];
-
-F = @(t,x) A*x + G(x);
-
-% F = @(t,x) DS.odefun(t,x);
-
-observable = @(x) x(9,:);
-tEnd = 100;
-nSamp = 15000;
+observable = @(x) x(3*nElements-1,:);
+tEnd = 30;
+nSamp = 100000;
 
 tic
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);

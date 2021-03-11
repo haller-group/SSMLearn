@@ -2,16 +2,19 @@ clearvars
 close all
 
 nTraj = 6;
-indTest = [1 2];
+indTest = [1 4];
 indTrain = setdiff(1:nTraj, indTest);
 SSMDim = 2;
+ICRadius = 1;
 
-[F, IC] = oscillator(3, nTraj, SSMDim);
-% [F, IC] = parabolicSyst(nTraj, 0.8, -0.01, 1, -0.13, [0,0,0], @(t,x) -[0;10*x(1,:).^3]);
+[F, M, C, K, fnl] = oscillator(3);
+IC = getSSMIC(M, C, K, fnl, nTraj, ICRadius, SSMDim, 1);
+% [F, IC] = parabolicSyst(nTraj, ICRadius, -0.01, 1, -0.13, [0,0,0], @(t,x) -[0;10*x(1,:).^3]);
+% IC = ICRadius * pickPointsOnHypersphere(nTraj, 3, 1);
 
 observable = @(x) x;
-tEnd = 500;
-nSamp = 1000;
+tEnd = 200;
+nSamp = 4000;
 dt = tEnd/(nSamp-1);
 
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
@@ -19,7 +22,8 @@ xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 overEmbed = 0;
 SSMOrder = 3;
 
-xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
+% xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
+xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
 
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 100, 'c2', 0.03);
 %%
@@ -31,7 +35,7 @@ RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 xLifted = liftReducedTrajs(yData, SSMFunction);
 plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 2)
 
-plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,3,5], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,2,3], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 %% Reduced dynamics

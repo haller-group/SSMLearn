@@ -2,9 +2,9 @@ function p = getManifoldPoint(mfd, z)
     % Computes coordinates on a manifold given reduced coordinates z
     %
     % INPUT
-    % mfd   (1 x md) cell array computed from compute_whisker in
+    % mfd   (1 x M) cell array computed from compute_whisker in
     %       SSMTool-2.0
-    % z     (2 x 1) reduced coordinates in complex form
+    % z     (dim x 1) reduced coordinates in complex form
     
     n = size(mfd{1}.coeffs,1);
     p = zeros(n,1);
