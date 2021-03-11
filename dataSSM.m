@@ -5,14 +5,14 @@ nTraj = 6;
 indTest = [1 4];
 indTrain = setdiff(1:nTraj, indTest);
 SSMDim = 2;
-ICRadius = 1;
+ICRadius = 0.4;
 
 [F, M, C, K, fnl] = oscillator(3);
 IC = getSSMIC(M, C, K, fnl, nTraj, ICRadius, SSMDim, 1);
 % [F, IC] = parabolicSyst(nTraj, ICRadius, -0.01, 1, -0.13, [0,0,0], @(t,x) -[0;10*x(1,:).^3]);
-% IC = ICRadius * pickPointsOnHypersphere(nTraj, 3, 1);
+IC = ICRadius * pickPointsOnHypersphere(nTraj, 6, 1);
 
-observable = @(x) x;
+observable = @(x) normrnd(1, 0.0, size(x)).*x;
 tEnd = 200;
 nSamp = 4000;
 dt = tEnd/(nSamp-1);

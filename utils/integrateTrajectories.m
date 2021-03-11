@@ -1,4 +1,4 @@
-function xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC)
+function xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC, varargin)
 % Computes trajectories of F starting at initial conditions IC.
 % Anonymous function observable can be passed as @(x) x to save the full
 % state space. To save only the first coordinate, pass @(x) x(1,:)
