@@ -9,7 +9,7 @@ function xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC, var
 
 xSim = cell(nTraj, 2);
 for iTraj = 1:nTraj
-    fprintf('integrating trajectory %d of %d...\n', iTraj, nTraj)
+    fprintf('simulating trajectory %d of %d...\n', iTraj, nTraj)
     [t, x] = ode45(F, linspace(0, tEnd, nSamp), IC(:, iTraj));
     xSim{iTraj,1} = t';
     xSim{iTraj,2} = observable(x');

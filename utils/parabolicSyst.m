@@ -1,4 +1,4 @@
-function [F,IC] = parabolicSyst(nTraj, ICRadius, mu, omega, lambda, rot, varargin)
+function [F,IC,eigs] = parabolicSyst(nTraj, ICRadius, mu, omega, lambda, rot, varargin)
 % Example dynamical system
 % Known to have the invariant manifold z = g(x,y), with optional rotation
 % Nonlinear terms can be added to the reduced dynamics x,y as an anonymous function
@@ -17,6 +17,8 @@ Dg = @(t,x) [2*x(1,:)', 2*x(2,:)'];
 Q = rotation(rot(1), rot(2), rot(3));
 F = @(t,x) Q*[R(t,Q'*x);
             lambda*(Q(:,3:end)'*x-g(t,Q'*x))+sum(Dg(t,Q'*x).*R(t,Q'*x)',2)'];
+  
+eigs = [mu+1j*omega, mu-1j*omega, lambda]';
 
 angle = linspace(0,2*pi,nTraj+1);
 angle = angle(1:end-1);

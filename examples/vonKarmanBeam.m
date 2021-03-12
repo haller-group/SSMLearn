@@ -49,7 +49,7 @@ plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [1,3,5], V, 50, 'SSMDimen
 view(50, 30)
 
 %% Reduced dynamics
-[R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTest,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 1000, 'c2', 0.1);
+[R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 1000, 'c2', 0.1);
 
 [yRec, xRec] = iterateMaps(R, yData, SSMFunction);
 
@@ -59,6 +59,6 @@ RMSE = mean(reducedTrajDist(indTest))
 RRMSE = mean(fullTrajDist(indTest))
 
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
-plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1)
+plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1, 'g')
 
 computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))

@@ -1,4 +1,4 @@
-function [F, M, C, K, fnl] = oscillator(N)
+function [F, M, C, K, fnl, lambda] = oscillator(N)
 % Example dynamical system
 % Oscillator chain
 % Returns the anonynous evolution function and initial conditions
@@ -26,3 +26,5 @@ A = [zeros(N), eye(N);
 G = @(x) [zeros(N,1);
          -M\f(x(1:N),x(N+1:2*N))];
 F = @(t,x) A*x + G(x);
+
+lambda = sort(eig(A));
