@@ -21,7 +21,7 @@ dt = tEnd/(nSamp-1);
 
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 %%
-overEmbed = 0;
+overEmbed = -2;
 SSMOrder = 3;
 
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);

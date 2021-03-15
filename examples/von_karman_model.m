@@ -85,8 +85,8 @@ outdof = find(outdofvec);
 % fext = outdofvec;
 
 
-weights = true(nElements,1); 
-fext = MyAssembly.constrain_vector(MyAssembly.uniform_body_force('weights',weights));
+% weights = true(nElements,1); 
+% fext = MyAssembly.constrain_vector(MyAssembly.uniform_body_force('weights',weights));
 
 
 computationTimeLIN = toc(startLIN);
