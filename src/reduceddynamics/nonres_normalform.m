@@ -59,7 +59,7 @@ else
         
     else % Map case
         Dt = varargin{:};
-        a_sym = log(abs(aw))/Dt; w_sym = phase(aw)/Dt;
+        a_sym = log(abs(aw))/Dt; w_sym = angle(aw)/Dt;
         a = matlabFunction(a_sym,'Vars', {transpose(r)});
         w = matlabFunction(w_sym,'Vars', {transpose(r)});
         

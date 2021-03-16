@@ -329,7 +329,7 @@ backbonesurfaces(damp,freq,abs(y_i([1 2],1)),'norm')
 %% Reduced Dynamics
 
 % Dynamics identification
-PolyOrd = 10; 
+PolyOrd = 4; 
 [R,iT,Nf,T,Maps_info] = IMdynamics_flow(Y_train,'R_PolyOrd',PolyOrd,'style','normalform');
 N_info = Maps_info.N;
 %%
