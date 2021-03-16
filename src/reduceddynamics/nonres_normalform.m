@@ -48,12 +48,12 @@ else
             if ndof == 1
                 disp(['Notation: z = r*exp(1i*\theta) where r is the '...
                     'amplitude and \theta the phase; ' ...
-                    'rk is the k-th power of r.'])
+                    'r^k is the k-th power of r.'])
             else
                 
                 disp(['Notation: z_j = r_j*exp(1i*\theta_j) where r_j is '...
                     'the amplitude and \theta_j the phase; ' ...
-                    'rk_j is the k-th power of r_j.'])
+                    'r^k_j is the k-th power of r_j.'])
             end
         end
         
@@ -97,16 +97,16 @@ else
                     'amplitude and \theta the phase; ' ...
                     'rk is the k-th power of r.'])
                 disp(['The polar form map '...
-                    ' consists of r <--| |R(r)|r and ' ...
-                    '\theta <--| \theta  + \arg(R(r))'])
+                    ' consists of r <--| |Z(r)|r and ' ...
+                    '\theta <--| \theta  + \arg(Z(r))'])
             else
                 
                 disp(['Notation: z_j = r_j*exp(1i*\theta_j) where r_j is '...
                     'the amplitude and \theta_j the phase; ' ...
                     'rk_j is the k-th power of r_j.'])
                 disp(['The polar form '...
-                    'map consists of r_j <--| |R_j(r)|r_j and ' ...
-                    '\theta_j <--| \theta_j  + \arg(R_j(r))'])
+                    'map consists of r_j <--| |Z_j(r)|r_j and ' ...
+                    '\theta_j <--| \theta_j  + \arg(Z_j(r))'])
             end
         end
         
@@ -121,7 +121,7 @@ function table_nf = disp_nonres_normalform_flow(coeffs,exponents)
 cell_table = cell(2*size(coeffs,1)+1,size(coeffs,2)+1);
 cell_table{1,1} = 'Monomial:'; ndof = size(exponents,2);
 if ndof==1
-    cell_table{2,1} = '\dot{r} =';
+    cell_table{2,1} = '\dot{r}/r =';
     cell_table{3,1} = '\dot{\theta} =';
     for ii = 1:size(exponents,1)
         cell_table{2,ii+1} = real(coeffs(ii));
@@ -129,17 +129,17 @@ if ndof==1
         if exponents(ii) == 0
             cell_table{1,ii+1} = '1';
         else
-            cell_table{1,ii+1} = rktostr('r',exponents(ii),[]);
+            cell_table{1,ii+1} = rktostr('r^',exponents(ii),[]);
         end
     end
 else
     for jj = 1:size(coeffs,1)
-        cell_table{jj+1,1} = ['\dot{r}_' num2str(jj) ' ='];
+        cell_table{jj+1,1} = ['\dot{r}_' num2str(jj) '/r_' num2str(jj) ' ='];
         cell_table{jj+1+ndof,1} = ['\dot{\theta}_' num2str(jj) ' ='];
     end
     for ii = 1:size(exponents,1)
         if sum(exponents(ii,:))==0
-            name_i = '1';
+            name_i = ' 1';
             for jj = 1:ndof
                 cell_table{jj+1,ii+1} = real(coeffs(jj,ii));
                 cell_table{jj+1+ndof,ii+1} = imag(coeffs(jj,ii));
@@ -150,10 +150,10 @@ else
                 cell_table{jj+1,ii+1} = real(coeffs(jj,ii));
                 cell_table{jj+1+ndof,ii+1} = imag(coeffs(jj,ii));
                 name_i = [name_i ...
-                    rktostr('r',exponents(ii,jj),['_' num2str(jj)])];
+                    rktostr(' r^',exponents(ii,jj),['_' num2str(jj)])];
             end
         end
-        cell_table{1,ii+1} = name_i ;
+        cell_table{1,ii+1} = name_i(2:end) ;
     end
 end
 
@@ -168,7 +168,7 @@ function table_nf = disp_nonres_normalform_map(coeffs,exponents)
 cell_table = cell(size(coeffs,1)+1,size(coeffs,2)+1);
 cell_table{1,1} = 'Monomial:'; ndof = size(exponents,2);
 if ndof==1
-    cell_table{2,1} = 'R(r) =';
+    cell_table{2,1} = 'Z(r) =';
     for ii = 1:size(exponents,1)
         cell_table{2,ii+1} = coeffs(ii);
         if exponents(ii) == 0
@@ -179,7 +179,7 @@ if ndof==1
     end
 else
     for jj = 1:size(coeffs,1)
-        cell_table{jj+1,1} = ['R_' num2str(jj) '(r) ='];
+        cell_table{jj+1,1} = ['Z_' num2str(jj) '(r) ='];
     end
     for ii = 1:size(exponents,1)
         if sum(exponents(ii,:))==0
