@@ -146,10 +146,10 @@ switch options.style
             disp(table_nf)
             if k == 2
             disp(['Notation: z is a complex number; z` is the ' ...
-                  'complex conjugated of z; zk is the k-th power of z.'])
+                  'complex conjugated of z; z^k is the k-th power of z.'])
             else
             disp(['Notation: each z_j is a complex number; z`_j is the '...
-              'complex conjugated of z_j; zk_j is the k-th power of z_j.'])    
+              'complex conjugated of z_j; z^k_j is the k-th power of z_j.'])    
             end
         end
     otherwise

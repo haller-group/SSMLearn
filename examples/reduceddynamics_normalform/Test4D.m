@@ -176,7 +176,7 @@ for ii = 1:size(X_test,1)
 end
 
 % Dynamics identification
-PolyOrd = 10; % Nfolds = 5; Nregvals = 20; % 'N_PolyOrd',7,'T_PolyOrd',9,)%,'n_folds',Nfolds,'l_vals',logspace(-6,0,Nregvals)
+PolyOrd = 4; % Nfolds = 5; Nregvals = 20; % 'N_PolyOrd',7,'T_PolyOrd',9,)%,'n_folds',Nfolds,'l_vals',logspace(-6,0,Nregvals)
 [R,iT,Nf,T,Maps_info] = IMdynamics_map(Y_train,'R_PolyOrd',PolyOrd,'style','normalform');
 R_info = Maps_info.R;
 N_info = Maps_info.N;

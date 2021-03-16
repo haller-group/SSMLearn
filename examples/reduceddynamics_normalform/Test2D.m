@@ -164,7 +164,7 @@ for ii = 1:size(X_test,1)
 end
 
 % Dynamics identification
-PolyOrd = 10; 
+PolyOrd = 10;
 [R,iT,N,T,Maps_info] = IMdynamics_map(Y_train,'R_PolyOrd',PolyOrd','style','normalform');
 %% Error of the dynamics
 

@@ -12,8 +12,9 @@ if size(exponents,2)==2
     end
     for ii = 1:size(exponents,1)
         cell_table{2,ii+1} = coeffs(ii);
-        cell_table{1,ii+1} = [zktostr('z',exponents(ii,1),[]) ...
-            zktostr('z`',exponents(ii,2),[])];
+        name_i = [zktostr(' z^',exponents(ii,1),[]) ...
+            zktostr(' z`^',exponents(ii,2),[])];
+        cell_table{1,ii+1} = name_i(2:end) ;
     end
 else
     if isempty(varargin)==1
@@ -29,11 +30,11 @@ else
         name_i = [];
         for jj = 1:size(coeffs,1)
             cell_table{jj+1,1+ii} = coeffs(jj,ii);
-            name_i = [name_i zktostr('z',exponents(ii,jj),['_' num2str(jj)])...
-                zktostr('z`',exponents(ii,jj+size(coeffs,1)), ...
+            name_i = [name_i zktostr(' z^',exponents(ii,jj),['_' num2str(jj)])...
+                zktostr(' z`^',exponents(ii,jj+size(coeffs,1)), ...
                 ['_' num2str(jj)])];
         end
-        cell_table{1,ii+1} = name_i ;
+        cell_table{1,ii+1} = name_i(2:end) ;
     end
 end
 
