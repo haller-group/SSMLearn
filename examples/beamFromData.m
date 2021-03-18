@@ -38,9 +38,23 @@ plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [1,2,3], V, 50, 'SSMDimen
 % axis equal
 view(50, 30)
 %% Reduced dynamics
+cutoff = 3000;
+for iTraj = indTrain
+    yData{iTraj,1} = yData{iTraj,1}(:,cutoff:end);
+    xData{iTraj,1} = xData{iTraj,1}(:,cutoff:end);
+    yData{iTraj,2} = yData{iTraj,2}(:,cutoff:end);
+    xData{iTraj,2} = xData{iTraj,2}(:,cutoff:end);
+end
 [R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', c1, 'c2', c2);
+% [R,iT,N,T,Maps_info] = IMdynamics_flow(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', c1, 'c2', c2);
 
 [yRec, xRec] = iterateMaps(R, yData, SSMFunction);
+% yRec = cell(nTraj,2);
+% for iTraj = 1:nTraj
+% [tt,yy] = ode45(@(t,x) R(x),yData{iTraj,1}(:),yData{iTraj,2}(:,1)');
+% yRec{iTraj,1} = tt'; yRec{iTraj,2} = yy';
+% end
+% xRec = liftReducedTrajs(yRec, SSMFunction);
 
 [reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRec, xRec, yData, xData);
 
@@ -49,6 +63,7 @@ RRMSE = mean(fullTrajDist(indTest))
 
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
 plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1, 'g')
+plotReconstructedTrajectory(xData(indTrain(1),:), {0,0}, 1, 'g')
 
 reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
 DSEigenvalues = lambda(1:SSMDim)

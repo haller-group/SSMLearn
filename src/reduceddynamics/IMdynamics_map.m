@@ -90,6 +90,8 @@ disp('Estimation of the reduced dynamics... ')
 [phi,Expmat] = multivariate_polynomial(k,1,options.R_PolyOrd);
 [W_r,l_opt,Err] = ridgeregression(phi(X),X_1,options.L2,...
                                          options.idx_folds,options.l_vals);
+% [W_r,l_opt,Err] = ridgeregression(phi(X.*L2),X_1.*L2,ones(size(options.L2)),...
+%                                          options.idx_folds,options.l_vals);
 R = @(x) W_r*phi(x);
 R_info = assemble_struct(R,W_r,phi,Expmat,l_opt,Err);
 options.l = l_opt;
