@@ -3,12 +3,13 @@ close all
 
 load rspa20160759_si_002.mat
 xSim = {NNM1a(1,:)-NNM1a(1,1), NNM1a(2,:);
-        NNM1b(1,:)-NNM1b(1,1), NNM1b(2,:)}%;
-       % NNM2(1,:)-NNM2(1,1), NNM2(2,:);
-       % NNM3(1,:)-NNM3(1,1), NNM3(2,:)};
+        NNM1b(1,:)-NNM1b(1,1), NNM1b(2,:);
+       NNM2(1,:)-NNM2(1,1), NNM2(2,:);
+       NNM3(1,:)-NNM3(1,1), NNM3(2,:)};
 nTraj = size(xSim, 1);
-indTest = [1];
+indTest = [2];
 indTrain = setdiff(1:nTraj, indTest);
+indTrain = 2
 SSMDim = 2;
 c1 = 1000; c2 = 6;
 

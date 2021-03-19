@@ -2,11 +2,11 @@ clearvars
 close all
 
 nTraj = 2;
-nTrajsOnMfd = 1;
+nTrajsOnMfd = 2;
 indTest = [1];
 indTrain = setdiff(1:nTraj, indTest);
 SSMDim = 2;
-ICRadius = 0.2;
+ICRadius = 0.15;
 c1 = 1000000;
 c2 = 0.4;
 
@@ -33,6 +33,7 @@ F = @(t,x) A*x + G(x);
 observable = @(x) x(9,:);
 tEnd = 100;
 nSamp = 15000;
+dt = tEnd/(nSamp-1);
 
 tic
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
@@ -45,7 +46,9 @@ SSMOrder = 3;
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
-[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', c1, 'c2', c2);
+% [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', c1, 'c2', c2);
+V = [1/sqrt(5)*ones(5,1), 1/sqrt(10)*[-2;-1;0;1;2]];
+SSMFunction = @(q)V*q;
 %%
 yData = getProjectedTrajs(xData, V);
 plotReducedCoords(yData(indTest,:));
@@ -84,3 +87,27 @@ plot(0:tEnd,max(xData{indTrain(1),2}(1,:))*timeWeighting(c1,c2,0:tEnd), 'r', 'Di
 
 reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))
 DSEigenvalues = lambda(1:SSMDim)
+%% Normal form
+[~,iT,N,T,NormalFormInfo] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', 0, 'c2', 0.4);
+
+zData = transformToComplex(iT, yData);
+[zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
+yRecNormal = transformToComplex(T, zRec);
+
+[reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecNormal, xRecNormal, yData, xData);
+
+RMSE_normal = mean(reducedTrajDist(indTest))
+RRMSE_normal = mean(fullTrajDist(indTest))
+
+plotReducedCoords(yData(indTest(1),:), yRecNormal(indTest(1),:))
+plotReconstructedTrajectory(xData(indTest(1),:), xRecNormal(indTest(1),:), 2, 'c')
+
+normalFormEigenvalues = computeEigenvaluesMap(NormalFormInfo, dt)
+DSEigenvalues = lambda(1:SSMDim)
+
+%% Nromal form and backbone curves
+N_info = NormalFormInfo.N;
+[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,dt);
+figure(100); clf;
+y_i = iT(V'*xData{indTest(1),2});
+backbonecurves(damp,freq,SSMFunction,T,1,abs(y_i(1,1)),'norm');

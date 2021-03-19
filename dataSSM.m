@@ -72,3 +72,9 @@ plotReconstructedTrajectory(xData(indTest(1),:), xRecNormal(indTest(1),:), 2, 'c
 
 normalFormEigenvalues = computeEigenvaluesMap(NormalFormInfo, dt)
 DSEigenvalues = lambda(1:SSMDim)
+
+%% Nromal form and backbone curves
+N_info = NormalFormInfo.N;
+[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,t_i(2)-t_i(1));
+figure(100); clf;
+backbonecurves(damp,freq,SSM_func,T,coordplot,abs(y_i(1,1)),'norm');

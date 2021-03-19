@@ -1,4 +1,4 @@
-function [M,C,K,fnl,fext, outdof] = von_karman_model(nElements, E, kappa)
+function [M,C,K,fnl,fext, outdof] = von_karman_model(nElements, E, rho, nu, kappa)
 %% Finite Element Setup
 % Geometry
 startLIN = tic;
@@ -10,10 +10,10 @@ b = 1;
 
 % Material properties
 
-E       = 70e9;  % 70e9 % 200e9 % Young's modulus
-rho     = 2700; % 2700 % 7850 % density
-nu      = 0.3;    % nu
-kappa   = 3e6; % material damping modulus 1e8
+% E       = 70e9;  % 70e9 % 200e9 % Young's modulus
+% rho     = 2700; % 2700 % 7850 % density
+% nu      = 0.3;    % nu
+% kappa   = 3e6; % material damping modulus 1e8
 
 %% FE model
 disp('Building FE model')
