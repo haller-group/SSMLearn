@@ -14,6 +14,8 @@ function [x_embd,opts_embd] = coordinates_embedding(x,k,varargin)
 %                  time delayed measurements, default 0
 % ForceEmbedding - force the embedding in the states of x, default false
 % TimeStepping   - time stepping in the time series, default 1
+% ShiftSteps     - number of timesteps passed between components (but 
+%                  subsequent measurements are kept intact), default 1
 %
 % If varargin is set to an integer value, it it set as OverEmbedding
 %
@@ -26,7 +28,7 @@ function [x_embd,opts_embd] = coordinates_embedding(x,k,varargin)
 % Developed by Mattia Cenedese. Updated March 2021.
 
 opts_embd = struct('IMdimensions',k,'OverEmbedding',0,...
-    'ForceEmbedding',0,'TimeStepping',1);
+    'ForceEmbedding',0,'TimeStepping',1,'ShiftSteps',1);
 % Default case
 if nargin == 3; opts_embd.OverEmbedding = varargin{:}; end
 if rem(length(varargin),2) > 0 && length(varargin) > 1
@@ -45,6 +47,7 @@ N_traj = size(x,1);
 N = size([x{1,2}],1);
 if length([x{1,1}])==N; N = size([x{1,2}],2); end
 l = opts_embd.TimeStepping;
+shift = opts_embd.ShiftSteps;
 n_N = ( ceil( (2*k+1)/N ) + opts_embd.OverEmbedding);
 % Construct embedding coordinate system
 x_embd = cell(N_traj,2);
@@ -68,11 +71,12 @@ if n_N > 1 && opts_embd.ForceEmbedding ~= 1
         if size(t_j,1)>size(t_j,2); t_j = transpose(t_j); end
         if length(t_j)~=size(x_j,2); x_j = transpose(x_j); end
         t_j = t_j(1:l:end); x_j = x_j(:,1:l:end);
-        Y_j = x_j(:,1:end-(n_N-1));
+        Y_j = x_j(:,1:end-(n_N-1)*shift);
         for ii = 1:(n_N-1)
-            Y_j = [Y_j; x_j(:,1+ii:end-(n_N-1-ii))];
+            Y_j = [Y_j; x_j(:,1+ii*shift:end-(n_N-1-ii)*shift)];
         end
-        x_embd{jj,1} = t_j(1+ii:end-(n_N-1-ii)); x_embd{jj,2} = Y_j; 
+        x_embd{jj,1} = t_j(1:end-shift*(n_N-1));
+        x_embd{jj,2} = Y_j; 
     end
     
 else
