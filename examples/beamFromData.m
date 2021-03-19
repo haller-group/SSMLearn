@@ -3,12 +3,11 @@ close all
 
 load rspa20160759_si_002.mat
 xSim = {NNM1a(1,:)-NNM1a(1,1), NNM1a(2,:);
-        NNM1b(1,:)-NNM1b(1,1), NNM1b(2,:)}%;
-       % NNM2(1,:)-NNM2(1,1), NNM2(2,:);
-       % NNM3(1,:)-NNM3(1,1), NNM3(2,:)};
-nTraj = size(xSim, 1);
-indTest = [1];
-indTrain = setdiff(1:nTraj, indTest);
+        NNM1b(1,:)-NNM1b(1,1), NNM1b(2,:);
+        NNM2(1,:)-NNM2(1,1), NNM2(2,:);
+        NNM3(1,:)-NNM3(1,1), NNM3(2,:)};
+indTest = [3];
+indTrain = [3];
 SSMDim = 2;
 c1 = 1000; c2 = 6;
 
@@ -16,8 +15,8 @@ dt = mean(diff(NNM1a(1,:))); % dt same in all experiments!
 omega = 45.8*2*pi; zeta = 0.38*0.01;
 lambda = -omega*(zeta + [1i; -1i]*sqrt(1-zeta^2));
 %%
-overEmbed = 0;
-SSMOrder = 3;
+overEmbed = -2;
+SSMOrder = 5;
 
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
@@ -50,5 +49,5 @@ RRMSE = mean(fullTrajDist(indTest))
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
 plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1, 'g')
 
-reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
 DSEigenvalues = lambda(1:SSMDim)
+reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
