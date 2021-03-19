@@ -10,10 +10,10 @@ b = 1;
 
 % Material properties
 
-% E       = 70e9;  % 70e9 % 200e9 % Young's modulus
+E       = 70e9;  % 70e9 % 200e9 % Young's modulus
 rho     = 2700; % 2700 % 7850 % density
 nu      = 0.3;    % nu
-% kappa   = 1e7; % material damping modulus 1e8
+kappa   = 3e6; % material damping modulus 1e8
 
 %% FE model
 disp('Building FE model')
