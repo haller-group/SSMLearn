@@ -41,9 +41,9 @@ plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,2,3], V, 50, 'SSMDime
 % axis equal
 view(50, 30)
 %% Reduced dynamics
-[R_modal,iT_modal,N_modal,T_modal,Maps_info_modal] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 100, 'c2', 0.03);
+[R,~,~,~,Maps_info] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 100, 'c2', 0.03);
 
-[yRecModal, xRecModal] = iterateMaps(R_modal, yData, SSMFunction);
+[yRecModal, xRecModal] = iterateMaps(R, yData, SSMFunction);
 
 [reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecModal, xRecModal, yData, xData);
 
@@ -53,10 +53,10 @@ RRMSE_modal = mean(fullTrajDist(indTest))
 plotReducedCoords(yData(indTest(1),:), yRecModal(indTest(1),:))
 plotReconstructedTrajectory(xData(indTest(1),:), xRecModal(indTest(1),:), 2, 'g')
 
-reconstructedEigenvalues = computeEigenvaluesMap(Maps_info_modal, dt)
+reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
 DSEigenvalues = lambda(1:SSMDim)
 %% Normal form
-[R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', 0, 'c2', 0.03);
+[~,iT,N,T,NormalFormInfo] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', 0, 'c2', 0.03);
 
 zData = transformToComplex(iT, yData);
 [zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
@@ -70,5 +70,11 @@ RRMSE_normal = mean(fullTrajDist(indTest))
 plotReducedCoords(yData(indTest(1),:), yRecNormal(indTest(1),:))
 plotReconstructedTrajectory(xData(indTest(1),:), xRecNormal(indTest(1),:), 2, 'c')
 
-reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
+normalFormEigenvalues = computeEigenvaluesMap(NormalFormInfo, dt)
 DSEigenvalues = lambda(1:SSMDim)
+
+%% Nromal form and backbone curves
+N_info = NormalFormInfo.N;
+[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,t_i(2)-t_i(1));
+figure(100); clf;
+backbonecurves(damp,freq,SSM_func,T,coordplot,abs(y_i(1,1)),'norm');

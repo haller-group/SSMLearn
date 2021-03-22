@@ -1,21 +1,24 @@
 clearvars
 close all
 
-nTraj = 4;
+nTraj = 2;
+nTrajsOnMfd = 2;
 indTest = [1];
 indTrain = setdiff(1:nTraj, indTest);
-ICRadius = 0.4;
 SSMDim = 2;
+ICRadius = 0.15;
+c1 = 0;
+c2 = 0.4;
 
 nElements = 5;
 kappa = 4; % cubic spring
 gamma = 0; % cubic damping
 [M,C,K,fnl] = build_model(kappa, gamma, nElements);
 n = size(M,1); % mechanical dofs
-[IC, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTraj, ICRadius, SSMDim, 1)
-% noise = 0.3;
-% IC = IC .* (1 + noise * (1-2*rand(size(IC)))/2);
-% IC = ICRadius * pickPointsOnHypersphere(nTraj, 2*n, 1)
+[ICOnMfd, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTrajsOnMfd, ICRadius, SSMDim, 1);
+ICOffMfd = ICRadius * pickPointsOnHypersphere(nTraj-nTrajsOnMfd, 2*n, 1);
+IC = [ICOnMfd, ICOffMfd];
+lambda = DS.spectrum.Lambda;
 
 Minv = inv(M);
 f = @(q,qdot) [zeros(n-2,1); kappa*q(n-1).^3; 0];
@@ -27,11 +30,10 @@ G = @(x) [zeros(n,1);
 
 F = @(t,x) A*x + G(x);
 
-% F = @(t,x) DS.odefun(t,x);
-
 observable = @(x) x(9,:);
 tEnd = 100;
 nSamp = 15000;
+dt = tEnd/(nSamp-1);
 
 tic
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
@@ -44,7 +46,9 @@ SSMOrder = 3;
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
-[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 1000, 'c2', 0.1);
+% [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', c1, 'c2', c2);
+V = [1/sqrt(5)*ones(5,1), 1/sqrt(10)*[-2;-1;0;1;2]];
+SSMFunction = @(q)V*q;
 %%
 yData = getProjectedTrajs(xData, V);
 plotReducedCoords(yData(indTest,:));
@@ -59,7 +63,7 @@ plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [1,3,5], V, 50, 'SSMDimen
 view(50, 30)
 
 %% Reduced dynamics
-[R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 1000, 'c2', 0.1);
+[R,iT,N,T,Maps_info] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.5*tEnd,Inf]), 'R_PolyOrd', 3, 'style', 'modal', 'c1', c1, 'c2', c2);
 
 [yRec, xRec] = iterateMaps(R, yData, SSMFunction);
 
@@ -71,4 +75,29 @@ RRMSE = mean(fullTrajDist(indTest))
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
 plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1, 'g')
 
-computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))
+reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))
+DSEigenvalues = lambda(1:SSMDim)
+%% Normal form
+[~,iT,N,T,NormalFormInfo] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.*tEnd,Inf]), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', c1, 'c2', c2);
+
+zData = transformToComplex(iT, yData);
+[zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
+yRecNormal = transformToComplex(T, zRec);
+
+[reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecNormal, xRecNormal, yData, xData);
+
+RMSE_normal = mean(reducedTrajDist(indTest))
+RRMSE_normal = mean(fullTrajDist(indTest))
+
+plotReducedCoords(yData(indTest(1),:), yRecNormal(indTest(1),:))
+plotReconstructedTrajectory(xData(indTest(1),:), xRecNormal(indTest(1),:), 2, 'c')
+
+normalFormEigenvalues = computeEigenvaluesMap(NormalFormInfo, dt)
+DSEigenvalues = lambda(1:SSMDim)
+
+%% Nromal form and backbone curves
+N_info = NormalFormInfo.N;
+[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,dt);
+figure(100); clf;
+y_i = iT(V'*xData{indTest(1),2});
+backbonecurves(damp,freq,SSMFunction,T,1,abs(y_i(1,1)),'norm');

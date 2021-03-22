@@ -8,7 +8,7 @@ if Nfeatures > Ndata
     trans_option  = 1;
     X = transpose(X); Y = transpose(Y); L = transpose(L);
 end
-[~,Nfeatures] = size(X);
+[Ndata,Nfeatures] = size(X);
 
 % Normalization & definition of regularizers
 X_normal = max(abs(X),[],1); X = X./X_normal;
