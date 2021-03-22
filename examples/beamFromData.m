@@ -6,8 +6,8 @@ xSim = {NNM1a(1,:)-NNM1a(1,1), NNM1a(2,:);
         NNM1b(1,:)-NNM1b(1,1), NNM1b(2,:);
         NNM2(1,:)-NNM2(1,1), NNM2(2,:);
         NNM3(1,:)-NNM3(1,1), NNM3(2,:)};
-indTest = [3];
-indTrain = [3];
+indTest = [1];
+indTrain = [2];
 SSMDim = 2;
 c1 = 1000; c2 = 6;
 

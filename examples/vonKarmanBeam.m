@@ -61,14 +61,7 @@ plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [n-2,n,2*n], V, 50, 'SSMD
 view(50, 30)
 
 %% Reduced dynamics
-cutoff = 20000;
-for iTraj = indTrain
-    yData{iTraj,1} = yData{iTraj,1}(:,cutoff:end);
-    xData{iTraj,1} = xData{iTraj,1}(:,cutoff:end);
-    yData{iTraj,2} = yData{iTraj,2}(:,cutoff:end);
-    xData{iTraj,2} = xData{iTraj,2}(:,cutoff:end);
-end
-[R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 0, 'c2', 0.3);
+[R,iT,N,T,Maps_info] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.4*tEnd, Inf]), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 0, 'c2', 0.3);
 
 [yRec, xRec] = iterateMaps(R, yData, SSMFunction);
 
