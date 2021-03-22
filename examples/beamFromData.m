@@ -6,8 +6,8 @@ xSim = {NNM1a(1,:)-NNM1a(1,1), NNM1a(2,:);
         NNM1b(1,:)-NNM1b(1,1), NNM1b(2,:);
         NNM2(1,:)-NNM2(1,1), NNM2(2,:);
         NNM3(1,:)-NNM3(1,1), NNM3(2,:)};
-indTest = [1];
-indTrain = [2];
+indTest = [2];
+indTrain = [1];
 SSMDim = 2;
 c1 = 1000; c2 = 6;
 
@@ -16,14 +16,14 @@ omega = 45.8*2*pi; zeta = 0.38*0.01;
 lambda = -omega*(zeta + [1i; -1i]*sqrt(1-zeta^2));
 %%
 overEmbed = -2;
-SSMOrder = 5;
+SSMOrder = 4;
 
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
 
-[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', c1, 'c2', c2);
-% V = [1/sqrt(3)*ones(3,1), 1/sqrt(2)*[-1;0;1]];
-% SSMFunction = @(q)V*q;
+% [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', c1, 'c2', c2);
+V = [1/sqrt(3)*ones(3,1), 1/sqrt(2)*[-1;0;1]];
+SSMFunction = @(q)V*q;
 %%
 yData = getProjectedTrajs(xData, V);
 plotReducedCoords(yData(indTest,:));

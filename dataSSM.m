@@ -2,7 +2,7 @@ clearvars
 close all
 
 nTraj = 5;
-nTrajsOnMfd = 5;
+nTrajsOnMfd = 4;
 indTest = [5];
 indTrain = setdiff(1:nTraj, indTest);
 SSMDim = 2;
@@ -75,6 +75,7 @@ DSEigenvalues = lambda(1:SSMDim)
 
 %% Nromal form and backbone curves
 N_info = NormalFormInfo.N;
-[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,t_i(2)-t_i(1));
+[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,dt);
 figure(100); clf;
-backbonecurves(damp,freq,SSM_func,T,coordplot,abs(y_i(1,1)),'norm');
+y_i = iT(V'*xData{indTest(1),2});
+backbonecurves(damp,freq,SSMFunction,T,1,abs(y_i(1,1)),'norm');
