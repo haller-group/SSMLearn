@@ -7,7 +7,7 @@ indTest = [1];
 indTrain = setdiff(1:nTraj, indTest);
 SSMDim = 2;
 ICRadius = 0.15;
-c1 = 1000000;
+c1 = 0;
 c2 = 0.4;
 
 nElements = 5;
@@ -63,14 +63,7 @@ plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [1,3,5], V, 50, 'SSMDimen
 view(50, 30)
 
 %% Reduced dynamics
-cutoff = 1;
-for iTraj = indTrain
-    yData{iTraj,1} = yData{iTraj,1}(:,cutoff:end);
-    xData{iTraj,1} = xData{iTraj,1}(:,cutoff:end);
-    yData{iTraj,2} = yData{iTraj,2}(:,cutoff:end);
-    xData{iTraj,2} = xData{iTraj,2}(:,cutoff:end);
-end
-[R,iT,N,T,Maps_info] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', c1, 'c2', c2);
+[R,iT,N,T,Maps_info] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.5*tEnd,Inf]), 'R_PolyOrd', 3, 'style', 'modal', 'c1', c1, 'c2', c2);
 
 [yRec, xRec] = iterateMaps(R, yData, SSMFunction);
 
@@ -81,14 +74,11 @@ RRMSE = mean(fullTrajDist(indTest))
 
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
 plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1, 'g')
-plotReconstructedTrajectory(xData(indTrain(1),:), {0,0}, 1, 'g')
-hold on
-plot(0:tEnd,max(xData{indTrain(1),2}(1,:))*timeWeighting(c1,c2,0:tEnd), 'r', 'DisplayName', 'weighting')
 
 reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))
 DSEigenvalues = lambda(1:SSMDim)
 %% Normal form
-[~,iT,N,T,NormalFormInfo] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', 0, 'c2', 0.4);
+[~,iT,N,T,NormalFormInfo] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.*tEnd,Inf]), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', c1, 'c2', c2);
 
 zData = transformToComplex(iT, yData);
 [zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
