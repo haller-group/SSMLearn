@@ -3,7 +3,7 @@ close all
 
 nTraj = 6;
 nTrajsOnMfd = 1;
-indTest = [1 2];
+indTest = [2 3 4 5 6];
 indTrain = setdiff(1:nTraj, indTest);
 ICRadius = 0.001;
 SSMDim = 2;
@@ -16,7 +16,7 @@ kappa   = 1e8; % material damping modulus 1e8
 
 [M,C,K,fnl] = von_karman_model(nElements, E, rho, nu, kappa);
 n = size(M,1); % mechanical dofs
-[ICOnMfd, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTrajsOnMfd, ICRadius, SSMDim, 1)
+[ICOnMfd, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTrajsOnMfd, ICRadius, SSMDim, 1);
 ICOffMfd = ICRadius * pickPointsOnHypersphere(nTraj-nTrajsOnMfd, 2*n, 1);
 IC = [ICOnMfd, ICOffMfd];
 lambda = DS.spectrum.Lambda;
@@ -27,11 +27,13 @@ F = @(t,x) DS.odefun(t,x);
 observable = @(x) x;
 tEnd = 100;
 nSamp = 50000;
+sliceInt = [0.4*tEnd, Inf];
 
 tic
 % xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 load vk5el6traj1stonmfddata.mat
 toc
+dt = xSim{1,1}(2)-xSim{1,1}(1);
 
 % for iTraj = 1:nTraj
 %     xSim{iTraj,2} = xSim{iTraj,2}(15,:)
@@ -61,7 +63,7 @@ plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [n-2,n,2*n], V, 50, 'SSMD
 view(50, 30)
 
 %% Reduced dynamics
-[R,iT,N,T,Maps_info] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.4*tEnd, Inf]), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 0, 'c2', 0.3);
+[R,iT,N,T,Maps_info] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), sliceInt), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 0, 'c2', 0.3);
 
 [yRec, xRec] = iterateMaps(R, yData, SSMFunction);
 
@@ -73,5 +75,31 @@ RRMSE = mean(fullTrajDist(indTest))
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
 plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), n, 'g')
 
-reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))
+reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
 DSEigenvalues = lambda(1:SSMDim)
+
+%% Normal form
+[~,iT,N,T,NormalFormInfo] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), sliceInt), 'R_PolyOrd', 3, 'style', 'normalform', 'c1', 0, 'c2', 0.03);
+
+zData = transformToComplex(iT, yData);
+[zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
+yRecNormal = transformToComplex(T, zRec);
+
+[reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecNormal, xRecNormal, yData, xData);
+
+RMSE_normal = mean(reducedTrajDist(indTest))
+RRMSE_normal = mean(fullTrajDist(indTest))
+
+plotReducedCoords(yData(indTest(1),:), yRecNormal(indTest(1),:))
+plotReconstructedTrajectory(sliceTrajectories(xData(indTest(1),:), sliceInt),...
+    sliceTrajectories(xRecNormal(indTest(1),:), sliceInt), n, 'c')
+
+normalFormEigenvalues = computeEigenvaluesMap(NormalFormInfo, dt)
+DSEigenvalues = lambda(1:SSMDim)
+
+%% Backbone curves
+N_info = NormalFormInfo.N;
+[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,dt);
+figure
+maxRho = abs(zData{indTest(1),2}(1,1));
+backbonecurves(damp, freq, SSMFunction, T, 1, maxRho, 'norm');

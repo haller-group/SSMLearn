@@ -97,8 +97,8 @@ W_n_nl  = sparse(idx_n(:,1),idx_n(:,2),z_complex(size(idx_it,1)+...
 % Compute function
 Phi_iT_Yk = Maps_info.Phi_iT_Yk; iTk_nl = W_it_nl*Phi_iT_Yk; 
 iTk = cc_transf(Maps_info.Yk_r + iTk_nl); Phi_N = phi_n(iTk);
-Err = Maps_info.Yk_1_DYk_r + W_it_nl*Maps_info.Phi_iT_Yk_1 - ...
-    (Maps_info.d_r.*iTk_nl + W_n_nl*Phi_N);
+Err = (Maps_info.Yk_1_DYk_r + W_it_nl*Maps_info.Phi_iT_Yk_1 - ...
+    (Maps_info.d_r.*iTk_nl + W_n_nl*Phi_N))/mean(abs(Maps_info.Yk_r));
 f = sum(sum((Err.*conj(Err)).*L2))/size(Maps_info.Yk_r,2)/k;
 if nargout > 1 % gradient required
     cErr_L = conj(Err).*L2;
