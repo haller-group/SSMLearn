@@ -34,10 +34,12 @@ opt_options_fm = optimoptions('fminunc',...
     'OptimalityTolerance',opt_options.OptimalityTolerance,...
     'MaxIterations',opt_options.MaxIter,...
     'MaxFunctionEvaluations',opt_options.MaxFunctionEvaluations,...
-    'SpecifyObjectiveGradient',opt_options.SpecifyObjectiveGradient,...
-    'CheckGradients',opt_options.CheckGradients);
+    'SpecifyObjectiveGradient',opt_options.SpecifyObjectiveGradient);
 if opt_options.IC_nf == 0
     Maps_info.IC_opt = 0*Maps_info.IC_opt;
+end
+if opt_options.IC_nf == 2
+    Maps_info.IC_opt = randn(size(Maps_info.IC_opt)).*Maps_info.IC_opt;       
 end
 % Run unconstrained optimization
 z = fminunc(fun,Maps_info.IC_opt,opt_options_fm);
@@ -99,7 +101,7 @@ Phi_iT_Yk = Maps_info.Phi_iT_Yk; iTk_nl = W_it_nl*Phi_iT_Yk;
 iTk = cc_transf(Maps_info.Yk_r + iTk_nl); Phi_N = phi_n(iTk);
 Err = Maps_info.Yk_1_DYk_r + W_it_nl*Maps_info.Phi_iT_Yk_1 - ...
     (Maps_info.d_r.*iTk_nl + W_n_nl*Phi_N);
-f = sum(sum((Err.*conj(Err)).*L2))/size(Maps_info.Yk_r,2)/k;
+f = sum(sum((Err.*conj(Err)).*L2))/size(Maps_info.Yk_r,2)/k_red;
 if nargout > 1 % gradient required
     cErr_L = conj(Err).*L2;
     lidx_n = N_info.lidx; lidx_it = iT_info.lidx;
@@ -140,7 +142,7 @@ if nargout > 1 % gradient required
             reshape(DF_n_re(lidx_n),length((lidx_n)),1);...
             reshape(DF_it_im(lidx_it),length((lidx_it)),1); ...
             reshape(DF_n_im(lidx_n),length((lidx_n)),1)]...
-            /size(Maps_info.Yk_r,2)/k;
+            /size(Maps_info.Yk_r,2)/k_red;
 end
 end
 
