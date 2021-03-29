@@ -3,7 +3,7 @@ close all
 
 nTraj = 6;
 nTrajsOnMfd = 1;
-indTest = [2 3 4 5 6];
+indTest = [1 2];
 indTrain = setdiff(1:nTraj, indTest);
 ICRadius = 0.001;
 SSMDim = 2;
@@ -15,7 +15,7 @@ nu      = 0.3;    % nu
 kappa   = 1e8; % material damping modulus 1e8
 
 [M,C,K,fnl] = von_karman_model(nElements, E, rho, nu, kappa);
-n = size(M,1); % mechanical dofs
+n = size(M,1); % mechanical dofs (axial def, transverse def, angle)
 [ICOnMfd, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTrajsOnMfd, ICRadius, SSMDim, 1);
 ICOffMfd = ICRadius * pickPointsOnHypersphere(nTraj-nTrajsOnMfd, 2*n, 1);
 IC = [ICOnMfd, ICOffMfd];
@@ -36,17 +36,17 @@ toc
 dt = xSim{1,1}(2)-xSim{1,1}(1);
 
 % for iTraj = 1:nTraj
-%     xSim{iTraj,2} = xSim{iTraj,2}(15,:)
+%     xSim{iTraj,2} = xSim{iTraj,2}(n-1,:)
 % end
 
-% plotReconstructedTrajectory(xSim(1,:), xSim(1,:), n)
+% plotReconstructedTrajectory(xSim(1,:), xSim(1,:), 1)
 
 %%
 overEmbed = 0;
 SSMOrder = 3;
 
-% xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
-xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
+xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
+% xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 1000, 'c2', 0.1);
 %%
@@ -56,9 +56,9 @@ plotReducedCoords(yData(indTest,:));
 RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 %%
 xLifted = liftReducedTrajs(yData, SSMFunction);
-plotReconstructedTrajectory(xData(indTest(2),:), xLifted(indTest(2),:), n)
+plotReconstructedTrajectory(xData(indTest(2),:), xLifted(indTest(2),:), n-1)
 %%
-plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [n-2,n,2*n], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [n-4,n-1,2*n-1], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 
@@ -73,7 +73,7 @@ RMSE = mean(reducedTrajDist(indTest))
 RRMSE = mean(fullTrajDist(indTest))
 
 plotReducedCoords(yData(indTest(1),:), yRec(indTest(1),:))
-plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), n, 'g')
+plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), n-1, 'g')
 
 reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
 DSEigenvalues = lambda(1:SSMDim)
@@ -91,8 +91,7 @@ RMSE_normal = mean(reducedTrajDist(indTest))
 RRMSE_normal = mean(fullTrajDist(indTest))
 
 plotReducedCoords(yData(indTest(1),:), yRecNormal(indTest(1),:))
-plotReconstructedTrajectory(sliceTrajectories(xData(indTest(1),:), sliceInt),...
-    sliceTrajectories(xRecNormal(indTest(1),:), sliceInt), n, 'c')
+plotReconstructedTrajectory(xData(indTest(1),:), xRecNormal(indTest(1),:), n-1, 'c')
 
 normalFormEigenvalues = computeEigenvaluesMap(NormalFormInfo, dt)
 DSEigenvalues = lambda(1:SSMDim)

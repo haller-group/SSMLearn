@@ -1,8 +1,8 @@
 clearvars
 close all
 
-nTraj = 2;
-nTrajsOnMfd = 2;
+nTraj = 6;
+nTrajsOnMfd = 1;
 indTest = [1];
 indTrain = setdiff(1:nTraj, indTest);
 SSMDim = 2;
@@ -40,15 +40,15 @@ xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 toc
 % load bernoulli4dfull
 %%
-overEmbed = 0;
+overEmbed = 100;
 SSMOrder = 3;
 
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
 
-% [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', c1, 'c2', c2);
-V = [1/sqrt(5)*ones(5,1), 1/sqrt(10)*[-2;-1;0;1;2]];
-SSMFunction = @(q)V*q;
+[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', c1, 'c2', c2);
+% V = [1/sqrt(5)*ones(5,1), 1/sqrt(10)*[-2;-1;0;1;2]];
+% SSMFunction = @(q)V*q;
 %%
 yData = getProjectedTrajs(xData, V);
 plotReducedCoords(yData(indTest,:));
@@ -56,9 +56,9 @@ plotReducedCoords(yData(indTest,:));
 RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 %%
 xLifted = liftReducedTrajs(yData, SSMFunction);
-plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 1)
+plotReconstructedTrajectory(xData(indTrain(1),:), xLifted(indTrain(1),:), 1)
 %%
-plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [1,3,5], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,3,5], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 
@@ -77,8 +77,9 @@ plotReconstructedTrajectory(xData(indTest(1),:), xRec(indTest(1),:), 1, 'g')
 
 reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,1}(1))
 DSEigenvalues = lambda(1:SSMDim)
+
 %% Normal form
-[~,iT,N,T,NormalFormInfo] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.*tEnd,Inf]), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', c1, 'c2', c2);
+[~,iT,N,T,NormalFormInfo] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.5*tEnd,Inf]), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', c1, 'c2', c2);
 
 zData = transformToComplex(iT, yData);
 [zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
