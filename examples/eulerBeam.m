@@ -40,7 +40,7 @@ xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 toc
 % load bernoulli4dfull
 %%
-overEmbed = 100;
+overEmbed = 0;
 SSMOrder = 3;
 
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);

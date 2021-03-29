@@ -35,7 +35,7 @@ if isempty(varargin)==0
         set(gca,'fontsize',18)
     else
         subplot(121); hold on; grid on; box on;
-        plot(inst_damp_curve,inst_amp,'Linewidth',2)
+        plot(inst_damp_curve./inst_damp_curve(1),inst_amp,'Linewidth',2)
         xlabel('$\zeta/\zeta(0)$','Interpreter','latex')
         ylabel(['$x_' num2str(coordplot) '$'],'Interpreter','latex')
         set(gca,'fontname','times')

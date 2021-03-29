@@ -131,7 +131,8 @@ xlim([t_i(1) t_i(end)])
 ylim([-1 1]*max(abs(y_i(2,:))))
 RMSE = mean(sqrt(sum( (y_i-y_sim).^2 )))
 
-coordplot = 1; 
+coordplot = 1;
+x_i = X_traj{ii,2};
 x_ROM = SSM_func((y_sim));
 figure(91); clf; hold on; grid on; box on; 
 plot(t_i,x_i(coordplot,:),'k','Linewidth',2,'DisplayName','Trajectory 1')
@@ -187,7 +188,7 @@ xlim([t_i(1) t_i(end)])
 legend
 subplot(212); hold on; grid on; box on;
 plot(real(y_i(1,:)),imag(y_i(2,:)),'k','Linewidth',2,'DisplayName','Testing Trajectory')
-plot(real(y_ROM(1,:)),imag(y_ROM(2,:)),'r:','Linewidth',2,'DisplayName','ROM Trajectory')
+plot(real(y_sim(1,:)),imag(y_sim(2,:)),'r:','Linewidth',2,'DisplayName','ROM Trajectory')
 xlabel('$z_1$','Interpreter','latex')
 ylabel('$z_2$','Interpreter','latex')
 set(gca,'fontname','times')
@@ -200,4 +201,4 @@ RRMSE = mean(sqrt(sum( (x_i-x_ROM).^2 )))/max(sqrt(sum(x_i.^2)))*100 % Percentag
 N_info = Maps_info.N; T =  Maps_info.T; T =  T.Map; 
 [damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents);
 figure(101); clf; hold on; grid on; box on;
-backbonecurves(damp,freq,SSM_func,T,coordplot,abs(y_i(1,1)),'Hz')
+backbonecurves(damp,freq,SSM_func,T,coordplot,abs(y_i(1,1)),'norm')
