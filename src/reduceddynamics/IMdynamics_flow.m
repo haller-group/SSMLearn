@@ -56,14 +56,20 @@ function [R,iT,N,T,Maps_info] = IMdynamics_flow(X_traj,varargin)
 %                      by the default the code uses the actual values of
 %                      of the frequencies. This option only works with the
 %                      normal form style center manifold
-% 'IC_nf' - default is zero or optionally an initial guess based on R
+% 'IC_nf' - initial condition for the optimization in the normal form.
+%           0 (default): zero initial condition;
+%           1: initial estimate based on the coefficients of R
+%           2: normally distributed with the variance of case 1
+% 'rescale' - rescale for the modal coordinates. 
+%           0: no rescale
+%           1 (default): the maximum amplitude is 0.5 (ratios kept)
+%           2: the maximum amplitude of all coordinates is 0.5       
 % 'Display' - default 'iter'
 % 'OptimalityTolerance' - default 1e-4 times the number of datapoints
 % 'MaxIter' - default 100
 % 'MaxFunctionEvaluations' - default 300
 % 'SpecifyObjectiveGradient' - default true
-% 'CheckGradients' - default false
-%     the last seven options are for Matlab function fminunc.
+%     the last five options are for Matlab function fminunc.
 %     For more information, check out its documentation.
     
 if rem(length(varargin),2) > 0 && length(varargin) > 1
@@ -113,7 +119,7 @@ switch options.style
         if n_real_eig>0
             disp('Normal form not available. Returning modal style.')
             % Linear transformation
-            [V,~,~] = eig_sorted(W_r(:,1:k),1); iT = @(x) V\x; T = @(y) V*y;
+            iT = @(x) V\x; T = @(y) V*y;
             T_info = assemble_struct(T,V,@(x) x,eye(k),[],[]);
             iT_info = assemble_struct(iT,inv(V),@(y) y,eye(k),[],[]);
             % Nonlinear modal dynamics coefficients
@@ -121,6 +127,14 @@ switch options.style
             W_n = V\W_r*V_M; N = @(y) V\(W_r*phi(V*y));
             N_info = assemble_struct(N,W_n,phi,Expmat,[],[]);
         else
+            if options.rescale == 1
+               v_rescale = max(abs(V\X),[],2); 
+               V = 2*V*diag(max(v_rescale(1:k/2))*ones(1,k));
+            end
+            if options.rescale == 2
+               v_rescale = max(abs(V\X),[],2); 
+               V = 2*V*diag(v_rescale);
+            end
             % Initialize the normal form
             Maps_info_opt=initialize_nf_flow(V,D,d,W_r,X_traj,options);
             % Get normal form mappings T, N and T^{-1}
@@ -295,12 +309,12 @@ options = struct('Style','default','R_PolyOrd', 1,'iT_PolyOrd',1,...
     'style','default','nf_style','center_mfld','frequencies_norm',[],...
     'tol_nf',1e1,...
     'IC_nf',0,...
+    'rescale',1,...
     'Display','iter',...
-    'OptimalityTolerance',10^(-4-floor(log10(Ndata))),...
-    'MaxIter',100,...
+    'OptimalityTolerance',10^(-8-floor(log10(Ndata))),...
+    'MaxIter',1e3,...
     'MaxFunctionEvaluations',10000,...
-    'SpecifyObjectiveGradient',true,...
-    'CheckGradients',false);
+    'SpecifyObjectiveGradient',true);
 % Default case
 if nargin_o == 2; options.R_PolyOrd = varargin_o{:};
     options.N_PolyOrd = varargin_o{:}; end
