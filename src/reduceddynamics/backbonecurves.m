@@ -24,26 +24,26 @@ if isempty(varargin)==0
         subplot(121); hold on; grid on; box on;
         plot(-inst_damp_curve./inst_freq_curve*100,inst_amp,'Linewidth',2)
         xlabel('$\xi \, [$\%$]$','Interpreter','latex')
-        ylabel(['$x_' num2str(coordplot) '$'],'Interpreter','latex')
+        ylabel(['$x_{' num2str(coordplot) '}$'],'Interpreter','latex')
         set(gca,'fontname','times')
         set(gca,'fontsize',18)
         subplot(122); hold on; grid on; box on;
         plot(inst_freq_curve/2/pi,inst_amp,'Linewidth',2)
         xlabel('$\omega \, [$Hz$]$','Interpreter','latex')
-        ylabel(['$x_' num2str(coordplot) '$'],'Interpreter','latex')
+        ylabel(['$x_{' num2str(coordplot) '}$'],'Interpreter','latex')
         set(gca,'fontname','times')
         set(gca,'fontsize',18)
     else
         subplot(121); hold on; grid on; box on;
         plot(inst_damp_curve./inst_damp_curve(1),inst_amp,'Linewidth',2)
         xlabel('$\zeta/\zeta(0)$','Interpreter','latex')
-        ylabel(['$x_' num2str(coordplot) '$'],'Interpreter','latex')
+        ylabel(['$x_{' num2str(coordplot) '}$'],'Interpreter','latex')
         set(gca,'fontname','times')
         set(gca,'fontsize',18)
         subplot(122); hold on; grid on; box on;
         plot(inst_freq_curve/inst_freq_curve(1),inst_amp,'Linewidth',2)
         xlabel('$\omega/\omega(0)$','Interpreter','latex')
-        ylabel(['$x_' num2str(coordplot) '$'],'Interpreter','latex')
+        ylabel(['$x_{' num2str(coordplot) '}$'],'Interpreter','latex')
         set(gca,'fontname','times')
         set(gca,'fontsize',18)
     end
@@ -51,13 +51,13 @@ else
     subplot(121); hold on; grid on; box on;
     plot(inst_damp_curve,inst_amp,'Linewidth',2)
     xlabel('$\zeta\, [$1/s$]$','Interpreter','latex')
-    ylabel(['$x_' num2str(coordplot) '$'],'Interpreter','latex')
+    ylabel(['$x_{' num2str(coordplot) '}$'],'Interpreter','latex')
     set(gca,'fontname','times')
     set(gca,'fontsize',18)
     subplot(122); hold on; grid on; box on;
     plot(inst_freq_curve,inst_amp,'Linewidth',2)
     xlabel('$\omega\, [$rad/s$]$','Interpreter','latex')
-    ylabel(['$x_' num2str(coordplot) '$'],'Interpreter','latex')
+    ylabel(['$x_{' num2str(coordplot) '}$'],'Interpreter','latex')
     set(gca,'fontname','times')
     set(gca,'fontsize',18)
 end

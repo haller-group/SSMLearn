@@ -58,7 +58,7 @@ RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 xLifted = liftReducedTrajs(yData, SSMFunction);
 plotReconstructedTrajectory(xData(indTest(2),:), xLifted(indTest(2),:), n-1)
 %%
-plotSSMWithTrajectories(xData(indTest,:), SSMFunction, [n-4,n-1,2*n-1], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(sliceTrajectories(xData(indTest,:),[0.1,Inf]), SSMFunction, [n-3,n-1,2*n-1], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 
@@ -101,4 +101,4 @@ N_info = NormalFormInfo.N;
 [damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,dt);
 figure
 maxRho = abs(zData{indTest(1),2}(1,1));
-backbonecurves(damp, freq, SSMFunction, T, 1, maxRho, 'norm');
+backbonecurves(damp, freq, SSMFunction, T, 14, maxRho, 'norm');
