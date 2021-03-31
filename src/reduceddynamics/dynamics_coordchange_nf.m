@@ -50,7 +50,7 @@ phi_n_nl = N_info.phi; phi_it_nl = iT_info.phi;
 [phi_dim_n,k] = size(N_info.Exponents);
 phi_dim_it = size(iT_info.Exponents,1); k_red = size(Maps_info.Yk_r,1);
 V = Maps_info.V;
-% Indexes
+% Indices
 idx_n = N_info.idx; idx_it = iT_info.idx;
 z_complex = z(1:length(z)/2)+1i*z(length(z)/2+1:end);
 % Reshape optimization vector

@@ -53,11 +53,11 @@ function [R,iT,N,T,Maps_info] = IMdynamics_map(X_traj,varargin)
 %            Default value for tol_nf is 10
 % 'frequencies_norm' - expected frequencies ratios (e.g. [1 2]) for 1:2
 %                      resonance with the first and the second frequencies,
-%                      by the default the code uses the actual values of
-%                      of the frequencies. This option only works with the
+%                      by default the code uses the actual values of
+%                      the frequencies. This option only works with the
 %                      normal form style center manifold
 % 'IC_nf' - initial condition for the optimization in the normal form.
-%           0 (default): zero initial condition;
+%           0 (default): zero initial condition
 %           1: initial estimate based on the coefficients of R
 %           2: normally distributed with the variance of case 1
 % 'rescale' - rescale for the modal coordinates. 
@@ -87,7 +87,7 @@ for ii = 1:size(X_traj,1)
     ind_traj{ii} = idx_end+[1:length(t_i)]; idx_end = length(t);
 end
 options = IMdynamics_options(nargin,varargin,ind_traj,size(X,2));
-% Phase space dimension & Error Weghting
+% Phase space dimension & Error Weighting
 k = size(X_i,1); L2 = (1+options.c1*exp(-options.c2*t)).^(-2);
 options = setfield(options,'L2',L2);
 
@@ -187,14 +187,14 @@ function Maps_info_opt=initialize_nf_map(V,D,d_cont,W_r,X,X_1,Dt,options)
 % Preparation function for the estimate of the normal form maps. Based on
 % the optimization properties, the functions seeks the coefficients of the
 % normal form dynamics and sets to zero those coefficients for the
-% transformation T^{-1}. Their indexes are stored in the output struct.
+% transformation T^{-1}. Their indices are stored in the output struct.
 % The error at time instant k for the successive optimization is
 %
-% Err_k = Y_1-D*Y+W_it_nl*phi_it(Y_1)-W_n*phi_n(Y+W_it_nl*phi_it(Y))
+% Err_k = Y_1-D*(Y+W_it_nl*phi_it(Y))+W_it_nl*phi_it(Y_1)-W_n*phi_n(Y+W_it_nl*phi_it(Y))
 % 
 % and this function also precomputes the difference Y_1-D*Y and the
 % transformations phi_it(Y_1) and phi_it(Y) for a more efficient
-% optimization. The overall process consider complex numbers, and the
+% optimization. The overall process considers complex numbers, and the
 % conjugated are ignored.
 
 % Modal transformation
@@ -240,7 +240,7 @@ if options.iT_PolyOrd<options.N_PolyOrd
 end
 lidx_it  = transpose(1:numel(W_it_0)); 
 lidx_it(lidx_elim_it)  = [];
-% Set the indexes for the coefficients of T^{-1} and N
+% Set the indices for the coefficients of T^{-1} and N
 [idx_it(:,1),idx_it(:,2)] = ind2sub(size(W_it_0),lidx_it); 
 idx_it(idx_it(:,1)>ndof,:) = []; % Eliminate cc rows
 W_it_0_up = W_it_0(1:ndof,:);
