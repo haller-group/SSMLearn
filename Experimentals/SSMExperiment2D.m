@@ -18,6 +18,14 @@ xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSt
 
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 100, 'c2', 0.03);
 %%
+% omeg = 503.6;
+% n = 5+overEmbed;
+% inds = linspace(-n/2*shiftSteps,n/2*shiftSteps,n)';
+% V = [sin(omeg*dt*inds), cos(omeg*dt*inds)];
+% V = V./vecnorm(V);
+% SSMFunction = @(q) V*q;
+
+%%
 yData = getProjectedTrajs(xData, V);
 plotReducedCoords(yData(indTest,:));
 
@@ -30,7 +38,7 @@ plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,2,3], V, 50, 'SSMDime
 % axis equal
 view(50, 30)
 %% Reduced dynamics
-[R,~,~,~,Maps_info] = IMdynamics_flow(yData(indTrain,:), 'R_PolyOrd', 5, 'style', 'modal');
+[R,~,~,~,Maps_info] = IMdynamics_flow(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal');
 
 [yRecModal, xRecModal] = integrateFlows(R, yData, SSMFunction);
 
