@@ -7,16 +7,12 @@ set(DS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 S = SSM(DS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
 S.choose_E([1:SSMDim]);
-mfd = S.compute_whisker(3);
+mfd = S.compute_whisker(9);
 
 IC = zeros(2*N, nTraj);
 z = ICRadius * pickPointsOnHypersphere(nTraj, SSMDim, seed);
 z = repelem(z(1:2:end,:) + 1j*z(2:2:end,:),2,1);
 z(2:2:end) = conj(z(2:2:end));
 for iTraj = 1:nTraj
-%     c = ICRadius*(-1)^(2*iTraj/nTraj);
-%     z = zeros(SSMDim, 1);
-%     z(1:2:SSMDim) = c;
-%     z(2:2:SSMDim) = conj(c);
     IC(:,iTraj) = real(getManifoldPoint(mfd, z(:,iTraj)));
 end

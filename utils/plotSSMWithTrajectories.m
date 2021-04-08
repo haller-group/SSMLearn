@@ -25,12 +25,20 @@ else
 end
 
 for iTraj = 1:size(xData,1)
-    plot3(xData{iTraj,2}(plotInds(1),:), xData{iTraj,2}(plotInds(2),:), xData{iTraj,2}(plotInds(3),:))
+    if length(plotInds) == 3
+        plot3(xData{iTraj,2}(plotInds(1),:), xData{iTraj,2}(plotInds(2),:), xData{iTraj,2}(plotInds(3),:))
+        xlabel(['$q_{' num2str(plotInds(1)) '}$'], 'Interpreter', 'latex')
+        ylabel(['$q_{' num2str(plotInds(2)) '}$'], 'Interpreter', 'latex')
+        zlabel(['$q_{' num2str(plotInds(3)) '}$'], 'Interpreter', 'latex')
+    elseif length(plotInds) == 1
+        yData = getProjectedTrajs(xData, V);
+        plot3(yData{iTraj,2}(1,:), yData{iTraj,2}(2,:), xData{iTraj,2}(plotInds,:))
+        xlabel(['$\eta_1$'], 'Interpreter', 'latex')
+        ylabel(['$\eta_2$'], 'Interpreter', 'latex')
+        zlabel(['$q_{' num2str(plotInds) '}$'], 'Interpreter', 'latex')
+    end
 end
 
-xlabel(['$q_{' num2str(plotInds(1)) '}$'], 'Interpreter', 'latex')
-ylabel(['$q_{' num2str(plotInds(2)) '}$'], 'Interpreter', 'latex')
-zlabel(['$q_{' num2str(plotInds(3)) '}$'], 'Interpreter', 'latex')
 title('Computed manifold with test set trajectories')
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)

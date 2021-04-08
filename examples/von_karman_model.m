@@ -73,7 +73,7 @@ v1 = reshape(V(:,mod),3,[]);
 % title(['Mode ' num2str(mod) ', Frequency = ' num2str(omega(mod)/(2*pi)) ' Hz'] )
 
 %% external force assembly
-disp('Assembling external force vector')
+% disp('Assembling external force vector')
 
 outnode = MyMesh.nNodes;
 outdof = outnode*3-1; % transverse direction
