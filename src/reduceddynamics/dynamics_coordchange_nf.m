@@ -11,7 +11,7 @@ function Maps = dynamics_coordchange_nf(Maps_info,opt_options)
 % in which 
 %
 %                 z = T^{-1}(y) = y + W_it_nl \phi_it(y)
-%                 N(z) = Dz +  W_n_nl \phi_it(y)
+%                 N(z) = Dz +  W_n_nl \phi_n(z)
 %
 % where the unknowns are the coefficients W_it_nl, W_n_nl, determined via
 % an unconstrained optimization process. D is a known diagonal matrix. The
