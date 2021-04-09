@@ -8,7 +8,7 @@ if Nfeatures > Ndata
     trans_option  = 1;
     X = transpose(X); Y = transpose(Y); L = transpose(L);
 end
-[Ndata,Nfeatures] = size(X);
+[~,Nfeatures] = size(X);
 
 % Normalization & definition of regularizers
 X_normal = max(abs(X),[],1); X = X./X_normal;
@@ -32,9 +32,9 @@ end
 %---------------------------Subfunctions---------------------------------
 
 function Err = ridgeregression_CVloop(X,Y,XL,lI,idx_folds)
-Err = zeros(1,length(idx_folds));
+Err = zeros(1,length(idx_folds)); ind_all = 1:size(X,1);
 for ii = 1:length(idx_folds)
-    ind_train = [idx_folds{:}];
+    ind_train = ind_all;
     ind_train([idx_folds{ii}])=[];
     ind_test = [idx_folds{ii}];
     X_train = X(ind_train,:); Y_train = Y(ind_train,:);
@@ -42,7 +42,7 @@ for ii = 1:length(idx_folds)
     X_test = X(ind_test,:); Y_test = Y(ind_test,:);
     sol = ( XL_train'*X_train + lI )\( XL_train'*Y_train );
     Err_i = Y_test-X_test*sol;
-    Err(ii) = mean(sqrt(sum(Err_i.*conj(Err_i))));
+    Err(ii) = mean(sqrt(sum(Err_i.*conj(Err_i),2)));
 end
 end
 
