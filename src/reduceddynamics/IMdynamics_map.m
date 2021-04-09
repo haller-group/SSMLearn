@@ -27,7 +27,14 @@ function [R,iT,N,T,Maps_info] = IMdynamics_map(X_traj,varargin)
 % coefficients of the normal form of the equivalent center manifold reduced
 % order model, specifying eventual resonances among the frequencies.
 %
-% INPUT 
+% OUTPUTS
+% R  - time-stepping map in the given coordinates of X_traj 
+% iT - transformation from the coordinates of X_traj to normal form ones 
+% N  - time-stepping map in the normal form coordinates
+% T  - transformation from the normal form coordinates to those of X_traj
+% Maps_info - struct containing the information of all these mapings
+%
+% INPUTS
 % X_traj - cell array of dimension (N_traj,2) where the first column 
 %          contains time instances (1 x mi each) and the second column the 
 %          trajectories (k x mi each). Sampling time is assumed to be
@@ -53,11 +60,11 @@ function [R,iT,N,T,Maps_info] = IMdynamics_map(X_traj,varargin)
 %            Default value for tol_nf is 10
 % 'frequencies_norm' - expected frequencies ratios (e.g. [1 2]) for 1:2
 %                      resonance with the first and the second frequencies,
-%                      by default the code uses the actual values of
-%                      the frequencies. This option only works with the
+%                      by the default the code uses the actual values of
+%                      of the frequencies. This option only works with the
 %                      normal form style center manifold
 % 'IC_nf' - initial condition for the optimization in the normal form.
-%           0 (default): zero initial condition
+%           0 (default): zero initial condition;
 %           1: initial estimate based on the coefficients of R
 %           2: normally distributed with the variance of case 1
 % 'rescale' - rescale for the modal coordinates. 
@@ -87,15 +94,19 @@ for ii = 1:size(X_traj,1)
     ind_traj{ii} = idx_end+[1:length(t_i)]; idx_end = length(t);
 end
 options = IMdynamics_options(nargin,varargin,ind_traj,size(X,2));
-% Phase space dimension & Error Weighting
+% Phase space dimension & Error Weghting
 k = size(X_i,1); L2 = (1+options.c1*exp(-options.c2*t)).^(-2);
 options = setfield(options,'L2',L2);
 
 % Construct phi and its derivatives
-disp('Estimation of the reduced dynamics... ')
 [phi,Expmat] = multivariate_polynomial(k,1,options.R_PolyOrd);
-[W_r,l_opt,Err] = ridgeregression(phi(X),X_1,options.L2,...
+if isempty(options.R_coeff) == 1
+    disp('Estimation of the reduced dynamics... ')
+    [W_r,l_opt,Err] = ridgeregression(phi(X),X_1,options.L2,...
                                          options.idx_folds,options.l_vals);
+else
+   W_r =  options.R_coeff; l_opt = 0; Err = 0;
+end
 R = @(x) W_r*phi(x);
 R_info = assemble_struct(R,W_r,phi,Expmat,l_opt,Err);
 options.l = l_opt;
@@ -187,14 +198,14 @@ function Maps_info_opt=initialize_nf_map(V,D,d_cont,W_r,X,X_1,Dt,options)
 % Preparation function for the estimate of the normal form maps. Based on
 % the optimization properties, the functions seeks the coefficients of the
 % normal form dynamics and sets to zero those coefficients for the
-% transformation T^{-1}. Their indices are stored in the output struct.
+% transformation T^{-1}. Their indexes are stored in the output struct.
 % The error at time instant k for the successive optimization is
 %
-% Err_k = Y_1-D*(Y+W_it_nl*phi_it(Y))+W_it_nl*phi_it(Y_1)-W_n*phi_n(Y+W_it_nl*phi_it(Y))
+% Err_k = Y_1-D*Y+W_it_nl*phi_it(Y_1)-W_n*phi_n(Y+W_it_nl*phi_it(Y))
 % 
 % and this function also precomputes the difference Y_1-D*Y and the
 % transformations phi_it(Y_1) and phi_it(Y) for a more efficient
-% optimization. The overall process considers complex numbers, and the
+% optimization. The overall process consider complex numbers, and the
 % conjugated are ignored.
 
 % Modal transformation
@@ -240,7 +251,7 @@ if options.iT_PolyOrd<options.N_PolyOrd
 end
 lidx_it  = transpose(1:numel(W_it_0)); 
 lidx_it(lidx_elim_it)  = [];
-% Set the indices for the coefficients of T^{-1} and N
+% Set the indexes for the coefficients of T^{-1} and N
 [idx_it(:,1),idx_it(:,2)] = ind2sub(size(W_it_0),lidx_it); 
 idx_it(idx_it(:,1)>ndof,:) = []; % Eliminate cc rows
 W_it_0_up = W_it_0(1:ndof,:);
@@ -296,8 +307,8 @@ options = struct('Style','default','R_PolyOrd', 1,'iT_PolyOrd',1,...
     'idx_folds',[],'fold_style',[],...
     'style','default','nf_style','center_mfld','frequencies_norm',[],...
     'tol_nf',1e1,...
-    'IC_nf',0,...
-    'rescale',1,...
+    'R_coeff',[],...
+    'IC_nf',0,'rescale',1,...
     'Display','iter',...
     'OptimalityTolerance',10^(-4-floor(log10(Ndata))),...
     'MaxIter',3000,...
@@ -339,6 +350,7 @@ if nargin_o > 2
             for ii = 1:options.n_folds-1
                 idx_folds{ii} = ind_perm(1+(ii-1)*fold_size:ii*fold_size);
             end
+            ii = ii+1;
             idx_folds{ii} = ind_perm(1+(ii-1)*fold_size:length(ind_perm));
         end
         options = setfield(options,'idx_folds',idx_folds);

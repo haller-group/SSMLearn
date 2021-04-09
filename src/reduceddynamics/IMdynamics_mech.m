@@ -1,8 +1,8 @@
-function [R,iT,N,T,Maps_info] = IMdynamics_flow(X_traj,varargin)
+function [R,iT,N,T,Maps_info] = IMdynamics_mech(X_traj,varargin)
 % Identification of the reduced dynamics in k coordinates, i.e. the vector
-% field
+% field for mechanical systems
 %
-%                        \dot{x} = R(x)
+%        \dot{x} = R(x) where x = (u,v) and R(x) = (v,f(u,v))
 %
 % via a weighted ridge regression. R(x) = W_r * phi(x) where phi is a
 % k-variate polynomial from order 1 to order M. Cross-validation can be
@@ -82,31 +82,36 @@ function [R,iT,N,T,Maps_info] = IMdynamics_flow(X_traj,varargin)
 if rem(length(varargin),2) > 0 && length(varargin) > 1
     error('Error on input arguments. Missing or extra arguments.')
 end
-
+k = size(X_traj{1,2},1); 
+if rem(k,2) > 0
+    error('Error on dimensionality. Phase space must be even-dim.')
+end
+ndof = k/2;
 % Reshape of trajectories into matrices
 t = []; % time values
-X = []; % coordinates at time k
-dXdt = []; % time derivatives at time k
+X = []; % coordinates at time j
+dXdt = []; % accelerations at time j
 ind_traj = cell(1,size(X_traj,1)); idx_end = 0;
 for ii = 1:size(X_traj,1)
-    t_in = X_traj{ii,1}; X_in = X_traj{ii,2};
+    t_in = X_traj{ii,1}; X_in = X_traj{ii,2}; 
     [dXidt,Xi,ti] = finitetimedifference(X_in,t_in,3);
     t = [t ti]; X = [X Xi]; dXdt = [dXdt dXidt];
     ind_traj{ii} = idx_end+[1:length(ti)]; idx_end = length(t);
 end
 options = IMdynamics_options(nargin,varargin,ind_traj,size(X,2));
 % Phase space dimension & Error Weghting
-k = size(Xi,1); L2 = (1+options.c1*exp(-options.c2*t)).^(-2);
+L2 = (1+options.c1*exp(-options.c2*t)).^(-2);
 options = setfield(options,'L2',L2);
 
 % Construct phi and ridge regression
 [phi,Expmat] = multivariate_polynomial(k,1,options.R_PolyOrd); 
 if isempty(options.R_coeff) == 1
     disp('Estimation of the reduced dynamics... ')
-    [W_r,l_opt,Err] = ridgeregression(phi(X),dXdt,options.L2,...
-                                         options.idx_folds,options.l_vals);
+    [W_r,l_opt,Err] = ridgeregression(phi(X),dXdt(ndof+1:end,:),...
+                              options.L2,options.idx_folds,options.l_vals);
+    W_r = [zeros(ndof) eye(ndof) zeros(ndof,size(W_r,2)-2*ndof); W_r];
 else
-   W_r =  options.R_coeff; l_opt = 0; Err = 0;
+    W_r =  options.R_coeff; l_opt = 0; Err = 0;
 end
 R = @(x) W_r*phi(x);  
 R_info = assemble_struct(@(x) W_r*phi(x),W_r,phi,Expmat,l_opt,Err);
