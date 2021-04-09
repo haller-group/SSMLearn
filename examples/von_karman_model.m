@@ -1,11 +1,11 @@
-function [M,C,K,fnl,fext, outdof] = von_karman_model(nElements, E, rho, nu, kappa)
+function [M,C,K,fnl,fext, outdof] = von_karman_model(nElements, E, rho, nu, kappa, l, h, b)
 %% Finite Element Setup
 % Geometry
 startLIN = tic;
 
-l = 1;
-h = 1e-3;
-b = 1; 
+% l = 1;
+% h = 1e-3;
+% b = 1; 
 % Mesh parameters
 
 % Material properties
