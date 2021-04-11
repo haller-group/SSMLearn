@@ -1,4 +1,4 @@
-function zData = transformToComplex(iT, yData)
+function zData = transformComplex(iT, yData)
 
 nTraj = size(yData,1);
 zData = cell(size(yData));

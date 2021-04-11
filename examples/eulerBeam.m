@@ -81,9 +81,9 @@ DSEigenvalues = lambda(1:SSMDim)
 %% Normal form
 [~,iT,N,T,NormalFormInfo] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.5*tEnd,Inf]), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', c1, 'c2', c2);
 
-zData = transformToComplex(iT, yData);
+zData = transformComplex(iT, yData);
 [zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
-yRecNormal = transformToComplex(T, zRec);
+yRecNormal = transformComplex(T, zRec);
 
 [reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecNormal, xRecNormal, yData, xData);
 

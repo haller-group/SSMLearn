@@ -58,9 +58,9 @@ xDataTrunc = sliceTrajectories(xData, sliceInt);
 yDataTrunc = sliceTrajectories(yData, sliceInt);
 [~,iT,N,T,NormalFormInfo] = IMdynamics_map(yDataTrunc, 'R_PolyOrd', 3, 'style', 'normalform');
 
-zData = transformToComplex(iT, yDataTrunc);
+zData = transformComplex(iT, yDataTrunc);
 [zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
-yRecNormal = transformToComplex(T, zRec);
+yRecNormal = transformComplex(T, zRec);
 
 [reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecNormal, xRecNormal, yDataTrunc, xDataTrunc);
 

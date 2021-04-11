@@ -18,7 +18,7 @@ end
 
 xlabel('$\eta_1$', 'Interpreter', 'latex')
 ylabel('$\eta_2$', 'Interpreter', 'latex')
-title({'Test set trajectories in', 'reduced model coordinates'})
+title({'Reduced coordinates $\eta$', 'of trajectories'}, 'Interpreter', 'latex')
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)
 hold off

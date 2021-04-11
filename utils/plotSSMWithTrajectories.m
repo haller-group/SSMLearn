@@ -39,7 +39,7 @@ for iTraj = 1:size(xData,1)
     end
 end
 
-title('Computed manifold with test set trajectories')
+title('Computed manifold with trajectories')
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)
 grid on
