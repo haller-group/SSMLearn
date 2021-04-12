@@ -13,8 +13,11 @@ E       = 70e9;  % 70e9 % 200e9 % Young's modulus
 rho     = 2700; % 2700 % 7850 % density
 nu      = 0.3;    % nu
 kappa   = 1e8; % material damping modulus 1e8
+l       = 1;      % beam length
+h       = 20e-3;  % height
+b       = 50e-3;  % width
 
-[M,C,K,fnl] = von_karman_model(nElements, E, rho, nu, kappa);
+[M,C,K,fnl] = von_karman_model(nElements, E, rho, nu, kappa, l, h, b);
 n = size(M,1); % mechanical dofs (axial def, transverse def, angle)
 [ICOnMfd, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTrajsOnMfd, ICRadius, SSMDim, 1);
 ICOffMfd = ICRadius * pickPointsOnHypersphere(nTraj-nTrajsOnMfd, 2*n, 1);
@@ -58,7 +61,7 @@ RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 xLifted = liftReducedTrajs(yData, SSMFunction);
 plotReconstructedTrajectory(xData(indTest(2),:), xLifted(indTest(2),:), n-1)
 %%
-plotSSMWithTrajectories(sliceTrajectories(xData(indTest,:),[0.1,Inf]), SSMFunction, [n-3,n-1,2*n-1], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(sliceTrajectories(xData(indTest,:),[0,Inf]), SSMFunction, [n-3,n-1,2*n-1], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 

@@ -251,13 +251,13 @@ if options.iT_PolyOrd<options.N_PolyOrd
 end
 lidx_it  = transpose(1:numel(W_it_0)); 
 lidx_it(lidx_elim_it)  = [];
-% Set the indexes for the coefficients of T^{-1} and N
+% Set the indices for the coefficients of T^{-1} and N
 [idx_it(:,1),idx_it(:,2)] = ind2sub(size(W_it_0),lidx_it); 
 idx_it(idx_it(:,1)>ndof,:) = []; % Eliminate cc rows
 W_it_0_up = W_it_0(1:ndof,:);
 lidx_it_up = sub2ind(size(W_it_0_up),idx_it(:,1),idx_it(:,2)); 
 % Eliminate useless exponents for N
-[idx_n(:,1),  idx_n(:,2)] = ind2sub(size(W_n_0),lidx_n);  
+[idx_n(:,1), idx_n(:,2)] = ind2sub(size(W_n_0),lidx_n);  
 idx_n(idx_n(:,1)>ndof,:) = []; % Eliminate cc rows
 W_n_0_up = W_n_0(1:ndof,:);
 lidx_n_up = sub2ind(size(W_n_0_up),idx_n(:,1),idx_n(:,2)); 
@@ -269,7 +269,7 @@ idx_expnts = find(sum(IDX_expnts,1));
                                              options.N_PolyOrd,idx_expnts);
 W_n_0_up = W_n_0_up(:,idx_expnts); IDX_expnts = IDX_expnts(:,idx_expnts);
 lidx_n_up = find(IDX_expnts);
-[idx_n(:,1),  idx_n(:,2)] = ind2sub(size(W_n_0_up),lidx_n_up);  
+[idx_n(:,1), idx_n(:,2)] = ind2sub(size(W_n_0_up),lidx_n_up);  
 % Initial condition for the optimization
 if ndof == 1
     IC_opt_complex = transpose([W_it_0_up(lidx_it_up) W_n_0_up(lidx_n_up)]);   

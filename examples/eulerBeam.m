@@ -44,7 +44,7 @@ overEmbed = 0;
 SSMOrder = 3;
 
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
-xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed);
+xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
 
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', c1, 'c2', c2);
 % V = [1/sqrt(5)*ones(5,1), 1/sqrt(10)*[-2;-1;0;1;2]];
@@ -58,7 +58,7 @@ RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 xLifted = liftReducedTrajs(yData, SSMFunction);
 plotReconstructedTrajectory(xData(indTrain(1),:), xLifted(indTrain(1),:), 1)
 %%
-plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,3,5], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(sliceTrajectories(xData(indTrain,:),[0,tEnd]), SSMFunction, 1, V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 

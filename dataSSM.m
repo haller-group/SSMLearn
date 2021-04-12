@@ -1,9 +1,9 @@
 clearvars
 close all
 
-nTraj = 5;
-nTrajsOnMfd = 4;
-indTest = [5];
+nTraj = 10;
+nTrajsOnMfd = 10;
+indTest = [1 5];
 indTrain = setdiff(1:nTraj, indTest);
 SSMDim = 2;
 ICRadius = 0.4;
@@ -14,15 +14,15 @@ ICOnMfd = getSSMIC(M, C, K, fnl, nTrajsOnMfd, ICRadius, SSMDim, 60);
 ICOffMfd = ICRadius * pickPointsOnHypersphere(nTraj-nTrajsOnMfd, 6, rand);
 IC = [ICOnMfd, ICOffMfd];
 
-observable = @(x) x(1,:);
-tEnd = 500;
-nSamp = 2000;
+observable = @(x) x(4,:);
+tEnd = 1231;
+nSamp = 5e3;
 dt = tEnd/(nSamp-1);
 
 xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 %%
-overEmbed = -2;
-SSMOrder = 3;
+overEmbed = 50;
+SSMOrder = 5;
 
 xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
 % xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
@@ -37,7 +37,7 @@ RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 xLifted = liftReducedTrajs(yData, SSMFunction);
 plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 2)
 
-plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1,2,3], V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, [1 25 50], V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 %% Reduced dynamics
