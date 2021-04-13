@@ -1,6 +1,20 @@
 function [a,w] = nonres_normalform(coeff,exponents,varargin)
 % Compute damping and frequency as well as display the normal form for
-% nonresonant eigenvalues in terms of amplitude
+% nonresonant eigenvalues in terms of the amplitudes 
+%
+% The amplitudes are denoted \rho\in\mathbb{R}^{k/2}, while angles are 
+% \theta\in\mathbb{R}^{k/2} for which z = \rho.*exp(1i*\theta)
+% The complex valued normal form dynamics is transformed into polar 
+% coordinates so that the damping rates a(\rho) & frequencies w(\rho) 
+% are defined as (Dt is the sampling time)
+%
+% flow:    a(\rho) = \dot{\rho}./rho,    w(\rho) = \dot{\theta}
+% map :    a(\rho) = 1/Dt\log(\rho_{k+1}/\rho_k), 
+%          w(\rho) = (\theta_{k+1}-\theta_{k})/Dt
+% 
+% If varargin is empty, the function assumes to deal with a flow. 
+% If varargin is nonempty, the function assumes to deal with a map 
+% and varargin is set to be the sampling time Dt.
 
 % Dynamics in terms of amplitude and frequencies
 ndof = size(coeff,1); r = sym('r',[1 ndof]); pos_coeff = abs(coeff)>0;
@@ -59,6 +73,7 @@ else
         
     else % Map case
         Dt = varargin{:};
+        if Dt <= 0; error('Sampling time must be positive.'); end
         a_sym = log(abs(aw))/Dt; w_sym = angle(aw)/Dt;
         a = matlabFunction(a_sym,'Vars', {transpose(r)});
         w = matlabFunction(w_sym,'Vars', {transpose(r)});
