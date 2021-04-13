@@ -56,10 +56,10 @@ plotReconstructedTrajectory(xData(indTest(1),:), xRecModal(indTest(1),:), 2, 'g'
 reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
 DSEigenvalues = lambda(1:SSMDim)
 %% Normal form
-[~,iT,N,T,NormalFormInfo] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', 0, 'c2', 0.03);
+[~,iT,N,T,NormalFormInfo] = IMdynamics_flow(yData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', 0, 'c2', 0.03);
 
 zData = transformComplex(iT, yData);
-[zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
+[zRec, xRecNormal] = integrateFlows(N, zData, @(z) SSMFunction(T(z)));
 yRecNormal = transformComplex(T, zRec);
 
 [reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecNormal, xRecNormal, yData, xData);
