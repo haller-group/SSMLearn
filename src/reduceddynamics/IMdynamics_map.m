@@ -201,7 +201,7 @@ function Maps_info_opt=initialize_nf_map(V,D,d_cont,W_r,X,X_1,Dt,options)
 % transformation T^{-1}. Their indexes are stored in the output struct.
 % The error at time instant k for the successive optimization is
 %
-% Err_k = Y_1-D*Y+W_it_nl*phi_it(Y_1)-W_n*phi_n(Y+W_it_nl*phi_it(Y))
+% Err_k = Y_1 - D*Y - D*W_it_nl*phi_it(Y) + W_it_nl*phi_it(Y_1) - W_n*phi_n(Y+W_it_nl*phi_it(Y))
 % 
 % and this function also precomputes the difference Y_1-D*Y and the
 % transformations phi_it(Y_1) and phi_it(Y) for a more efficient

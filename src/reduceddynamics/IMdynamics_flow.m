@@ -199,8 +199,8 @@ function [Maps_info_opt]=initialize_nf_flow(V,D,d,W_r,X_traj,options)
 % normal form dynamics and sets to zero those coefficients for the
 % transformation T^{-1}. Their indexes are stored in the output struct.
 % The error at time instant k for the successive optimization is
-%
-% Err_k = dYdt-D*Y+W_it_nl*Dphi_it(Y)*dYdt-W_n*phi_n(Y+W_it_nl*phi_it(Y))
+% 
+% Err_k = dYdt - D*Y - D*W_it_nl*phi_it(Y) + W_it_nl*Dphi_it(Y)*dYdt - W_n*phi_n(Y+W_it_nl*phi_it(Y))
 % 
 % and this function also precomputes the difference dYdt-D*Y and the
 % transformations Dphi_it(Y)*dYdt and phi_it(Y) for a more efficient

@@ -84,6 +84,11 @@ end
 %- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 function [f,Df] = f_minimize(z,Maps_info,L2)
+% Flow
+% Err_k = dYdt - D*Y - D*W_it_nl*phi_it(Y) + W_it_nl*Dphi_it(Y)*dYdt - W_n*phi_n(Y+W_it_nl*phi_it(Y))
+% Map
+% Err_k = Y_1  - D*Y - D*W_it_nl*phi_it(Y) + W_it_nl*phi_it(Y_1)     - W_n*phi_n(Y+W_it_nl*phi_it(Y))
+
 N_info = Maps_info.N; iT_info = Maps_info.iT;
 % Nonlinear Maps & Dimensions
 phi_n = N_info.phi; [phi_dim_n,k] = size(N_info.Exponents);
