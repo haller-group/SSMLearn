@@ -1,11 +1,8 @@
-function [F, M, C, K, fnl, lambda] = oscillator(N)
+function [F, M, C, K, fnl, lambda] = oscillator(N, mass, stiffness, damping)
 % Example dynamical system
 % Oscillator chain
 % Returns the anonynous evolution function and initial conditions
 
-mass = 1;
-stiffness = 1;
-damping = 0.006;
 M = mass*eye(N);
 K = stiffness*(2*eye(N) - diag(ones(1,N-1),-1) - diag(ones(1,N-1),1));
 C = K; C(1,1) = 4; C(end,end) = 3; C = damping*C;

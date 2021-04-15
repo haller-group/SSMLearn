@@ -6,7 +6,7 @@ function plotReconstructedTrajectory(xData, xRec, plotCoord, varargin)
 % INPUT
 % xData        cell (nTraj x 2)   full trajectories
 % xRec         cell (nTraj x 2)   reconstructed trajectories
-% plotCoord     int         index in dim to plot
+% plotCoord    int                index in dim to plot
 
 fullColor = 'r';
 if ~isempty(varargin)
@@ -18,8 +18,8 @@ hold on
 
 nTraj = size(xData,1);
 for iTraj = 1:nTraj
-    plot(xData{iTraj,1}, xData{iTraj,2}(plotCoord,:),fullColor,'Linewidth',1,'DisplayName','Full')
-    hh = plot(xRec{iTraj,1}, xRec{iTraj,2}(plotCoord,:),'k:','Linewidth',2,'DisplayName','Reconstructed');
+    plot(xData{iTraj,1}, xData{iTraj,2}(plotCoord,:), fullColor, 'Linewidth', 1, 'DisplayName', 'Full')
+    hh = plot(xRec{iTraj,1}, xRec{iTraj,2}(plotCoord,:), 'k:', 'Linewidth', 2, 'DisplayName', 'Reconstructed');
     hh.Color(4) = .6;
 end
 xlabel('time', 'Interpreter', 'latex')

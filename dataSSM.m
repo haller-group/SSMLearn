@@ -8,7 +8,7 @@ indTrain = setdiff(1:nTraj, indTest);
 SSMDim = 2;
 ICRadius = 0.4;
 
-[F, M, C, K, fnl, lambda] = oscillator(3);
+[F, M, C, K, fnl, lambda] = oscillator(3, 1, 1, 0.006);
 [ICOnMfd, mfd, DS, SSM] = getSSMIC(M, C, K, fnl, nTrajsOnMfd, ICRadius, SSMDim, 60);
 % [F, ICOnMfd, lambda] = parabolicSyst(nTrajsOnMfd, ICRadius, -0.01, 1, -0.13, [0,0,0], @(t,x) -[0;10*x(1,:).^3]);
 ICOffMfd = ICRadius * pickPointsOnHypersphere(nTraj-nTrajsOnMfd, 6, rand);
@@ -30,7 +30,7 @@ xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
 [V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 100, 'c2', 0.03);
 %%
 yData = getProjectedTrajs(xData, V);
-plotReducedCoords(yData(indTest,:));
+plotReducedCoords(yData);
 
 RRMS = getRMS(xData(indTest,:), SSMFunction, V)
 

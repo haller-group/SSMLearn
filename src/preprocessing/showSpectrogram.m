@@ -11,8 +11,10 @@ end
 
 t = xData{1,1}; x = xData{1,2}(plotcoord, :);
 Nwin = round(length(t)/50); 
-[stfourier, frequencies, times] = spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)));
+% [stfourier, frequencies, times] = spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)));
+[stfourier, frequencies, times] = spectrogram(x, [], round(Nwin*0.5), [], 1./(t(2)-t(1)));
 % spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)), 'yaxis');
+% spectrogram(x, 'yaxis');
 powerdensity = abs(stfourier);
 
 surf(times, frequencies, powerdensity)
