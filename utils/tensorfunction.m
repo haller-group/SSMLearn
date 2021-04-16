@@ -1,7 +1,6 @@
 function [F, lambda] = tensorfunction(M, C, K, fnl)
 
 n = size(M,1);
-
 q = sym('q', [2*n 1]);
 qdot = sym(zeros(n,1));
 t = sym('t');
@@ -18,4 +17,5 @@ A = [zeros(n), eye(n);
 G = [zeros(n,1);
     -M\qdot];
 F = matlabFunction(A*q + G, 'vars', {t q});
+
 lambda = sort(eig(full(A)));

@@ -15,18 +15,5 @@ F3(1,1,1,1) = 2;         % q1^3
 F3(1,1,1,N+1) = 0.3;     % q1^2*q1dot^2 
 F3(1,N+1,N+1,N+1) = 0.5; % q1dot^3
 fnl = {F2, F3};
-% f = @(q,qdot) [F2(1,N+1,N+1)*qdot(1).^2 + F3(1,1,1,1)*q(1).^3 + F3(1,1,1,N+1)*q(1).^2.*qdot(1) + F3(1,N+1,N+1,N+1)*qdot(1).^3;
-%                zeros(N-1,1)];
-% f = @(q, qdot) tensorfunction(fnl, [q;qdot]);
-% f = tensorfunction2(fnl);
-%            
-% A = [zeros(N), eye(N);
-%     -M\K,     -M\C];
-% G = @(x) [zeros(N,1);
-%          -M\f(x(1:N),x(N+1:2*N))];
-% G = @(x) [zeros(N,1);
-%          -M\f(x)];
-% F = @(t,x) A*x + G(x);
-[F, lambda] = tensorfunction(M, C, K, fnl);
 
-% lambda = sort(eig(A));
+[F, lambda] = tensorfunction2(M, C, K, fnl);
