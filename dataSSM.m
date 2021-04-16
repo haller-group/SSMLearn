@@ -75,7 +75,7 @@ DSEigenvalues = lambda(1:SSMDim)
 
 %% Backbone curves
 N_info = NormalFormInfo.N;
-[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,dt);
+[damp,freq] = nonres_normalform(N_info.coeff, N_info.exponents);
 figure
 maxRho = abs(zData{indTest(1),2}(1,1));
 backbonecurves(damp, freq, SSMFunction, T, 1, maxRho, 'norm');

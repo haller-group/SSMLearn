@@ -1,10 +1,10 @@
 clearvars
 close all
 
-nTraj = 2;
+nTraj = 1;
 indTest = [1];
-indTrain = setdiff(1:nTraj, indTest);
-% indTrain = [1];
+% indTrain = setdiff(1:nTraj, indTest);
+indTrain = [1];
 ICRadius = 1e-5;
 SSMDim = 4;
 
@@ -12,7 +12,7 @@ nElements = 2;
 E       = 70e9;   % Young's modulus
 rho     = 2700;   % density
 nu      = 0.3;    % nu
-kappa   = 1e5;    % material damping modulus
+kappa   = 0e5;    % material damping modulus
 l       = 1;
 h       = 20e-3;
 b       = 50e-3;
@@ -26,7 +26,7 @@ F = @(t,x) DS.odefun(t,x);
 IC = ICRadius * pickPointsOnHypersphere(nTraj, 2*n, 1);
 
 observable = @(x) x;
-tEnd = 50;
+tEnd = 15;
 nSamp = 50000;
 dt = tEnd/(nSamp-1);
 tic

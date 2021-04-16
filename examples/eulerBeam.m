@@ -79,7 +79,7 @@ reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, yRec{1,1}(2)-yRec{1,
 DSEigenvalues = lambda(1:SSMDim)
 
 %% Normal form
-[~,iT,N,T,NormalFormInfo] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.5*tEnd,Inf]), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', c1, 'c2', c2);
+[~,iT,N,T,NormalFormInfo] = IMdynamics_map(sliceTrajectories(yData(indTrain,:), [0.5*tEnd,Inf]), 'R_PolyOrd', 3, 'style', 'normalform', 'c1', c1, 'c2', c2);
 
 zData = transformComplex(iT, yData);
 [zRec, xRecNormal] = iterateMaps(N, zData, @(q) SSMFunction(T(q)));
@@ -98,7 +98,7 @@ DSEigenvalues = lambda(1:SSMDim)
 
 %% Backbone curves
 N_info = NormalFormInfo.N;
-[damp,freq] = nonres_normalform(N_info.coeff,N_info.exponents,dt);
+[damp,freq] = nonres_normalform(N_info.coeff, N_info.exponents, dt);
 figure
 maxRho = abs(zData{indTest(1),2}(1,1));
-backbonecurves(damp, freq, SSMFunction, T, 1, maxRho, 'norm');
+backbonecurves(damp, freq, SSMFunction, T, 1, maxRho);

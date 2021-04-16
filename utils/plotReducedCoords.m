@@ -19,7 +19,6 @@ end
 legend();
 xlabel('$y_1$', 'Interpreter', 'latex')
 ylabel('$y_2$', 'Interpreter', 'latex')
-title('Planar coordinates y')
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)
 hold off
