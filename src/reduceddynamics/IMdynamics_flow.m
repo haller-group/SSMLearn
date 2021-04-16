@@ -14,7 +14,7 @@ function [R,iT,N,T,Maps_info] = IMdynamics_flow(X_traj,varargin)
 % where iT, T and N depend on the selected style.
 % If the style is selected as modal, then the coordinate change is a linear
 % map that transforms the linear part of R into the diagonal matrix of its
-% eigenvalues. 
+% eigenvalues.
 % If the style is selected as normalform, then the functions seeks from
 % data the maps iT, N and T such that the dynamics N is in normal form.
 % This option is only available for purely oscillatory dynamics (i.e., the
@@ -29,15 +29,15 @@ function [R,iT,N,T,Maps_info] = IMdynamics_flow(X_traj,varargin)
 % order model, specifying eventual resonances among the frequencies.
 %
 % OUTPUTS
-% R  - vector field in the given coordinates of X_traj 
-% iT - transformation from the coordinates of X_traj to normal form ones 
+% R  - vector field in the given coordinates of X_traj
+% iT - transformation from the coordinates of X_traj to normal form ones
 % N  - vector field in the normal form coordinates
 % T  - transformation from the normal form coordinates to those of X_traj
 % Maps_info - struct containing the information of all these mapings
 %
 % INPUTS
-% X_traj - cell array of dimension (N_traj,2) where the first column 
-%          contains time instances (1 x mi each) and the second column the 
+% X_traj - cell array of dimension (N_traj,2) where the first column
+%          contains time instances (1 x mi each) and the second column the
 %          trajectories (k x mi each). Sampling time is assumed to be
 %          constant
 %  varargin = polynomial order of R
@@ -67,18 +67,25 @@ function [R,iT,N,T,Maps_info] = IMdynamics_flow(X_traj,varargin)
 %           0 (default): zero initial condition;
 %           1: initial estimate based on the coefficients of R
 %           2: normally distributed with the variance of case 1
-% 'rescale' - rescale for the modal coordinates. 
+% 'rescale' - rescale for the modal coordinates.
 %           0: no rescale
 %           1 (default): the maximum amplitude is 0.5 (ratios kept)
-%           2: the maximum amplitude of all coordinates is 0.5       
+%           2: the maximum amplitude of all coordinates is 0.5
+% 'fig_disp_nf' - display of the normal form.
+%               0:  command line only
+%               r:  LaTex-style figure with r terms per row (default 1). 
+%                   Command line also appears if the LaTex string is too
+%                   long
+%               -r: both command line and LaTex-style figure with r terms  
+%                   per row.
 % 'Display' - default 'iter'
 % 'OptimalityTolerance' - default 1e-4 times the number of datapoints
-% 'MaxIter' - default 100
-% 'MaxFunctionEvaluations' - default 300
+% 'MaxIter' - default 1e3
+% 'MaxFunctionEvaluations' - default 1e4
 % 'SpecifyObjectiveGradient' - default true
 %     the last five options are for Matlab function fminunc.
 %     For more information, check out its documentation.
-    
+
 if rem(length(varargin),2) > 0 && length(varargin) > 1
     error('Error on input arguments. Missing or extra arguments.')
 end
@@ -100,15 +107,15 @@ k = size(Xi,1); L2 = (1+options.c1*exp(-options.c2*t)).^(-2);
 options = setfield(options,'L2',L2);
 
 % Construct phi and ridge regression
-[phi,Expmat] = multivariate_polynomial(k,1,options.R_PolyOrd); 
+[phi,Expmat] = multivariate_polynomial(k,1,options.R_PolyOrd);
 if isempty(options.R_coeff) == 1
     disp('Estimation of the reduced dynamics... ')
     [W_r,l_opt,Err] = ridgeregression(phi(X),dXdt,options.L2,...
-                                         options.idx_folds,options.l_vals);
+        options.idx_folds,options.l_vals);
 else
-   W_r =  options.R_coeff; l_opt = 0; Err = 0;
+    W_r =  options.R_coeff; l_opt = 0; Err = 0;
 end
-R = @(x) W_r*phi(x);  
+R = @(x) W_r*phi(x);
 R_info = assemble_struct(@(x) W_r*phi(x),W_r,phi,Expmat,l_opt,Err);
 options.l = l_opt;
 fprintf('\b Done. \n')
@@ -117,12 +124,12 @@ switch options.style
     case 'modal'
         % Linear transformation
         [V,~,~] = eig_sorted(W_r(:,1:k)); iT = @(x) V\x; T = @(y) V*y;
-        T_info = assemble_struct(T,V,@(x) x,eye(k),[],[]);
-        iT_info = assemble_struct(iT,inv(V),@(y) y,eye(k),[],[]);
+        T_info = assemble_struct(T,V,@(x) x,eye(k));
+        iT_info = assemble_struct(iT,inv(V),@(y) y,eye(k));
         % Nonlinear modal dynamics coefficients
         V_M = multivariate_polynomial_lintransf(V,k,options.R_PolyOrd);
         W_n = V\W_r*V_M; N = @(y) V\(W_r*phi(V*y));
-        N_info = assemble_struct(N,W_n,phi,Expmat,[],[]);
+        N_info = assemble_struct(N,W_n,phi,Expmat);
     case 'normalform'
         disp('Estimation of the reduced dynamics in normal form...')
         [V,D,d] = eig_sorted(W_r(:,1:k));
@@ -131,20 +138,20 @@ switch options.style
             disp('Normal form not available. Returning modal style.')
             % Linear transformation
             iT = @(x) V\x; T = @(y) V*y;
-            T_info = assemble_struct(T,V,@(x) x,eye(k),[],[]);
-            iT_info = assemble_struct(iT,inv(V),@(y) y,eye(k),[],[]);
+            T_info = assemble_struct(T,V,@(x) x,eye(k));
+            iT_info = assemble_struct(iT,inv(V),@(y) y,eye(k));
             % Nonlinear modal dynamics coefficients
             V_M = multivariate_polynomial_lintransf(V,k,options.R_PolyOrd);
             W_n = V\W_r*V_M; N = @(y) V\(W_r*phi(V*y));
-            N_info = assemble_struct(N,W_n,phi,Expmat,[],[]);
+            N_info = assemble_struct(N,W_n,phi,Expmat);
         else
             if options.rescale == 1
-               v_rescale = max(abs(V\X),[],2); 
-               V = 2*V*diag(max(v_rescale(1:k/2))*ones(1,k));
+                v_rescale = max(abs(V\X),[],2);
+                V = 2*V*diag(max(v_rescale(1:k/2))*ones(1,k));
             end
             if options.rescale == 2
-               v_rescale = max(abs(V\X),[],2); 
-               V = 2*V*diag(v_rescale);
+                v_rescale = max(abs(V\X),[],2);
+                V = 2*V*diag(v_rescale);
             end
             % Initialize the normal form
             Maps_info_opt=initialize_nf_flow(V,D,d,W_r,X_traj,options);
@@ -155,30 +162,37 @@ switch options.style
             iT_info_opt = Maps.iT;
             iT  = iT_info_opt.Map; N = N_info_opt.Map; T = T_info_opt.Map;
             iT_info = assemble_struct(iT,iT_info_opt.coeff,...
-                              iT_info_opt.phi,iT_info_opt.Exponents,[],[]);
+                iT_info_opt.phi,iT_info_opt.Exponents);
             N_info = assemble_struct(N,N_info_opt.coeff,N_info_opt.phi,...
-                                               N_info_opt.Exponents,[],[]);
+                N_info_opt.Exponents);
             T_info = assemble_struct(T,T_info_opt.coeff,T_info_opt.phi,...
-                                               T_info_opt.Exponents,[],[]);
+                T_info_opt.Exponents);
             iT_info.lintransf = inv(V); T_info.lintransf = V;
             % Display the obtained normal form
-            fprintf('\n')
-            disp(['The data-driven normal form dynamics reads:'])
-            fprintf('\n')
-            table_nf = disp_normalform(N_info_opt.coeff,...
-                                                     N_info_opt.Exponents);
-            disp(table_nf)
-            if k == 2
-            disp(['Notation: z is a complex number; z` is the ' ...
-                  'complex conjugated of z; z^k is the k-th power of z.'])
-            else
-            disp(['Notation: each z_j is a complex number; z`_j is the '...
-              'complex conjugated of z_j; z^k_j is the k-th power of z_j.'])    
+            if abs(options.fig_disp_nf)>0
+                [str_eqn,flag_long] = disp_normalform_fig(N_info_opt.coeff,...
+                             N_info_opt.Exponents,abs(options.fig_disp_nf));
+                N_info.LateX = str_eqn;             
+            end 
+            if (options.fig_disp_nf<=0) || (flag_long==1)
+                fprintf('\n')
+                disp(['The data-driven normal form dynamics reads:'])
+                fprintf('\n')
+                table_nf = disp_normalform(N_info_opt.coeff,...
+                    N_info_opt.Exponents);
+                disp(table_nf)
+                if k == 2
+                    disp(['Notation: z is a complex number; z` is the ' ...
+                        'complex conjugated of z; z^k is the k-th power of z.'])
+                else
+                    disp(['Notation: each z_j is a complex number; z`_j is the '...
+                        'complex conjugated of z_j; z^k_j is the k-th power of z_j.'])
+                end
             end
         end
     otherwise
         T = @(x) x; iT=@(y) y; N =@(y) R(y);
-        T_info = assemble_struct(@(x) x,eye(k),@(x) x,eye(k),[],[]);
+        T_info = assemble_struct(@(x) x,eye(k),@(x) x,eye(k));
         iT_info = T_info; N_info = R_info;
 end
 Maps_info = struct('R',R_info,'iT',iT_info,'N',N_info,'T',T_info);
@@ -186,9 +200,13 @@ end
 
 %---------------------------Subfunctions-----------------------------------
 
-function str_out = assemble_struct(fun,W,phi,Emat,l,Err)
-str_out = struct('Map',fun,'coeff',W,'phi',phi,'exponents',Emat,...
-    'l_opt',l,'CV_error',Err);
+function str_out = assemble_struct(fun,W,phi,Emat,varargin)
+if isempty(varargin) == 0
+    str_out = struct('Map',fun,'coeff',W,'phi',phi,'exponents',Emat,...
+    'l_opt',varargin{1},'CV_error',varargin{2});
+else
+    str_out = struct('Map',fun,'coeff',W,'phi',phi,'exponents',Emat);    
+end
 end
 
 %- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -199,9 +217,9 @@ function [Maps_info_opt]=initialize_nf_flow(V,D,d,W_r,X_traj,options)
 % normal form dynamics and sets to zero those coefficients for the
 % transformation T^{-1}. Their indexes are stored in the output struct.
 % The error at time instant k for the successive optimization is
-% 
-% Err_k = dYdt - D*Y - D*W_it_nl*phi_it(Y) + W_it_nl*Dphi_it(Y)*dYdt - W_n*phi_n(Y+W_it_nl*phi_it(Y))
-% 
+%
+% Err_k = dYdt-D*Y+W_it_nl*Dphi_it(Y)*dYdt-W_n*phi_n(Y+W_it_nl*phi_it(Y))
+%
 % and this function also precomputes the difference dYdt-D*Y and the
 % transformations Dphi_it(Y)*dYdt and phi_it(Y) for a more efficient
 % optimization. The overall process consider complex numbers, and the
@@ -221,12 +239,12 @@ for ii = 1:size(X_traj,1)
     t_in = X_traj{ii,1}; Y_in = V\(X_traj{ii,2});
     Phi_iT_Y_in = phi_it(Y_in);
     [dYDphi_i_dt,YDphi_i,~] = finitetimedifference([Y_in; Phi_iT_Y_in],...
-                                                                   t_in,3);
-    Y = [Y YDphi_i(1:k,:)]; dYdt = [dYdt dYDphi_i_dt(1:k,:)]; 
-    Phi_iT_Y = [Phi_iT_Y YDphi_i(k+1:end,:)]; 
+        t_in,3);
+    Y = [Y YDphi_i(1:k,:)]; dYdt = [dYdt dYDphi_i_dt(1:k,:)];
+    Phi_iT_Y = [Phi_iT_Y YDphi_i(k+1:end,:)];
     DPhi_iT_dYdt = [DPhi_iT_dYdt dYDphi_i_dt(k+1:end,:)];
 end
-Y_red = Y(1:ndof,:); dYdt_red = dYdt(1:ndof,:); 
+Y_red = Y(1:ndof,:); dYdt_red = dYdt(1:ndof,:);
 d_red = diag(D); d_red=d_red(1:ndof);
 V_M = multivariate_polynomial_lintransf(V,k,options.R_PolyOrd);
 W_modal = V\W_r*V_M;
@@ -237,72 +255,72 @@ if strcmp(options.nf_style,'center_mfld')
         d_nf = 1i*imag(d);
     else
         d_nf = transpose([+1i*options.frequencies_norm ...
-                          -1i*options.frequencies_norm]*imag(d(1)));
+            -1i*options.frequencies_norm]*imag(d(1)));
     end
 else
     d_nf = d; tol_nf = options.tol_nf*max(abs(real(d_nf)));
-end 
+end
 
 lidx_n = find(abs(repmat(d_nf,1,size(Expmat_n,1))-...
-                  repmat(transpose(Expmat_n*d_nf),k,1))<tol_nf);
+    repmat(transpose(Expmat_n*d_nf),k,1))<tol_nf);
 if options.R_PolyOrd>options.N_PolyOrd
     W_n_0 = W_modal(:,k+[1:size(Expmat_n,1)]);
 else
-    W_n_0 = [W_modal(:,k+1:end) zeros(k,size(Expmat_n,1)+k-size(W_r,2))]; 
+    W_n_0 = [W_modal(:,k+1:end) zeros(k,size(Expmat_n,1)+k-size(W_r,2))];
 end
 if options.R_PolyOrd>options.iT_PolyOrd
     W_it_0 = -W_modal(:,k+[1:size(Expmat_it,1)]);
 else
-    W_it_0 =-[W_modal(:,k+1:end) zeros(k,size(Expmat_it,1)+k-size(W_r,2))]; 
+    W_it_0 =-[W_modal(:,k+1:end) zeros(k,size(Expmat_it,1)+k-size(W_r,2))];
 end
 W_it_0=W_it_0./(repmat(d,1,size(Expmat_n,1))-...
-                  repmat(transpose(Expmat_n*d),k,1));
+    repmat(transpose(Expmat_n*d),k,1));
 lidx_elim_it = lidx_n;
 if options.iT_PolyOrd<options.N_PolyOrd
     lidx_elim_it(lidx_elim_it>numel(W_it_0)) = [];
 end
-lidx_it  = transpose(1:numel(W_it_0)); 
+lidx_it  = transpose(1:numel(W_it_0));
 lidx_it(lidx_elim_it)  = [];
 % Set the indexes for the coefficients of T^{-1} and N
-[idx_it(:,1),idx_it(:,2)] = ind2sub(size(W_it_0),lidx_it); 
+[idx_it(:,1),idx_it(:,2)] = ind2sub(size(W_it_0),lidx_it);
 idx_it(idx_it(:,1)>ndof,:) = []; % Eliminate cc rows
 W_it_0_up = W_it_0(1:ndof,:);
-lidx_it_up = sub2ind(size(W_it_0_up),idx_it(:,1),idx_it(:,2)); 
+lidx_it_up = sub2ind(size(W_it_0_up),idx_it(:,1),idx_it(:,2));
 % Eliminate uncessary exponents for N
-[idx_n(:,1),  idx_n(:,2)] = ind2sub(size(W_n_0),lidx_n);  
+[idx_n(:,1),  idx_n(:,2)] = ind2sub(size(W_n_0),lidx_n);
 idx_n(idx_n(:,1)>ndof,:) = []; % Eliminate cc rows
 W_n_0_up = W_n_0(1:ndof,:);
-lidx_n_up = sub2ind(size(W_n_0_up),idx_n(:,1),idx_n(:,2)); 
+lidx_n_up = sub2ind(size(W_n_0_up),idx_n(:,1),idx_n(:,2));
 W_n_0_up(setdiff(1:numel(W_n_0_up),lidx_n_up)) = 0;
 IDX_expnts = ones(size(W_n_0_up));
 IDX_expnts(setdiff(1:numel(W_n_0_up),lidx_n_up)) = 0;
 idx_expnts = find(sum(IDX_expnts,1));
 [phi_n,Expmat_n,D_phi_n_info] = multivariate_polynomial_sel(k,2,...
-                                             options.N_PolyOrd,idx_expnts);
+    options.N_PolyOrd,idx_expnts);
 W_n_0_up = W_n_0_up(:,idx_expnts); IDX_expnts = IDX_expnts(:,idx_expnts);
 lidx_n_up = find(IDX_expnts);
-[idx_n(:,1),  idx_n(:,2)] = ind2sub(size(W_n_0_up),lidx_n_up);  
+[idx_n(:,1),  idx_n(:,2)] = ind2sub(size(W_n_0_up),lidx_n_up);
 % Initial condition for the optimization
 if ndof == 1
-    IC_opt_complex =transpose([W_it_0_up(lidx_it_up) W_n_0_up(lidx_n_up)]);   
+    IC_opt_complex =transpose([W_it_0_up(lidx_it_up) W_n_0_up(lidx_n_up)]);
 else
     IC_opt_complex = [W_it_0_up(lidx_it_up); W_n_0_up(lidx_n_up)];
 end
 IC_opt = [real(IC_opt_complex); imag(IC_opt_complex)];
 % Maps info
 N_info_opt  = struct('phi',phi_n,'Exponents',Expmat_n,'idx',idx_n,...
-                                  'lidx',lidx_n_up);
+    'lidx',lidx_n_up);
 iT_info_opt = struct('phi',phi_it,'Exponents',Expmat_it,'idx',idx_it,...
-                                                        'lidx',lidx_it_up);
-D_phi_n = cell2struct(D_phi_n_info,{'Derivative','Indexes'},2); 
+    'lidx',lidx_it_up);
+D_phi_n = cell2struct(D_phi_n_info,{'Derivative','Indexes'},2);
 
 % Final Output
 Y_1_DY_red = dYdt_red - d_red.*Y_red;
 Maps_info_opt = struct('IC_opt',IC_opt,'V',V,'d_r',d_red,'Yk_r',Y_red,...
-                       'Yk_1_r',dYdt_red,'Yk_1_DYk_r',Y_1_DY_red,...
-                       'Phi_iT_Yk',Phi_iT_Y,'Phi_iT_Yk_1',DPhi_iT_dYdt,...
-                       'iT',iT_info_opt,'N',N_info_opt,...
-                       'D_phi_n_info',D_phi_n);
+    'Yk_1_r',dYdt_red,'Yk_1_DYk_r',Y_1_DY_red,...
+    'Phi_iT_Yk',Phi_iT_Y,'Phi_iT_Yk_1',DPhi_iT_dYdt,...
+    'iT',iT_info_opt,'N',N_info_opt,...
+    'D_phi_n_info',D_phi_n);
 end
 
 %- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -311,21 +329,14 @@ end
 
 function options = IMdynamics_options(nargin_o,varargin_o,idx_traj,Ndata)
 options = struct('Style','default','R_PolyOrd', 1,'iT_PolyOrd',1,...
-    'N_PolyOrd',1,'T_PolyOrd',1,'c1',0,...
-    'c2',0,...
-    'L2',[],...
-    'n_folds',0,...
-    'l_vals',0,...
-    'idx_folds',[],'fold_style',[],...
+    'N_PolyOrd',1,'T_PolyOrd',1,'c1',0,'c2',0,...
+    'L2',[],'n_folds',0,'l_vals',0,'idx_folds',[],'fold_style',[],...
     'style','default','nf_style','center_mfld','frequencies_norm',[],...
-    'tol_nf',1e1,...
-    'IC_nf',1,...
-    'R_coeff',[],...
-    'rescale',1,...
+    'tol_nf',1e1,'IC_nf',1,'R_coeff',[],'rescale',1,'fig_disp_nf',1,...
     'Display','iter',...
     'OptimalityTolerance',10^(-8-floor(log10(Ndata))),...
-    'MaxIter',9e2,...
-    'MaxFunctionEvaluations',10000,...
+    'MaxIter',1e3,...
+    'MaxFunctionEvaluations',1e4,...
     'SpecifyObjectiveGradient',true);
 % Default case
 if nargin_o == 2; options.R_PolyOrd = varargin_o{:};
@@ -338,18 +349,18 @@ if nargin_o > 2
     end
     % Some default options for polynomial degree
     if strcmp(options.style,'normalform')==1 && ...
-                options.iT_PolyOrd*options.N_PolyOrd*options.T_PolyOrd == 1
+            options.iT_PolyOrd*options.N_PolyOrd*options.T_PolyOrd == 1
         options.N_PolyOrd = options.R_PolyOrd;
     end
     if strcmp(options.style,'normalform')==1 && options.N_PolyOrd > 1
-       if options.T_PolyOrd*options.T_PolyOrd == 1
-           options.T_PolyOrd = options.N_PolyOrd;
-           options.iT_PolyOrd = options.N_PolyOrd;
-       else
-           PolyOrdM = max([options.T_PolyOrd options.iT_PolyOrd]);
-           options.T_PolyOrd = PolyOrdM;
-           options.iT_PolyOrd = PolyOrdM;
-       end
+        if options.T_PolyOrd*options.T_PolyOrd == 1
+            options.T_PolyOrd = options.N_PolyOrd;
+            options.iT_PolyOrd = options.N_PolyOrd;
+        else
+            PolyOrdM = max([options.T_PolyOrd options.iT_PolyOrd]);
+            options.T_PolyOrd = PolyOrdM;
+            options.iT_PolyOrd = PolyOrdM;
+        end
     end
     % Fold indexes
     if options.n_folds > 1
