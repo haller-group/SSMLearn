@@ -20,7 +20,7 @@ nTraj = size(xData,1);
 for iTraj = 1:nTraj
     plot(xData{iTraj,1}, xData{iTraj,2}(plotCoord,:), fullColor, 'Linewidth', 1, 'DisplayName', 'Full')
     hh = plot(xRec{iTraj,1}, xRec{iTraj,2}(plotCoord,:), 'k:', 'Linewidth', 2, 'DisplayName', 'Reconstructed');
-    hh.Color(4) = .6;
+    hh.Color(4) = .4;
 end
 xlabel('time', 'Interpreter', 'latex')
 ylabel(['$q_{', num2str(plotCoord), '}$'], 'Interpreter', 'latex')

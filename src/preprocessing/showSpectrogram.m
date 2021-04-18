@@ -9,10 +9,15 @@ if ~isempty(varargin)
     plotcoord = varargin{1};
 end
 
-t = xData{1,1}; x = xData{1,2}(plotcoord, :);
-Nwin = round(length(t)/50); 
-% [stfourier, frequencies, times] = spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)));
-[stfourier, frequencies, times] = spectrogram(x, [], round(Nwin*0.5), [], 1./(t(2)-t(1)));
+stfourier = 0;
+for iTraj = 1:size(xData, 1)
+    t = xData{iTraj,1}; x = xData{iTraj,2}(plotcoord, :);
+    Nwin = round(length(t)/50);
+    % [stfourier, frequencies, times] = spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)));
+    [stf, frequencies, times] = spectrogram(x, [], round(Nwin*0.5), [], 1./(t(2)-t(1))); % TODO: If timeseries vary between trajectories
+    stfourier = stfourier + stf;
+end
+
 % spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)), 'yaxis');
 % spectrogram(x, 'yaxis');
 powerdensity = abs(stfourier);
