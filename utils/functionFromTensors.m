@@ -1,4 +1,4 @@
-function [F, lambda] = tensorfunction2(M, C, K, fnl)
+function [F, lambda] = functionFromTensors(M, C, K, fnl)
 
 n = size(M,1);
 q = sym('q', [2*n 1]);
