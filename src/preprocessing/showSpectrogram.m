@@ -13,7 +13,7 @@ stfourier = 0;
 for iTraj = 1:size(xData, 1)
     t = xData{iTraj,1}; x = xData{iTraj,2}(plotcoord, :);
     Nwin = round(length(t)/50);
-    % [stfourier, frequencies, times] = spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)));
+%     [stf, frequencies, times] = spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)));
     [stf, frequencies, times] = spectrogram(x, [], round(Nwin*0.5), [], 1./(t(2)-t(1))); % TODO: If timeseries vary between trajectories
     stfourier = stfourier + stf;
 end
@@ -22,6 +22,7 @@ end
 % spectrogram(x, 'yaxis');
 powerdensity = abs(stfourier);
 
+figure
 surf(times, frequencies, powerdensity)
 set(gca,'ColorScale','log')
 xlim([min(times), max(times)])

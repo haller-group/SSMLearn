@@ -215,10 +215,13 @@ if isempty(varargin)==1 % Flow case
     end
     if length(str_eqn_plot)>1
         figure;
+        h = plot(0,0);
         set(gcf,'color','w');
         str_above = ['Using the notation ' str_not ', the normal form reads'];
         annotation('textbox','FontSize',18,'Interpreter','latex','FaceAlpha','1','EdgeColor','w','Position',[0.01 0.1 0.99 0.9], 'String',str_above);
         annotation('textbox','FontSize',18,'Interpreter','latex','FaceAlpha','1','EdgeColor','w','Position',[0.02 0.12 0.98 0.76],'String',['$' str_eqn_plot '$']);
+        delete(h);
+        set(gca,'Visible','off')
     else
         disp('System of equations too large for complete plotting. See the variable for the full system.')
     end

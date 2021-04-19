@@ -23,18 +23,18 @@ err_amp = zeros(size(x,1),N_err);
 err_amp_rel = zeros(size(x,1),N_err);
 err_phase = zeros(size(x,1),N_err);
 err_phase_rel = zeros(size(x,1),N_err);
-% figure(214); clf; hold on; grid on; box on;
-% plot(t_ref,x_ref,'k','Linewidth',1,'DisplayName','Reference Trajectory')
-% plot(t_ref,x,'Linewidth',1,'DisplayName','Trajectory')
+figure(214); clf; hold on; grid on; box on;
+plot(t_ref,x_ref,'k','Linewidth',1,'DisplayName','Reference Trajectory')
+plot(t_ref,x,'Linewidth',1,'DisplayName','Trajectory')
 for ii = 1:N_err
     x_ref_i = x_ref(idx(ii):idx(ii+1)); t_ref_i = t_ref(idx(ii):idx(ii+1));
     x_i = x(:,idx(ii):idx(ii+1));
     [vals,poss] = max(abs(x_i),[],2);
     inds = sub2ind(size(x_i),transpose(1:size(x,1)),poss);
     [val_ref,pos_ref] = max(abs(x_ref_i));
-%     plot(t_ref_i(pos_ref),x_ref_i(pos_ref),'r.','MarkerSize',12,'DisplayName','Peaks Ref.')
-%     plot(t_ref_i(poss),x_i(inds),'c.','MarkerSize',12,'DisplayName','Peaks Ref.')
-%     drawnow;
+    plot(t_ref_i(pos_ref),x_ref_i(pos_ref),'r.','MarkerSize',12,'DisplayName','Peaks Ref.')
+    plot(t_ref_i(poss),x_i(inds),'c.','MarkerSize',12,'DisplayName','Peaks Ref.')
+    drawnow;
     err_amp(:,ii) = vals.*sign(x_i(inds)) - val_ref*sign(x_ref_i(pos_ref));
     err_amp_rel(:,ii) = err_amp(:,ii) /val_ref*100;
     err_phase(:,ii) = transpose(t_ref_i(poss)-t_ref_i(pos_ref));

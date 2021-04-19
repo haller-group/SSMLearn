@@ -172,7 +172,7 @@ switch options.style
             if abs(options.fig_disp_nf)>0
                 [str_eqn,flag_long] = disp_normalform_fig(N_info_opt.coeff,...
                              N_info_opt.Exponents,abs(options.fig_disp_nf));
-                N_info.LateX = str_eqn;             
+                N_info.LaTeX = str_eqn;             
             end 
             if (options.fig_disp_nf<=0) || (flag_long==1)
                 fprintf('\n')
