@@ -1,4 +1,4 @@
-function RMS = getRMS(xData, SSMFunction, V)
+function RMS = getRMS(yData, SSMFunction, V)
 % Compute the mean distance of trajectories in xData and the same
 % trajectories projected onto the manifold defined by V and SSMFunction
 %
@@ -7,9 +7,9 @@ function RMS = getRMS(xData, SSMFunction, V)
 % SSMFunction   Anonymous function for the SSM
 % V             (d x 2) 2D subspace tangent to the SSM at the fixed point
 
-nTraj = size(xData,1);
+nTraj = size(yData,1);
 meanDist = zeros(nTraj,1);
 for iTraj = 1:nTraj
-    meanDist(iTraj) = mean(vecnorm(xData{iTraj,2} - SSMFunction(V.'*xData{iTraj,2})));
+    meanDist(iTraj) = mean(vecnorm(yData{iTraj,2} - SSMFunction(V.'*yData{iTraj,2})));
 end
 RMS = mean(meanDist);

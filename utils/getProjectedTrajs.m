@@ -1,8 +1,8 @@
-function yData = getProjectedTrajs(xData, V)
+function etaData = getProjectedTrajs(yData, V)
 
-nTraj = size(xData, 1);
-yData = cell(size(xData));
+nTraj = size(yData, 1);
+etaData = cell(size(yData));
 for iTraj = 1:nTraj
-    yData{iTraj,1} = xData{iTraj,1};
-    yData{iTraj,2} = V.'*xData{iTraj,2};
+    etaData{iTraj,1} = yData{iTraj,1};
+    etaData{iTraj,2} = V.'*yData{iTraj,2};
 end

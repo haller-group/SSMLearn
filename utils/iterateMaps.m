@@ -1,11 +1,11 @@
-function [yRec, xRec] = iterateMaps(R, yData, SSMFunction)
+function [etaRec, yRec] = iterateMaps(R, etaData, SSMFunction)
 
-nTraj = size(yData,1);
-yRec = cell(nTraj,2); xRec = cell(nTraj,2);
+nTraj = size(etaData,1);
+etaRec = cell(nTraj,2); yRec = cell(nTraj,2);
 for iTraj = 1:nTraj
-    nPoints = length(yData{iTraj,1});
-    yRec{iTraj,1} = yData{iTraj,1};
-    xRec{iTraj,1} = yData{iTraj,1};
-    yRec{iTraj,2} = iterate_map(R, nPoints, yData{iTraj,2}(:,1));
-    xRec{iTraj,2} = SSMFunction(yRec{iTraj,2});
+    nPoints = length(etaData{iTraj,1});
+    etaRec{iTraj,1} = etaData{iTraj,1};
+    yRec{iTraj,1} = etaData{iTraj,1};
+    etaRec{iTraj,2} = iterate_map(R, nPoints, etaData{iTraj,2}(:,1));
+    yRec{iTraj,2} = SSMFunction(etaRec{iTraj,2});
 end

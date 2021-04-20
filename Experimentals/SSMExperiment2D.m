@@ -49,9 +49,9 @@ reconstructedEigenvalues = computeEigenvaluesFlow(Maps_info)
 %% Normal form
 [~,iT,N,T,NormalFormInfo] = IMdynamics_flow(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'normalform');
 
-zData = transformToComplex(iT, yData);
+zData = transformComplex(iT, yData);
 [zRec, xRecNormal] = integrateFlows(N, zData, @(q) SSMFunction(T(q)));
-yRecNormal = transformToComplex(T, zRec);
+yRecNormal = transformComplex(T, zRec);
 % [yRecNormal, xRecNormal] = integrateFlows(R, yData, SSMFunction);
 
 [reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecNormal, xRecNormal, yData, xData);

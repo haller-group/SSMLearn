@@ -1,8 +1,8 @@
-function zData = transformComplex(iT, yData)
+function zData = transformComplex(iT, etaData)
 
-nTraj = size(yData,1);
-zData = cell(size(yData));
+nTraj = size(etaData,1);
+zData = cell(size(etaData));
 for iTraj = 1:nTraj
-    zData{iTraj,1} = yData{iTraj,1};
-    zData{iTraj,2} = iT(yData{iTraj,2});
+    zData{iTraj,1} = etaData{iTraj,1};
+    zData{iTraj,2} = iT(etaData{iTraj,2});
 end

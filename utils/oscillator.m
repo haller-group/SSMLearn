@@ -16,4 +16,4 @@ F3(1,1,1,N+1) = 0.3;     % q1^2*q1dot^2
 F3(1,N+1,N+1,N+1) = 0.5; % q1dot^3
 fnl = {F2, F3};
 
-[F, lambda] = tensorfunction2(M, C, K, fnl);
+[F, lambda] = functionFromTensors(M, C, K, fnl);
