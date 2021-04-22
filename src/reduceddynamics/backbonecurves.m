@@ -1,4 +1,4 @@
-function backbonecurves(a,w,SSM_func,T,coordplot,max_rho,varargin)
+function [inst_damp_curve, inst_freq_curve, inst_amp] = backbonecurves(a,w,SSM_func,T,coordplot,max_rho,varargin)
 % Plot instantaneous amplitude and frequency/damping curves. The amplitude
 % is defined as the maximum value reached by the physical coordinate in
 % coordplot along a full rotation in the angle theta for each value of the

@@ -1,4 +1,4 @@
-function [M,C,K,fnl,fext, outdof] = von_karman_model(nElements, E, rho, nu, kappa, l, h, b)
+function [M,C,K,fnl,fext,outdof] = von_karman_model(nElements, E, rho, nu, kappa, l, h, b)
 %% Finite Element Setup
 % Geometry
 startLIN = tic;
@@ -82,7 +82,7 @@ outdofvec = sparse(outdof,ones(size(outdof)),1,MyMesh.nDOFs,1);
 outdofvec = MyAssembly.constrain_vector(outdofvec);
 outdof = find(outdofvec);
 
-% fext = outdofvec;
+fext = outdofvec;
 
 
 % weights = true(nElements,1); 
