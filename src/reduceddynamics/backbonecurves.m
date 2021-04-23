@@ -1,4 +1,5 @@
-function [inst_damp_curve, inst_freq_curve, inst_amp] = backbonecurves(a,w,SSM_func,T,coordplot,max_rho,varargin)
+function [inst_damp_curve, inst_freq_curve, inst_amp, rho_plot] = ...
+                  backbonecurves(a,w,SSM_func,T,coordplot,max_rho,varargin)
 % Plot instantaneous amplitude and frequency/damping curves. The amplitude
 % is defined as the maximum value reached by the physical coordinate in
 % coordplot along a full rotation in the angle theta for each value of the
@@ -7,7 +8,7 @@ function [inst_damp_curve, inst_freq_curve, inst_amp] = backbonecurves(a,w,SSM_f
 % the linear limit
 
 % Compute instantaneous damping and frequency
-rho_plot = linspace(0,max_rho,100);
+rho_plot = linspace(0,max_rho,1001);
 inst_damp_curve = a(rho_plot); inst_freq_curve = w(rho_plot);
 % Compute instantaneous amplitude
 theta_plot = linspace(0,2*pi,51); theta_plot = theta_plot(1:end-1);
@@ -36,7 +37,7 @@ if isempty(varargin)==0
     else
         subplot(121); hold on; grid on; box on;
         plot(inst_damp_curve./inst_damp_curve(1),inst_amp,'Linewidth',2)
-        xlabel('$\zeta/\zeta(0)$','Interpreter','latex')
+        xlabel('$c/c(0)$','Interpreter','latex')
         ylabel(['$y_{' num2str(coordplot) '}$'],'Interpreter','latex')
         set(gca,'fontname','times')
         set(gca,'fontsize',18)
@@ -50,7 +51,7 @@ if isempty(varargin)==0
 else
     subplot(121); hold on; grid on; box on;
     plot(inst_damp_curve,inst_amp,'Linewidth',2)
-    xlabel('$\zeta\, [$1/s$]$','Interpreter','latex')
+    xlabel('$c\, [$1/s$]$','Interpreter','latex')
     ylabel(['$y_{' num2str(coordplot) '}$'],'Interpreter','latex')
     set(gca,'fontname','times')
     set(gca,'fontsize',18)
