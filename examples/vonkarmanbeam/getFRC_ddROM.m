@@ -40,7 +40,7 @@ bd  = coco(prob,bd_name, [], cont_args{:});
 % Extracts simulation results
 T_vec=coco_bd_col(bd, 'po.period');
 Z0=coco_bd_col(bd, 'X0');
-ph_vec = phase(Z0(1,:)+1i*Z0(2,:));
+ph_vec = unwrap(angle(Z0(1,:)+1i*Z0(2,:)));
 rho_vec = abs(Z0(1,:)+1i*Z0(2,:));
 stability = sum(abs(coco_bd_col(bd, 'eigs'))>1)==0;
     
