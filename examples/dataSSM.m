@@ -15,39 +15,43 @@ ICOffMfd = ICRadius * pickPointsOnHypersphere(nTraj-nTrajsOnMfd, 6, rand);
 IC = [ICOnMfd, ICOffMfd];
 
 observable = @(x) x;
-tEnd = 1231;
+tEnd = 1500;
 nSamp = 5e3;
 dt = tEnd/(nSamp-1);
 
 xData = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 %%
-overEmbed = 50;
+overEmbed = 0;
 SSMOrder = 5;
 
 % yData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
 yData = coordinates_embedding(xData, SSMDim, 'ForceEmbedding', 1);
 
-[V, SSMFunction, mfdInfo] = IMparametrization(yData(indTrain,:), SSMDim, SSMOrder);
+sliceInt = [400, tEnd];
+yDataTrunc = sliceTrajectories(yData, sliceInt);
+
+[V, SSMFunction, mfdInfo] = IMparametrization(yDataTrunc(indTrain,:), SSMDim, SSMOrder);
 %%
 etaData = getProjectedTrajs(yData, V);
+etaDataTrunc = sliceTrajectories(etaData, sliceInt);
 plotReducedCoords(etaData);
 
 RRMS = getRMS(yData(indTest,:), SSMFunction, V)
 
 yLifted = liftReducedTrajs(etaData, SSMFunction);
-plotReconstructedTrajectory(yData(indTest(1),:), yLifted(indTest(1),:), 2)
+plotReconstructedTrajectory(yData(indTrain(1),:), yLifted(indTrain(1),:), 2)
 
-plotSSMWithTrajectories(yData(indTrain,:), SSMFunction, 1, V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(yDataTrunc(indTrain,:), SSMFunction, 1, V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
 %% Normal form
-[~,iT,N,T,NormalFormInfo] = IMdynamics_flow(etaData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform');
+[~,iT,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), 'R_PolyOrd', 3, 'style', 'normalform');
 
-zData = transformComplex(iT, etaData);
+zData = transformComplex(iT, etaDataTrunc);
 [zRec, yRec] = integrateFlows(N, zData, @(z) SSMFunction(T(z)));
 etaRec = transformComplex(T, zRec);
 
-[reducedTrajDist, fullTrajDist] = computeRecDynErrors(etaRec, yRec, etaData, yData);
+[reducedTrajDist, fullTrajDist] = computeRecDynErrors(etaRec, yRec, etaDataTrunc, yDataTrunc);
 
 RMSE = mean(reducedTrajDist(indTest))
 RRMSE = mean(fullTrajDist(indTest))

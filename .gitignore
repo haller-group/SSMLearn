@@ -2,3 +2,5 @@
 *.DS_store
 *~$*.ppt*
 *SSMep.mat
+*.ep
+data/

@@ -1,4 +1,4 @@
-function [M,C,K,fnl] = build_model(kappa, gamma, nElements)
+function [M,C,K,fnl] = EB_model(kappa, gamma, nElements)
 
 [M,C,K]=L_Bernoulli_Beam_Model(nElements);
 
