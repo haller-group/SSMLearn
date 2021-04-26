@@ -18,7 +18,7 @@ figure
 hold on
 
 if opts.SSMDimension == 2
-    etaData = V'* cat(2,yData{:,2});
+    etaData = transpose(V) * cat(2,yData{:,2});
     plot_2dSSM_surf(plotInds, etaData, SSMFunction, radiusIncr, 50, 0);
 else
     disp("SSM plotting only available for 2D manifolds")

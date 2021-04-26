@@ -273,8 +273,8 @@ if options.R_PolyOrd>options.iT_PolyOrd
 else
     W_it_0 =-[W_modal(:,k+1:end) zeros(k,size(Expmat_it,1)+k-size(W_r,2))];
 end
-W_it_0=W_it_0./(repmat(d,1,size(Expmat_n,1))-...
-    repmat(transpose(Expmat_n*d),k,1));
+W_it_0=W_it_0./(repmat(d,1,size(Expmat_it,1))-...
+    repmat(transpose(Expmat_it*d),k,1));
 lidx_elim_it = lidx_n;
 if options.iT_PolyOrd<options.N_PolyOrd
     lidx_elim_it(lidx_elim_it>numel(W_it_0)) = [];
