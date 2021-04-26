@@ -19,56 +19,41 @@ tEnd = 1231;
 nSamp = 5e3;
 dt = tEnd/(nSamp-1);
 
-xSim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
+xData = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC);
 %%
 overEmbed = 50;
 SSMOrder = 5;
 
-% xData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
-xData = coordinates_embedding(xSim, SSMDim, 'ForceEmbedding', 1);
+% yData = coordinates_embedding(xSim, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
+yData = coordinates_embedding(xData, SSMDim, 'ForceEmbedding', 1);
 
-[V, SSMFunction, mfdInfo] = IMparametrization(xData(indTrain,:), SSMDim, SSMOrder, 'c1', 100, 'c2', 0.03);
+[V, SSMFunction, mfdInfo] = IMparametrization(yData(indTrain,:), SSMDim, SSMOrder);
 %%
-yData = getProjectedTrajs(xData, V);
-plotReducedCoords(yData);
+etaData = getProjectedTrajs(yData, V);
+plotReducedCoords(etaData);
 
-RRMS = getRMS(xData(indTest,:), SSMFunction, V)
+RRMS = getRMS(yData(indTest,:), SSMFunction, V)
 
-xLifted = liftReducedTrajs(yData, SSMFunction);
-plotReconstructedTrajectory(xData(indTest(1),:), xLifted(indTest(1),:), 2)
+yLifted = liftReducedTrajs(etaData, SSMFunction);
+plotReconstructedTrajectory(yData(indTest(1),:), yLifted(indTest(1),:), 2)
 
-plotSSMWithTrajectories(xData(indTrain,:), SSMFunction, 1, V, 50, 'SSMDimension', SSMDim)
+plotSSMWithTrajectories(yData(indTrain,:), SSMFunction, 1, V, 50, 'SSMDimension', SSMDim)
 % axis equal
 view(50, 30)
-%% Reduced dynamics
-[R,~,~,~,Maps_info] = IMdynamics_map(yData(indTrain,:), 'R_PolyOrd', 3, 'style', 'modal', 'c1', 100, 'c2', 0.03);
-
-[yRecModal, xRecModal] = iterateMaps(R, yData, SSMFunction);
-
-[reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecModal, xRecModal, yData, xData);
-
-RMSE_modal = mean(reducedTrajDist(indTest))
-RRMSE_modal = mean(fullTrajDist(indTest))
-
-plotReducedCoords(yData(indTest(1),:), yRecModal(indTest(1),:))
-plotReconstructedTrajectory(xData(indTest(1),:), xRecModal(indTest(1),:), 2, 'g')
-
-reconstructedEigenvalues = computeEigenvaluesMap(Maps_info, dt)
-DSEigenvalues = lambda(1:SSMDim)
 %% Normal form
-[~,iT,N,T,NormalFormInfo] = IMdynamics_flow(yData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform', 'c1', 0, 'c2', 0.03);
+[~,iT,N,T,NormalFormInfo] = IMdynamics_flow(etaData(indTrain,:), 'R_PolyOrd', 7, 'style', 'normalform');
 
-zData = transformComplex(iT, yData);
-[zRec, xRecNormal] = integrateFlows(N, zData, @(z) SSMFunction(T(z)));
-yRecNormal = transformComplex(T, zRec);
+zData = transformComplex(iT, etaData);
+[zRec, yRec] = integrateFlows(N, zData, @(z) SSMFunction(T(z)));
+etaRec = transformComplex(T, zRec);
 
-[reducedTrajDist, fullTrajDist] = computeRecDynErrors(yRecNormal, xRecNormal, yData, xData);
+[reducedTrajDist, fullTrajDist] = computeRecDynErrors(etaRec, yRec, etaData, yData);
 
-RMSE_normal = mean(reducedTrajDist(indTest))
-RRMSE_normal = mean(fullTrajDist(indTest))
+RMSE = mean(reducedTrajDist(indTest))
+RRMSE = mean(fullTrajDist(indTest))
 
-plotReducedCoords(yData(indTest(1),:), yRecNormal(indTest(1),:))
-plotReconstructedTrajectory(xData(indTest(1),:), xRecNormal(indTest(1),:), 2, 'c')
+plotReducedCoords(etaData(indTest(1),:), etaRec(indTest(1),:))
+plotReconstructedTrajectory(yData(indTest(1),:), yRec(indTest(1),:), 2, 'm')
 
 normalFormEigenvalues = computeEigenvaluesMap(NormalFormInfo, dt)
 DSEigenvalues = lambda(1:SSMDim)
