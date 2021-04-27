@@ -33,34 +33,34 @@ etaData = getProjectedTrajs(yData, V);
 
 RRMS = getRMS(yData(indTest,:), SSMFunction, V)
 
-yLifted = liftReducedTrajs(etaData, SSMFunction);
-plotReconstructedTrajectory(yData(indTest(1),:), yLifted(indTest(1),:), 1)
+% yLifted = liftReducedTrajs(etaData, SSMFunction);
+% plotReconstructedTrajectory(yData(indTest(1),:), yLifted(indTest(1),:), 1)
 
-plotSSMWithTrajectories(yData, SSMFunction, [1,2,3], V, 10, 'SSMDimension', SSMDim)
-view(50, 30)
+% plotSSMWithTrajectories(yData, SSMFunction, [1,2,3], V, 10, 'SSMDimension', SSMDim)
+% view(50, 30)
 %% Reduced dynamics
 ROMOrder = 3;
 [R,~,~,~,MapsInfo] = IMdynamics_flow(etaData(indTrain,:), 'R_PolyOrd', ROMOrder);
 MapsInfo.R.coeff
 
 %%
-figure
-x = linspace(-1,1.5)';
-plot(x, x-x.^3, 'DisplayName', 'True', 'LineWidth', 2)
-hold on
-plot(x,sum(MapsInfo.R.coeff.*x.^(1:ROMOrder),2), ':', 'DisplayName', ['ROM order ' num2str(ROMOrder)], 'LineWidth', 2)
-xlabel('$R$', 'Interpreter', 'latex')
-ylabel('$\dot{R}$', 'Interpreter', 'latex')
-legend()
-set(gca, 'fontname', 'times')
-set(gca, 'fontsize', 18)
+% figure
+% x = linspace(-1,1.5)';
+% plot(x, x-x.^3, 'DisplayName', 'True', 'LineWidth', 2)
+% hold on
+% plot(x,sum(MapsInfo.R.coeff.*x.^(1:ROMOrder),2), ':', 'DisplayName', ['ROM order ' num2str(ROMOrder)], 'LineWidth', 2)
+% xlabel('$R$', 'Interpreter', 'latex')
+% ylabel('$\dot{R}$', 'Interpreter', 'latex')
+% legend()
+% set(gca, 'fontname', 'times')
+% set(gca, 'fontsize', 18)
 
-figure
-plot(xData{1,1}, xData{1,2}, 'LineWidth', 2)
-xlabel('$t$ [s]', 'Interpreter', 'latex')
-ylabel('$R$', 'Interpreter', 'latex')
-set(gca, 'fontname', 'times')
-set(gca, 'fontsize', 18)
+% figure
+% plot(xData{1,1}, xData{1,2}, 'LineWidth', 2)
+% xlabel('$t$ [s]', 'Interpreter', 'latex')
+% ylabel('$R$', 'Interpreter', 'latex')
+% set(gca, 'fontname', 'times')
+% set(gca, 'fontsize', 18)
 
 %%
 [etaRec, yRec] = integrateFlows(R, etaData, @(eta) SSMFunction(eta));
@@ -72,6 +72,17 @@ RRMSE = mean(fullTrajDist(indTest))
 
 plotReconstructedTrajectory(yData(indTest(1),:), yRec(indTest(1),:), 1, 'm')
 
-reconstructedEigenvalues = computeEigenvaluesFlow(MapsInfo)
 DSEigenvalues = mu
+reconstructedEigenvalues = computeEigenvaluesFlow(MapsInfo)
 
+%% DMD
+[Phi,omega,lambda,b,Xdmd,t] = DMD(yData{1,2}(:,1:end-1), yData{1,2}(:,2:end), 3, dt);
+figure
+plot(yData{1,1}, yData{1,2}(1,:), 'DisplayName', 'true', 'LineWidth', 2)
+hold on
+plot(t, Xdmd(1,:), ':', 'DisplayName', 'DMD', 'LineWidth', 2)
+xlabel('$t$ [s]', 'Interpreter', 'latex')
+ylabel('$R$', 'Interpreter', 'latex')
+legend
+set(gca, 'fontname', 'times')
+set(gca, 'fontsize', 18)

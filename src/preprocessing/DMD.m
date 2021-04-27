@@ -41,8 +41,8 @@ b = Phi\x1;
 %% DMD reconstruction
 mm1 = size(X1, 2); % mm1 = m - 1
 time_dynamics = zeros(r, mm1);
-t = (0:mm1 -1)*dt; % time vector
-for iter = 1:mm1
+t = (0:mm1 -0)*dt; % time vector
+for iter = 1:mm1+1
     time_dynamics(:,iter) = (b.*exp(omega*t(iter)));
 end
 Xdmd = real(Phi * time_dynamics) ;
