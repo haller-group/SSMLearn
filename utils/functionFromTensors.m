@@ -1,4 +1,11 @@
-function [F, lambda] = functionFromTensors(M, C, K, fnl)
+function [F, lambda] = functionFromTensors(M, C, K, fnl, varargin)
+
+forced = 0;
+if ~isempty(varargin)
+    forced = 1;
+    fext = varargin{1};
+    omega = varargin{2};
+end
 
 n = size(M,1);
 q = sym('q', [2*n 1]);
@@ -10,13 +17,20 @@ for iT = 1:length(fnl)
         qdot(idx(i,1)) = qdot(idx(i,1)) + Fi(idx(i,:))*prod(q(idx(i,2:end)));
     end
 end
-f = matlabFunction(qdot, 'vars', {q});
+g = matlabFunction(qdot, 'vars', {q});
 
 Minv = inv(M);
 A = [zeros(n), eye(n);
     -Minv*K,     -Minv*C];
 G = @(x) [zeros(n,1);
-         -Minv*f(x)];
-F = @(t,x) A*x + G(x);
+         -Minv*g(x)];
+     
+if forced
+    H = @(t,x) [zeros(n,1);
+        -Minv*fext*cos(omega*t)];
+    F = @(t,x) A*x + G(x) + H(t,x);
+else
+    F = @(t,x) A*x + G(x);
+end
 
 lambda = sort(eig(full(A)));

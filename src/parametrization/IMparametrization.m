@@ -6,7 +6,7 @@ function [V,IM_para,IM_param_info] = IMparametrization(X,k,M,varargin)
 %               x = IM_para(y) = Vy + H phi(y)
 %
 % V is an orthonormal representation of the eigenspace to which the
-% manifold is tangent at the origin. Moreover, phi(y) is a k-variate polynomial
+% manifold is tangent at the origin. Moreover, phi(y) is a k-variate
 % polynomial mapping from degree 2 to degree M and its coefficients H are
 % orthogonal to V, i.e., V'*H = 0.
 % A classic ridge penality can be inserted in the optimization of H.
@@ -14,7 +14,7 @@ function [V,IM_para,IM_param_info] = IMparametrization(X,k,M,varargin)
 % contains the normalization coefficients for the weights in H.
 % Eventual error weighting can be performed in a slow manifold fashion: the
 % cell err_info contains the time instances in err_info{1} and a vector
-% c in err_info{2}. Eeach error is multiplied by a  coefficient
+% c in err_info{2}. Each error is multiplied by a  coefficient
 % (1+c(1)*exp(-c(2)*t)).^(-1) which is useful for imperfect measurements
 % converging to the slow manifold which has to be identified.
 % The best hyperparameter set may be obtained via crossvali-
