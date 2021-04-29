@@ -49,7 +49,7 @@ b       = 50e-3;  % width
 [M,C,K,fnl,fext,outdof] = von_karman_model(nElements, E, rho, nu, kappa, l, h, b);
 n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
 [F, lambda1] = functionFromTensors(M, C, K, fnl);
-[Fforced, lambda2] = functionFromTensors(M, C, K, fnl, 3.5*fext, 105);
+[Fforced, lambda2] = functionFromTensors(M, C, K, fnl, 7.0*fext, 105);
 lambda = [lambda1; lambda2];
 %% Generation of Synthetic Data
 % 
@@ -305,9 +305,9 @@ subplot(122); ylabel('$u \, [$m$]$','Interpreter','latex')
 % model.
 
 % Compute with SSMTool
-f_full = [0.7000    1.4000    3.5000];
+f_full = [0.7000 7.0000];
 f_vec = loadvector(:,2)/max(abs(loadvector(:,2)));
-w_span = [90 125];
+w_span = [90 150];
 FRC_full = getFRC_full(M, C, K, fnl, f_vec, f_full, n-1, w_span, ROMOrder);
 
 % Calibration based on the maximal amplitude response of a validation FRC
@@ -321,6 +321,7 @@ ratio_force_data_full = f_red/f_full(idx_f_full);
 % Compute with data-driven model
 ddROM = struct('Dim',SSMDim,'Param',SSMFunction,'CCtoNormal',Tinv,'ReducedDynNormal',N,'CCfromNormal',T);
 FRC_data = getFRC_ddROM(ddROM,f_red,w_span,1);
+save FRC_data FRC_data
 
 %%
 % Plot
