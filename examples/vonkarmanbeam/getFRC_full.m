@@ -9,10 +9,10 @@ function FRC_data = getFRC_full(M, C, K, fnl, f_vec, f_coeffs, ...
 
 epsilon = 1;
 kappas = [-1; 1];
-set(S.Options, 'reltol', 1, 'IRtol', 0.02, 'notation', 'multiindex', 'contribNonAuto', true)
-set(S.FRCOptions, 'nt', 2^7, 'nRho', 400, 'nPar', 400, 'nPsi', 400, 'rhoScale', 2)
-set(S.FRCOptions, 'method', 'continuation ep', 'z0', 1e-4*[1; 1]) % 'level set' 
+set(S.Options, 'reltol', 1, 'notation', 'multiindex', 'contribNonAuto', false)
+set(S.FRCOptions, 'method', 'continuation ep') % 'level set' 
 set(S.FRCOptions, 'outdof', outdof, 'nCycle', 500)
+set(S.contOptions, 'PtMX', 500, 'h_min', 1e-3)
 
 FRC_data = struct();
 for ii = 1:length(f_coeffs)

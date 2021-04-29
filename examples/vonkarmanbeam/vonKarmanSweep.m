@@ -34,7 +34,7 @@ ampli(ii) = max(abs(xData{1,2}(n-1,end-100:end)))
 IC = xData{1,2}(:,end);
 end
 %%
-FRC_full = getFRC_full(M, C, K, fnl, fext, f_full, n-1, w_span, 7); close all
+FRC_full = getFRC_full(M, C, K, fnl, fext, f_full, n-1, w_span, 7)
 
 %%
 plot(omega,ampli,'o', 'DisplayName', 'Numerical integration')
