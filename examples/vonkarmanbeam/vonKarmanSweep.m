@@ -1,7 +1,7 @@
 clearvars
 close all
 
-nElements = 2;
+nElements = 3;
 E       = 70e9;   % Young's modulus
 rho     = 2700;   % density
 nu      = 0.3;    % nu
@@ -12,14 +12,14 @@ b       = 50e-3;  % width
 
 [M,C,K,fnl,fext,outdof] = von_karman_model(nElements, E, rho, nu, kappa, l, h, b);
 n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
-w_span = [100,135];
-omega = linspace(w_span(1),w_span(2),75);
+w_span = [120,200];
+omega = linspace(w_span(1),w_span(2),20);
 load FRC_data
-f_full = [7.0];
+f_full = [128];
 
 w0 = -K\(f_full*fext); % linear initial guess
 IC = [w0; zeros(n,1)];
-
+%%
 for ii = 1:length(omega)
 [F, lambda] = functionFromTensors(M, C, K, fnl, f_full*fext, omega(ii));
 observable = @(x) x;
