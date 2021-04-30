@@ -34,13 +34,14 @@ ampli(ii) = max(abs(xData{1,2}(n-1,end-100:end)))
 IC = xData{1,2}(:,end);
 end
 %%
-FRC_full = getFRC_full(M, C, K, fnl, fext, f_full, n-1, w_span, 7); close all
+FRC_full = getFRC_full(M, C, K, fnl, fext, f_full, n-1, w_span, 7)
 
 %%
-plot(omega,ampli,'o', 'DisplayName', 'Numerical integration')
+plot(FRC_full.F1.Freq, FRC_full.F1.Amp, 'DisplayName', 'SSMTool', 'LineWidth', 2)
 hold on
-plot(FRC_full.F1.Freq, FRC_full.F1.Amp, 'DisplayName', 'SSMTool')
-plot(FRC_data.F2.Freq, FRC_data.F2.Amp, 'DisplayName', 'SSMLearn')
+plot(FRC_data.F2.Freq, FRC_data.F2.Amp, 'DisplayName', 'SSMLearn', 'LineWidth', 2)
+plot(omega,ampli,'ok', 'DisplayName', 'Numerical integration','MarkerFaceColor','g','MarkerSize',4)
 xlabel('$\Omega$ [rad/s]', 'Interpreter', 'latex')
 ylabel('$u$ [m]', 'Interpreter', 'latex')
 legend
+set(gca,'fontname', 'times'); set(gca,'fontsize', 18)
