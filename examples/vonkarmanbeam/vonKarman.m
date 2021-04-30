@@ -16,7 +16,7 @@ close all
 %% Example setup
 % 
 
-nElementsList = [6];
+nElementsList = [2 3];
 E       = 70e9;   % Young's modulus
 rho     = 2700;   % density
 nu      = 0.3;    % nu

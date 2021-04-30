@@ -12,7 +12,7 @@ b       = 50e-3;  % width
 
 [M,C,K,fnl,fext,outdof] = von_karman_model(nElements, E, rho, nu, kappa, l, h, b);
 n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
-w_span = [120,200];
+w_span = [100,200];
 omega = linspace(w_span(1),w_span(2),20);
 load FRC_data
 f_full = [128];
