@@ -16,7 +16,7 @@ close all
 %% Example setup
 % 
 
-nElementsList = [2 3];
+nElementsList = [2 3 4 5];
 E       = 70e9;   % Young's modulus
 rho     = 2700;   % density
 nu      = 0.3;    % nu
@@ -62,9 +62,19 @@ nSamp = fix(50 * tEnd * abs(imag(lambda(1))) / (2*pi));
 dt = tEnd/(nSamp-1);
 tic
 % xData(1,:) = integrateTrajectories(Fforced, observable, tEnd, nSamp, 1, IC(:,1));
-xData(iEl,:) = integrateTrajectories(F, observable, tEnd, nSamp, 1, IC);
-toc
+xData(iEl,:) = integrateTrajectories(F, observable, tEnd, nSamp, 1, IC, 'odetol', 1e-7);
+intTimes(iEl) = toc
 end
+%%
+hBar=bar(nElementsList, intTimes, 'y');
+set(gca, 'YScale', 'log')
+xlabel('# elements')
+ylabel('time [s]')
+ylim([1,100])
+set(gca, 'fontname', 'times')
+set(gca, 'fontsize', 18)
+grid on
+return
 %% Delay embedding
 % 
 

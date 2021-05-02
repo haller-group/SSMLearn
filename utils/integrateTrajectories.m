@@ -4,9 +4,15 @@ function ySim = integrateTrajectories(F, observable, tEnd, nSamp, nTraj, IC, var
 % state space. To save only the first coordinate, pass @(x) x(1,:)
 %
 % OUTPUT
-% xSim      (nTraj x 2) cell array of (1 x nSamp) time sequencies and 
+% ySim      (nTraj x 2) cell array of (1 x nSamp) time sequencies and 
 %               (dim x nSamp) trajectories
-opts = odeset('AbsTol',1e-7);
+
+p = inputParser;
+validScalarPosNum = @(x) isnumeric(x) && isscalar(x) && (x > 0);
+addParameter(p, 'odetol', 1e-7, validScalarPosNum);
+parse(p, varargin{:});
+
+opts = odeset('AbsTol', p.Results.odetol);
 ySim = cell(nTraj, 2);
 for iTraj = 1:nTraj
     fprintf('simulating trajectory %d of %d...\n', iTraj, nTraj)
