@@ -1,4 +1,4 @@
-function [M,C,K,fnl,fext,outdof] = von_karman_model(nElements, E, rho, nu, kappa, l, h, b)
+function [M,C,K,fnl,fext,outdof] = von_karman_model_cantilever(nElements, E, rho, nu, kappa, l, h, b)
 %% Finite Element Setup
 % Geometry
 startLIN = tic;
@@ -40,7 +40,7 @@ C = MyAssembly.damping_matrix();
 
 %% apply boundary conditions
 disp('Applying boundary conditions')
-MyMesh.set_essential_boundary_condition([1, nNodes],[1 2 3],0) % Clamped-clamped beam
+MyMesh.set_essential_boundary_condition(1,[1 2 3],0) % Clamped-clamped beam
 M = MyAssembly.constrain_matrix(M);
 K = MyAssembly.constrain_matrix(K);
 C = MyAssembly.constrain_matrix(C);
@@ -62,7 +62,7 @@ title(['Mode ' num2str(mod) ', Frequency = ' num2str(omega(mod)/(2*pi)) ' Hz'] )
 %% external force assembly
 % disp('Assembling external force vector')
 
-outnode = ceil(MyMesh.nNodes/2);
+outnode = MyMesh.nNodes;
 outdof = outnode*3-1; % transverse direction
 
 outdofvec = sparse(outdof,ones(size(outdof)),1,MyMesh.nDOFs,1);
