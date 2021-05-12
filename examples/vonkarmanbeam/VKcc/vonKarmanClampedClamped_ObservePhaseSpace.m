@@ -39,7 +39,7 @@ clc
 %
 
 nElements = 12;
-[M,C,K,fnl,f_0,outdof, PlotFieldonDefMesh] = build_model(nElements);
+[M,C,K,fnl,f_vec,outdof, PlotFieldonDefMesh] = build_model(nElements);
 n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
 [F, lambda,Vmodel] = functionFromTensors(M, C, K, fnl);
 %% Generation of Synthetic Data
@@ -63,9 +63,7 @@ indTrain = setdiff(1:nTraj, indTest);
 % point load. We expect the trajectories to eventually converge onto a slow 2D
 % manifold, which will be identified and used to reduce the system dynamics.
 
-loadvector = zeros(n,nTraj);
-loadvector(outdof,1) = -1.75; % point load, [N]
-loadvector(outdof,2) = -2; % point load, [N]
+loadvector = [1.75 2].*f_vec;
 w0 = -K\loadvector(:,1); % linear initial guess
 IC = zeros(2*n,nTraj);
 options = optimoptions('fsolve', 'MaxFunctionEvaluations', 200*n, 'Display', 'off');
@@ -314,7 +312,6 @@ subplot(122); ylabel('$u \, [$m$]$','Interpreter','latex')
 
 % Compute with SSMTool
 f_full = 5e-4*[4 8 12];
-f_vec = loadvector(:,1)/max(abs(loadvector(:,1)));
 w_span = [30 37];
 FRC_full = getFRC_full(M, C, K, fnl, f_vec, f_full, outdof, w_span, ROMOrder); close all
 
