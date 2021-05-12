@@ -49,7 +49,6 @@ else
         freqs = matlabFunction(w_sym,'Vars', {transpose(r)});
     end
 end
-return
 
 % Plot normal form in latex style on matlab figure (only for flows)
 if isempty(varargin)==1 % Flow case
