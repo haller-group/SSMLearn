@@ -3,18 +3,6 @@ function [M,C,K,fnl,fext,outdof] = von_karman_model(nElements, E, rho, nu, kappa
 % Geometry
 startLIN = tic;
 
-% l = 1;
-% h = 1e-3;
-% b = 1; 
-% Mesh parameters
-
-% Material properties
-
-% E       = 70e9;  % 70e9 % 200e9 % Young's modulus
-% rho     = 2700; % 2700 % 7850 % density
-% nu      = 0.3;    % nu
-% kappa   = 3e6; % material damping modulus 1e8
-
 %% FE model
 disp('Building FE model')
 % Material
@@ -52,30 +40,29 @@ C = MyAssembly.damping_matrix();
 
 %% apply boundary conditions
 disp('Applying boundary conditions')
-MyMesh.set_essential_boundary_condition(1,[1 2 3],0) % Cantilevered beam
+MyMesh.set_essential_boundary_condition([1, nNodes],[1 2 3],0) % Clamped-clamped beam
 M = MyAssembly.constrain_matrix(M);
 K = MyAssembly.constrain_matrix(K);
 C = MyAssembly.constrain_matrix(C);
 
 
-
 %% Eigenvalue problem
 disp('Solving undamped eigenvalue problem')
-n_VMs = 5; % first n_VMs modes with lowest frequency calculated 
+n_VMs = 3; % first n_VMs modes with lowest frequency calculated 
 [V0,omega2] = eigs(K,M,n_VMs,'SM');
 omega = sqrt(diag(omega2));
 
 V = MyAssembly.unconstrain_vector(V0);
 mod = 1;
 v1 = reshape(V(:,mod),3,[]);
-% figure;
-% PlotFieldonDeformedMesh(nodes,elements,v1(1:2,:).','factor',0.2);
-% title(['Mode ' num2str(mod) ', Frequency = ' num2str(omega(mod)/(2*pi)) ' Hz'] )
+figure;
+PlotFieldonDeformedMesh(nodes,elements,v1(1:2,:).','factor',0.2);
+title(['Mode ' num2str(mod) ', Frequency = ' num2str(omega(mod)/(2*pi)) ' Hz'] )
 
 %% external force assembly
 % disp('Assembling external force vector')
 
-outnode = MyMesh.nNodes;
+outnode = ceil(MyMesh.nNodes/2);
 outdof = outnode*3-1; % transverse direction
 
 outdofvec = sparse(outdof,ones(size(outdof)),1,MyMesh.nDOFs,1);

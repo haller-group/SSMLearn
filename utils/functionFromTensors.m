@@ -1,4 +1,4 @@
-function [F, lambda] = functionFromTensors(M, C, K, fnl, varargin)
+function [F, lambda, V] = functionFromTensors(M, C, K, fnl, varargin)
 
 forced = 0;
 if ~isempty(varargin)
@@ -33,4 +33,7 @@ else
     F = @(t,x) A*x + G(x);
 end
 
-lambda = sort(eig(full(A)));
+[V,D] = eig(full(A));
+[lambda,pos] = sort(diag(D)); 
+V = V(:,pos);
+end

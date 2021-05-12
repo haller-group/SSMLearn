@@ -16,7 +16,7 @@ opts = odeset('AbsTol', p.Results.odetol);
 ySim = cell(nTraj, 2);
 for iTraj = 1:nTraj
     fprintf('simulating trajectory %d of %d...\n', iTraj, nTraj)
-    [t, x] = ode23tb(F, linspace(0, tEnd, nSamp), IC(:, iTraj), opts);
+    [t, x] = ode15s(F, linspace(0, tEnd, nSamp), IC(:, iTraj), opts);
     ySim{iTraj,1} = t.';
     ySim{iTraj,2} = observable(x.');
 end
