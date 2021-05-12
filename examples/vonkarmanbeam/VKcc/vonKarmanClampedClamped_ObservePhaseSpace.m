@@ -86,7 +86,7 @@ figure; PlotFieldonDefMesh(w0,150)
 % In this case we are observing the full phase space. We also make sure 
 % that the data is sampled with a sufficiently high frequency.
 
-new_meas = 0;
+new_meas = 1;
 observable = @(x) x;
 if new_meas == 1
     tEnd = 30;
@@ -387,40 +387,34 @@ xlim([w_span(1)+1 w_span(2)-1])
 
 %% Numerical Integration
 if new_meas == 1
-    w_0 = 32;
+    w_0 = w_span(1);
     Npers = 50;
     f_veci = M\f_vec;
-    tic
-    jj = 1
-    F_force = @(t,x,w) F(t,x) + [zeros(n,1); f_veci*f_full(jj)*cos(w*t)];
-    [~,x_sim] = ode23tb(@(t,x) F_force(t,x,w_0),[0 Npers*2*pi/w_0], zeros(2*n,1));
-    jj = 2
-    F_force = @(t,x,w) F(t,x) + [zeros(n,1); f_veci*f_full(jj)*cos(w*t)];
-    [~,x_sim] = ode23tb(@(t,x) F_force(t,x,w_0),[0 Npers*2*pi/w_0], transpose(x_sim(end,:)));
-    jj = 3
-    F_force = @(t,x,w) F(t,x) + [zeros(n,1); f_veci*f_full(jj)*cos(w*t)];
-    [t_sim,x_sim] = ode23tb(@(t,x) F_force(t,x,w_0),[0 Npers*2*pi/w_0], transpose(x_sim(end,:)));
-    t_sim = t_sim'; x_sim = x_sim';
-    toc
-    figure
-    plot(t_sim,x_sim(outdof,:))
-    
-    [t_sim,x_sim] = ode23tb(@(t,x) F_force(t,x,w_0),[0 3*Npers*2*pi/w_0], x_sim(:,end));
+    x_sim = zeros(1,2*n);
+    for jj = 1:length(f_full)
+        F_force = @(t,x,w) F(t,x) + [zeros(n,1); f_veci*f_full(jj)*cos(w*t)];
+        [t_sim,x_sim] = ode15s(@(t,x) F_force(t,x,w_0),[0 Npers*2*pi/w_0], transpose(x_sim(end,:)));
+    end
     t_sim = t_sim'; x_sim = x_sim';
     figure
     plot(t_sim,x_sim(outdof,:))
     
-    w_sweep = 32:.1:35;
+    [t_sim,x_sim] = ode15s(@(t,x) F_force(t,x,w_0),[0 3*Npers*2*pi/w_0], x_sim(:,end));
+    t_sim = t_sim'; x_sim = x_sim';
+    figure
+    plot(t_sim,x_sim(outdof,:))
+    
+    w_sweep = w_span(1):0.1:w_span(2);
     u_sweep = zeros(1,length(w_sweep)); x_sim_i = x_sim;
-    [~,x_PO] = ode23tb(@(t,x) F_force(t,x,w_0),[0 1*2*pi/w_0], x_sim_i(:,end));
+    [~,x_PO] = ode15s(@(t,x) F_force(t,x,w_0),[0 1*2*pi/w_0], x_sim_i(:,end));
     u_sweep(1) = max(abs(x_PO(:,outdof)));
     Npers = 30;
     
     for ii = 2:length(w_sweep)
-        ii
-        [~,x_sim_i] = ode23tb(@(t,x) F_force(t,x,w_sweep(ii)),[0 Npers*2*pi/w_sweep(ii)], x_sim_i(:,end));
+        disp(['computing FRC point ', num2str(ii), ' of ', num2str(length(w_sweep))])
+        [~,x_sim_i] = ode15s(@(t,x) F_force(t,x,w_sweep(ii)),[0 Npers*2*pi/w_sweep(ii)], x_sim_i(:,end));
         x_sim_i = x_sim_i';
-        [~,x_PO] = ode23tb(@(t,x) F_force(t,x,w_sweep(ii)),[0 1*2*pi/w_sweep(ii)], x_sim_i(:,end));
+        [~,x_PO] = ode15s(@(t,x) F_force(t,x,w_sweep(ii)),[0 1*2*pi/w_sweep(ii)], x_sim_i(:,end));
         u_sweep(ii) = max(abs(x_PO(:,outdof)));
     end
     

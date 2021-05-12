@@ -1,4 +1,4 @@
-function [M,C,K,fnl,fext, outdof, PlotFieldonDefMesh] = build_model(nElements)
+function [M, C, K, fnl, fext, outdof, PlotFieldonDefMesh] = build_model(nElements)
 %% Finite Element Setup
 % Geometry
 startLIN = tic;
@@ -93,23 +93,23 @@ fext = outdofvec;
 computationTimeLIN = toc(startLIN);
 %% Tensor Assembly
 disp('Getting nonlinearity coefficients')
-filename = ['tensors_' num2str(MyMesh.nElements) '.mat'];
-try     
-    load(filename,'fnl')
-    disp('Loaded tensors from storage')
-    load(filename, 'computationTimeTensors')
-    disp(['Total time spent on model assembly = ' datestr(datenum(0,0,0,0,0,computationTimeTensors + computationTimeLIN),'HH:MM:SS')])
-catch
-    fnl = cell(1,2);
-    disp('Assembling Tensors')
-    startTensors = tic;
-    fnl{1} = MyAssembly.tensor('T2',[MyMesh.nDOFs, MyMesh.nDOFs, MyMesh.nDOFs], [2,3]);
-    fnl{2} = MyAssembly.tensor('T3',[MyMesh.nDOFs, MyMesh.nDOFs, MyMesh.nDOFs, MyMesh.nDOFs], [2,3,4]);       
-    computationTimeTensors = toc(startTensors);
-    disp('Saving Tensors')
-    save(filename,'fnl','computationTimeTensors','-v7.3')
-    disp(['Total time spent on model assembly = ' datestr(datenum(0,0,0,0,0,computationTimeTensors + computationTimeLIN),'HH:MM:SS')])
-end
+% filename = ['tensors_' num2str(MyMesh.nElements) '.mat'];
+% try
+%     load(filename,'fnl')
+%     disp('Loaded tensors from storage')
+%     load(filename, 'computationTimeTensors')
+%     disp(['Total time spent on model assembly = ' datestr(datenum(0,0,0,0,0,computationTimeTensors + computationTimeLIN),'HH:MM:SS')])
+% catch
+fnl = cell(1,2);
+disp('Assembling Tensors')
+startTensors = tic;
+fnl{1} = MyAssembly.tensor('T2',[MyMesh.nDOFs, MyMesh.nDOFs, MyMesh.nDOFs], [2,3]);
+fnl{2} = MyAssembly.tensor('T3',[MyMesh.nDOFs, MyMesh.nDOFs, MyMesh.nDOFs, MyMesh.nDOFs], [2,3,4]);
+computationTimeTensors = toc(startTensors);
+% disp('Saving Tensors')
+% save(filename,'fnl','computationTimeTensors','-v7.3')
+disp(['Total time spent on model assembly = ' datestr(datenum(0,0,0,0,0,computationTimeTensors + computationTimeLIN),'HH:MM:SS')])
+% end
 
 % apply boundary conditions
 for j = 1:length(fnl)
