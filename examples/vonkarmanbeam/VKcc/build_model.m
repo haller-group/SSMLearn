@@ -63,7 +63,7 @@ C = MyAssembly.constrain_matrix(C);
 
 %% Eigenvalue problem
 disp('Solving undamped eigenvalue problem')
-n_VMs = 5; % first n_VMs modes with lowest frequency calculated 
+n_VMs = 3; % first n_VMs modes with lowest frequency calculated 
 [V0,omega2] = eigs(K,M,n_VMs,'SM');
 omega = sqrt(diag(omega2));
 
