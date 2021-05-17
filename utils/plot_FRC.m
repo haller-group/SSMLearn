@@ -2,7 +2,7 @@ function plot_FRC(FRC, varargin)
 
 p = inputParser;
 validString = @(x) isstring(x)||ischar(x);
-addOptional(p, 'color', 'b', validString);
+addOptional(p, 'color', 'b');
 addOptional(p, 'datalabel', '', validString);
 parse(p, varargin{:});
 

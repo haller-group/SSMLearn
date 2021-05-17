@@ -5,9 +5,10 @@ validScalar = @(x) isscalar(x);
 addOptional(p, 'step', 0.1, validScalar);
 addOptional(p, 'initRevolutions', 200, validScalar);
 addOptional(p, 'stepRevolutions', 30, validScalar);
+addOptional(p, 'odetol', 1e-4, validScalar);
 parse(p, varargin{:});
 
-opts = odeset('AbsTol', 1e-6);
+opts = odeset('RelTol', p.Results.odetol);
 
 w_0 = w_span(1);
 Npers = p.Results.initRevolutions;

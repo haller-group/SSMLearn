@@ -16,10 +16,10 @@ n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
 [F, lambda] = functionFromTensors(M, C, K, fnl);
 %% Generation of Synthetic Data
 
-loads = [2];
+loads = [1.75 2];
 nTraj = size(loads, 2);
-indTest = [1];
-indTrain = 1;
+indTest = [2];
+indTrain = 2;
 %% 
 
 loadvector = loads.*f_vec;
@@ -34,7 +34,7 @@ if new_meas == 1
     nSamp = fix(50 * tEnd * abs(imag(lambda(1))) / (2*pi));
     dt = tEnd/(nSamp-1);
     tic
-    FullTrajectories = integrateTrajectories(F, @(x) x, tEnd, nSamp, nTraj, IC);
+    FullTrajectories = integrateTrajectories(F, @(x) x, tEnd, nSamp, nTraj, IC, 'odetol', 1e-4);
     toc
     DataInfo = struct('nElements',nElements,'loadvector',loadvector);
     save('data_VKcc.mat','DataInfo','FullTrajectories','dt','tEnd','nSamp')
@@ -63,7 +63,6 @@ yDataTrunc = sliceTrajectories(yData, sliceInt);
 
 SSMOrder = 1;
 [V, SSMFunction, mfdInfo] = IMparametrization(yDataTrunc(indTrain,:), SSMDim, SSMOrder);
-%% Plot and validation
 
 etaData = getProjectedTrajs(yData, V);
 etaDataTrunc = getProjectedTrajs(yDataTrunc, V);
@@ -77,15 +76,22 @@ zDataTrunc = transformComplex(Tinv, etaDataTrunc);
 [zRec, yRec] = integrateFlows(N, zDataTrunc, @(q) SSMFunction(T(q)));
 etaRec = transformComplex(T, zRec);
 
+%%
 [reducedTrajDist, fullTrajDist] = computeRecDynErrors(etaRec, yRec, etaDataTrunc, yDataTrunc);
 RRMSE_normal = mean(fullTrajDist(indTest))
+
+plotReducedCoords(etaDataTrunc(indTest(1),:), etaRec(indTest(1),:))
+legend({'Test set (truncated)', 'Prediction'})
+
+plotReconstructedTrajectory(yData(indTest(1),:), yRec(indTest(1),:), 1, 'm')
+legend({'Test set', 'Prediction'}); ylabel('$u \, [$m$]$','Interpreter','latex')
 %% Backbone curves
 
 N_info = NormalFormInfo.N;
 [damp, freq] = polarnormalform(N_info.coeff, N_info.exponents, N_info.phi);
 figure
 rhoCal = abs(zData{indTest(1),2}(1,1));
-[dmp, frq, amp, rho_plot] = backbonecurves(damp, freq, SSMFunction, T, 1, rhoCal,'norm');
+[dmp, frq, amp, rho_plot] = backbonecurves(damp, freq, SSMFunction, T, 1, rhoCal);
 subplot(121); ylabel('$u \, [$m$]$','Interpreter','latex')
 subplot(122); ylabel('$u \, [$m$]$','Interpreter','latex')
 %% 
@@ -95,65 +101,60 @@ subplot(122); ylabel('$u \, [$m$]$','Interpreter','latex')
 % model.
 
 % Compute with SSMTool
-f_full = 1e-3*[1 8];
-w_span = abs(imag(lambda(1)))*[0.9 1.2];
+f_full = 1e-3*[8];
+w_span = abs(imag(lambda(1)))*[0.8 1.2];
 FRC_full = getFRC_full(M, C, K, fnl, f_vec, f_full, outdof, w_span, ROMOrder);
 
 %%
 % Calibration based on the maximal amplitude response of a validation FRC
-% idx_f_full = 1;
-% amp_max = max(FRC_full.(['F' num2str(idx_f_full)]).Amp);
-% [~,pos] = min(abs(amp-amp_max));
-% rho_max = rho_plot(pos);
-% f_red = abs(damp(rho_max)*rho_max) * f_full/f_full(idx_f_full);
-% ratio_force_data_full = f_red/f_full(idx_f_full)
 
-% calibrationLoads = [0.000001];
+% Omega = 0;
 % calibrationLoads = f_full(end);
 % calloadvector = calibrationLoads.*f_vec;
 % ICCal = getStaticResponse(K, M, F, calloadvector, 0, 0);
 % uCal = observable(ICCal);
-% uCal = FRC_NI.amp(45)
-% zCal = Tinv(V.'*repmat(uCal,size(yData{1,2},1),1));
-% rhoCal = abs(zCal(1));
 
-Omega = 45;
+% Omega = FRC_NI.omega(98);
+% uCal = FRC_NI.amp(98);
+
+% yCal = uCal*cos(Omega*dt*((1:size(V,1))-ceil(0.5*size(V,1)))).';
+% zCal = Tinv(V.'*yCal);
+% rhoCal = abs(zCal(1));
+% f_red(iAmp) = sqrt(rhoCal^2*(freq(rhoCal)-Omega)^2+rhoCal^2*(damp(rhoCal))^2);
+
+Omega = 32;
 F_force = @(t,x,w) F(t,x) + [zeros(n,1); f_full(end)*(M\f_vec)*cos(w*t)];
-[t_sim,x_sim] = ode15s(@(t,x) F_force(t,x,Omega),0:dt:tEnd, zeros(2*n,1));
+opts = odeset('RelTol', 1e-4);
+[t_sim,x_sim] = ode15s(@(t,x) F_force(t,x,Omega),0:dt:3*tEnd, zeros(2*n,1),opts);
+
 xCal = {t_sim.', observable(x_sim.')};
 yCal = coordinates_embedding(xCal, SSMDim, 'OverEmbedding', overEmbed);
 etaCal = getProjectedTrajs(yCal, V);
 zCal = transformComplex(Tinv, etaCal);
-rhoCal = mean(abs(zCal{1,2}(1,end-1000:end)));
-
-% fpsi = fsolve(@(fpsi) [damp(rhoCal)*rhoCal + fpsi(1)*sin(fpsi(2)); ...
-%     freq(rhoCal) - 0 + fpsi(1)/rhoCal*cos(fpsi(2))],...
-%     [0; 0]);
-% fpsi = fsolve(@(fpsi) [damp(rhoCal)*rhoCal + fpsi(1)*sin(fpsi(2)); ...
-%     freq(rhoCal) - FRC_NI.omega(45) + fpsi(1)/rhoCal*cos(fpsi(2))],...
-%     [0; 0]);
+rhoCal = max(abs(zCal{1,2}(1,end-1000:end)));
 fpsi = fsolve(@(fpsi) [damp(rhoCal)*rhoCal + fpsi(1)*sin(fpsi(2)); ...
     freq(rhoCal) - Omega + fpsi(1)/rhoCal*cos(fpsi(2))],...
     [0; 0]);
-% ratio = 0.5*abs(fpsi(1)/calibrationLoads);
-f_red = 2*0.5*abs(fpsi(1));
-0.5*imag(lambda(1))*abs(NormalFormInfo.iT.lintransf*sum(V).'*(f_vec'*(K\f_vec)))
-% f_red = ratio*f_full;
+f_red = abs(fpsi(1));
 
+
+%% Compute FRC analytically
+options = optimoptions('fsolve', 'MaxFunctionEvaluations', 10000);
+for iAmp = 1:length(f_red)
+    rhoTip = abs(fsolve(@(rho) 1e5*(f_red(iAmp)-(rho*damp(rho))), rhoCal, options));
+    rhoFRC = logspace(log10(rhoTip*0.003), log10(rhoTip), 1000);
+    rhoFRC = [rhoFRC, -fliplr(rhoFRC)];
+    OmegaFRC(iAmp,:) = real(freq(rhoFRC) + -1./rhoFRC.*sqrt(f_red(iAmp)^2-(rhoFRC.*damp(rhoFRC)).^2));
+    uFRC(iAmp,:) = max(abs(SSMFunction(T([rhoFRC;rhoFRC]))));
+end
 
 %% Compute with data-driven model
-ddROM = struct('Dim', SSMDim, 'Param', SSMFunction, 'CCtoNormal', Tinv, ...
-    'ReducedDynNormal', N, 'CCfromNormal', T);
-FRC_data = getFRC_ddROM(ddROM,f_red,w_span,1);
+% ddROM = struct('Dim', SSMDim, 'Param', SSMFunction, 'CCtoNormal', Tinv, ...
+%     'ReducedDynNormal', N, 'CCfromNormal', T);
+% FRC_data = getFRC_ddROM(ddROM,f_red,w_span,1);
 
 
-% Plot
-figure(100); hold on;
-plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
-plot_FRC(FRC_full, 'r', 'SSMTool')
-plot_FRC(FRC_data, 'b', 'SSMLearn')
-
-% Numerical Integration
+%% Numerical Integration
 if new_meas == 1
     f_sweep = f_full(end)*(M\f_vec);
     FRC_NI = integrateSweep(F, w_span, n, f_sweep, observable, 'stepRevolutions', 300);
@@ -163,8 +164,18 @@ else
     load('data_sweep.mat','DataInfo','FRC_NI')
 end
 
-figure(100);
-scatter1 = scatter(FRC_NI.omega,FRC_NI.amp,24,'b','MarkerFaceColor','c','DisplayName','Numerical integration');
+%% Plot
+figure; hold on; colors = colororder;
+plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
+% plot_FRC(FRC_data, colors(1,:), 'SSMLearn')
+plot_FRC(FRC_full, colors(2,:), 'SSMTool')
+plot(OmegaFRC, uFRC, 'Color', colors(3,:), 'LineWidth', 2, 'DisplayName', 'SSMLearn')
+scatter1 = scatter(FRC_NI.omega,FRC_NI.amp,48,'b','MarkerFaceColor','c','DisplayName','Numerical integration');
 scatter1.MarkerFaceAlpha = 0.6;
 scatter1.MarkerEdgeAlpha = 1.0;
 xlim(w_span)
+ylim([0,1.06*max(FRC_full.F1.Amp)])
+xlabel('Excitation frequency $\Omega$ [rad/s]', 'Interpreter', 'latex')
+set(gca, 'fontname', 'times')
+set(gca, 'fontsize', 18)
+legend

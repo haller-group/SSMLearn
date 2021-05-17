@@ -44,7 +44,7 @@ figure; PlotFieldonDefMesh(w0,200)
 % element. We also make sure that the data is sampled with a sufficiently high 
 % frequency.
 
-new_meas = 0;
+new_meas = 1;
 observable = @(x) x(outdof,:);
 if new_meas == 1
     tEnd = 30;
