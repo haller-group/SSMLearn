@@ -13,19 +13,36 @@ if ~isempty(varargin)
     fullColor = varargin{1};
 end
     
-figure
-hold on
-
 nTraj = size(yData,1);
+fig = figure;
+nCol = ceil(sqrt(nTraj));
+nRow = nCol - (nCol * nCol - nTraj > nCol - 1);
+tiledlayout(nRow,nCol, 'TileSpacing', 'compact')
+maxAmp = max(max(horzcat(yData{:,2})));
+
 for iTraj = 1:nTraj
+    nexttile
+    hold on
     plot(yData{iTraj,1}, yData{iTraj,2}(plotCoord,:), fullColor, 'Linewidth', 1, 'DisplayName', 'Full')
     hh = plot(yRec{iTraj,1}, yRec{iTraj,2}(plotCoord,:), 'k:', 'Linewidth', 2, 'DisplayName', 'Reconstructed');
     hh.Color(4) = .4;
+    ylim([-maxAmp,maxAmp]);
+    if nTraj > 9
+        set(gca,'YTick',[])
+        set(gca,'XTick', [])
+    elseif iTraj == 1
+        legend
+    end
+    set(gca, 'fontname', 'times')
+    set(gca, 'fontsize', 10)
 end
-xlabel('time', 'Interpreter', 'latex')
-ylabel(['$y_{', num2str(plotCoord), '}$'], 'Interpreter', 'latex')
-title('Trajectory projection onto manifold')
+han=axes(fig,'visible','off'); 
+han.Title.Visible='on';
+han.XLabel.Visible='on';
+han.YLabel.Visible='on';
+ylabel(han, ['$y_{', num2str(plotCoord), '}$'], 'Interpreter', 'latex');
+xlabel(han, 'time', 'Interpreter', 'latex');
+title(han, 'Trajectory projection onto manifold');
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)
-legend
 hold off
