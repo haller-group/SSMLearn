@@ -147,7 +147,8 @@ for iAmp = 1:length(amplitudes)
     plot(OmegaFRC(iAmp,:), uFRC(iAmp,:), 'LineWidth', 2, 'Color', colors(iAmp+1,:),...
         'DisplayName', ['SSMLearn A = ', num2str(amplitudes(iAmp)), ' %'])
     plot(expAmp{iAmp}(:,1), expAmp{iAmp}(:,2), '.', 'MarkerSize', 12, ...
-        'Color', colors(iAmp+1,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'])
+        'Color', colors(iAmp+1,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'],...
+        'MarkerSize', 14)
     figure(101);
     plot(OmegaFRC(iAmp,:), 180*(psiFRC(iAmp,:)-pi)/pi, 'LineWidth', 2, 'Color', colors(iAmp+1,:),...
         'DisplayName', ['SSMLearn A = ', num2str(amplitudes(iAmp)), ' %'])
@@ -162,6 +163,13 @@ ylabel('Amplitude $\hat{X}$ (\%)', 'Interpreter', 'latex')
 set(gca, 'fontname', 'times')
 set(gca, 'fontsize', 18)
 legend('location', 'SW')
+p = 1;
+if p ~=1
+    plot(freq(linspace(0,rhoMax))*p/7.8, ...
+        max(abs(SSMFunction(T([linspace(0,rhoMax);linspace(0,rhoMax)])))), ...
+        'b', 'DisplayName', [num2str(p),'\Omega'])
+    xlim([min(p*w_span(1),w_span(1)),max(p*w_span(2),w_span(2))]/7.8)
+end
 figure(101)
 xlim(w_span/7.8)
 ylim([-180,0]); %max(vertcat(expAmp{1,:})*[0;1])*1.4]
