@@ -9,8 +9,13 @@ function plotReconstructedTrajectory(yData, yRec, plotCoord, varargin)
 % plotCoord    int                index in dim to plot
 
 fullColor = 'r';
+plotTitles = 0;
 if ~isempty(varargin)
     fullColor = varargin{1};
+end
+if length(varargin) > 1
+    titles = varargin{2};
+    plotTitles = 1;
 end
     
 nTraj = size(yData,1);
@@ -19,19 +24,25 @@ nCol = ceil(sqrt(nTraj));
 nRow = nCol - (nCol * nCol - nTraj > nCol - 1);
 tiledlayout(nRow,nCol, 'TileSpacing', 'compact')
 maxAmp = max(max(horzcat(yData{:,2})));
+minTime = min(min(horzcat(yData{:,1})));
+maxTime = max(max(horzcat(yData{:,1})));
 
 for iTraj = 1:nTraj
     nexttile
     hold on
-    plot(yData{iTraj,1}, yData{iTraj,2}(plotCoord,:), fullColor, 'Linewidth', 1, 'DisplayName', 'Full')
+    plot(yData{iTraj,1}, yData{iTraj,2}(plotCoord,:), fullColor, 'Linewidth', 0.3, 'DisplayName', 'Full')
     hh = plot(yRec{iTraj,1}, yRec{iTraj,2}(plotCoord,:), 'k:', 'Linewidth', 2, 'DisplayName', 'Reconstructed');
     hh.Color(4) = .4;
+    xlim([-minTime,maxTime]);
     ylim([-maxAmp,maxAmp]);
     if nTraj > 9
         set(gca,'YTick',[])
         set(gca,'XTick', [])
     elseif iTraj == 1
         legend
+    end
+    if plotTitles
+        title(titles{iTraj}, 'Interpreter', 'latex')
     end
     set(gca, 'fontname', 'times')
     set(gca, 'fontsize', 10)

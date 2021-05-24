@@ -1,0 +1,1 @@
+function FRC = computeFRC(f_red)

@@ -21,11 +21,14 @@ ii = 0;
 for file = csvfiles'
     ii = ii + 1;
     rawData{ii} = load([datadir, file.name]);
+    decayFrequencies(ii) = str2num(file.name(18:22));
+    titles{ii} = ['$\Omega = ', num2str(decayFrequencies(ii)), '$'];
 end
 %%
 width = 500;
 nTraj = numel(rawData);
-rawColInds = 3;
+rawColInds = [3];
+% rawColInds = [3 5:100:1500];
 
 for iTraj = 1:nTraj
     xData{iTraj,1} = rawData{iTraj}(:,1)';
@@ -46,22 +49,17 @@ indTest = indTrain;
 
 %% Delay embedding
 
-% showSpectrogram(xData(indTrain,:));
-% for iTraj = 1:nTraj
-%     xDataPass{iTraj,1} = xData{iTraj,1};
-%     xDataPass{iTraj,2} = bandpass(xData{iTraj,2}, [0.9,1.8], 1/dt);
-% end
-% showSpectrogram(xDataPass(indTrain,:));
 SSMDim = 2;
 overEmbed = 0;
-yData = coordinates_embedding(xData, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
+[yData, opts_embd] = coordinates_embedding(xData, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
+embedDim = size(yData{1,2},1)/length(rawColInds);
 %% 
 
 sliceInt = [1.9, Inf];
 yDataTrunc = sliceTrajectories(yData, sliceInt);
 % Datadriven manifold fitting
 
-SSMOrder = 1;
+SSMOrder = 3;
 [V, SSMFunction, mfdInfo] = IMparametrization(yDataTrunc(indTrain,:), SSMDim, SSMOrder);
 % Plot and validation
 
@@ -71,9 +69,10 @@ plotReducedCoords(etaData);
 plotSSMWithTrajectories(yDataTrunc(indTrain,:), SSMFunction, 1, V, 10, 'SSMDimension', SSMDim)
 %% Reduced order model
 
-ROMOrder = 3;
+% ROMOrder = 7;
 % [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:),...
 %     'R_PolyOrd',ROMOrder,'style', 'normalform', 'l_vals', [0.1]);
+ROMOrder = 3;
 [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:),...
     'R_PolyOrd',ROMOrder,'style', 'normalform');
 
@@ -88,14 +87,21 @@ RRMSE_normal = mean(fullTrajDist(indTest))
 plotReducedCoords(etaDataTrunc(indTest(1),:))%, etaRec(indTest(1),:))
 legend({'Test set (truncated)', 'Prediction'});
 
-ppw = length(indTest);
-indPlots = indTest;
+indPlots = [17];
+ppw = length(indPlots);
 for ii = 0:floor(length(indPlots)/ppw-1)
     inds = ppw*ii+1:min(length(indPlots),ppw*ii+ppw);
-    plotReconstructedTrajectory(yData(indPlots(inds),:), yRec(indPlots(inds),:), 1, 'm')
+    plotReconstructedTrajectory(yData(indPlots(inds),:), yRec(indPlots(inds),:), 1, 'm', ...
+        titles(indPlots(inds)))
     ylabel('$\hat{Y} \, [\%]$','Interpreter','latex'); title('');
 end
-
+s=findobj('type','legend');
+delete(s)
+% savepic(['figs/',num2str(indTrain)])
+%%
+plotTrajs(xData(indTrain,:), 'styles', {'-','-'}, 'colors', {'r','k'}, 'legendnames', titles(indTrain))
+savepic(['figs/',num2str(indTrain)])
+%%
 normalFormEigenvalues = computeEigenvaluesFlow(NormalFormInfo)
 lambda = normalFormEigenvalues;
 %% Backbone curves
@@ -113,18 +119,12 @@ frq = frq/7.8;
 %%
 w_span = [0.77, 1.06]*7.8;
 for iAmp = 1:length(amplitudes)
-%     [Omega, pos] = max(expAmp{iAmp}(:,1));
-%     Omega = Omega*7.8;
-%     uCal = expAmp{iAmp}(pos,2);
     [uCal, pos] = max(expAmp{iAmp}(:,2));
     if iAmp == 4; [uCal, pos] = min(expAmp{iAmp}(:,2)); end
-    Omega = expAmp{iAmp}(pos,1)*7.8;
-    yCal = uCal*cos(Omega*dt*((1:size(V,1))-ceil(0.5*size(V,1)))).';
-    zCal = Tinv(V.'*yCal);
-    rhoCal = abs(zCal(1));
-    f_red(iAmp) = sqrt(rhoCal^2*(freq(rhoCal)-Omega)^2+rhoCal^2*(damp(rhoCal))^2);
+    Omega(iAmp) = expAmp{iAmp}(pos,1)*7.8;
+    yCal{iAmp} = uCal*V(:,1)./V(floor(embedDim/2)*length(rawColInds)+1,1);
 end
-% f_red = amplitudes*f_red(iAmp)/amplitudes(iAmp)
+f_red = computeFRCForce(yCal, Omega, V, Tinv, damp, freq);
 
 % Compute FRC analytically
 options = optimoptions('fsolve', 'MaxFunctionEvaluations', 10000);
@@ -133,7 +133,8 @@ for iAmp = 1:length(amplitudes)
     rhoFRC = logspace(log10(rhoTip*0.03), log10(rhoTip),1000);
     rhoFRC = [rhoFRC, -fliplr(rhoFRC)];
     OmegaFRC(iAmp,:) = 1/7.8*real(freq(rhoFRC) + -1./rhoFRC.*sqrt(f_red(iAmp)^2-(rhoFRC.*damp(rhoFRC)).^2));
-    uFRC(iAmp,:) = max(abs(SSMFunction(T([rhoFRC;rhoFRC]))));
+    xFRC = SSMFunction(T([rhoFRC;rhoFRC]));
+    uFRC(iAmp,:) = abs(xFRC(floor(embedDim/2)*length(rawColInds)+1,:));
     psiFRC(iAmp,:) = acos((7.8*OmegaFRC(iAmp,:) - freq(rhoFRC)).*rhoFRC.*sign(rhoFRC)./f_red(iAmp));
 end
 
