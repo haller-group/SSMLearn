@@ -10,7 +10,7 @@ close all
 clc
 %% Example setup
 
-nElements = 16;
+nElements = 12;
 [M, C, K, fnl, f_vec, outdof, PlotFieldonDefMesh] = build_model(nElements);
 n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
 [F, lambda] = functionFromTensors(M, C, K, fnl);
@@ -27,7 +27,7 @@ IC = getStaticResponse(K, M, F, loadvector, 1, PlotFieldonDefMesh);
 
 %% 
 
-new_meas = 1;
+new_meas = 0;
 observable = @(x) x(outdof,:);
 if new_meas == 1
     tEnd = 30;
@@ -103,7 +103,7 @@ subplot(122); ylabel('$u \, [$m$]$','Interpreter','latex')
 % model.
 
 % Compute with SSMTool
-f_full = 1e-3*[12];
+f_full = 1e-3*[8];
 w_span = abs(imag(lambda(1)))*[0.9 1.3];
 FRC_full = getFRC_full(M, C, K, fnl, f_vec, f_full, outdof, w_span, ROMOrder);
 
@@ -120,54 +120,29 @@ end
 
 %%
 % Calibration based on the maximal amplitude response of a validation FRC
+integrationBasedCalibration = 0;
 
-% Omega = 0;
-% calibrationLoads = f_full(end);
-% calloadvector = calibrationLoads.*f_vec;
-% ICCal = getStaticResponse(K, M, F, calloadvector, 0, 0);
-% uCal = observable(ICCal);
+if integrationBasedCalibration
+    Omega = 32;
+    F_force = @(t,x,w) F(t,x) + [zeros(n,1); f_full(end)*(M\f_vec)*cos(w*t)];
+    opts = odeset('RelTol', 1e-4);
+    [t_sim,x_sim] = ode15s(@(t,x) F_force(t,x,Omega),0:dt:3*tEnd, zeros(2*n,1),opts);
+    xCal = {t_sim(end-1000:end,:).', observable(x_sim(end-1000:end,:).')};
+    yCalFull = coordinates_embedding(xCal, SSMDim, 'OverEmbedding', overEmbed);
+    [~,indMax] = max(yCalFull{1,2}(ceil(0.5*size(V,1)),:));
+    yCal = yCalFull{1,2}(:,indMax);
+else
+    % calibrate at FRC point
+    Omega(1) = FRC_NI.omega(30);
+    uCal(1) = FRC_NI.amp(30);
+    yCal(:,1) = uCal*cos(Omega*dt*((1:size(V,1))-ceil(0.5*size(V,1)))).';
+end
 
-Omega = FRC_NI.omega(30);
-uCal = FRC_NI.amp(30);
-
-yCal = uCal*cos(Omega*dt*((1:size(V,1))-ceil(0.5*size(V,1)))).';
-zCal = Tinv(V.'*yCal);
-rhoCal = abs(zCal(1));
-f = sqrt(rhoCal^2*(freq(rhoCal)-Omega)^2+rhoCal^2*(damp(rhoCal))^2);
-f_red = f*f_full/f_full(end)
-
-% Omega = 32;
-% F_force = @(t,x,w) F(t,x) + [zeros(n,1); f_full(end)*(M\f_vec)*cos(w*t)];
-% opts = odeset('RelTol', 1e-4);
-% [t_sim,x_sim] = ode15s(@(t,x) F_force(t,x,Omega),0:dt:3*tEnd, zeros(2*n,1),opts);
-% 
-% xCal = {t_sim.', observable(x_sim.')};
-% yCal = coordinates_embedding(xCal, SSMDim, 'OverEmbedding', overEmbed);
-% etaCal = getProjectedTrajs(yCal, V);
-% zCal = transformComplex(Tinv, etaCal);
-% rhoCal = mean(abs(zCal{1,2}(1,end-1000:end)));
-% fpsi = fsolve(@(fpsi) [damp(rhoCal)*rhoCal + fpsi(1)*sin(fpsi(2)); ...
-%     freq(rhoCal) - Omega + fpsi(1)/rhoCal*cos(fpsi(2))],...
-%     [0; 0]);
-% f_red = abs(fpsi(1));
+f_red = calibrateFRC(yCal, Omega, V, Tinv, damp, freq)
 
 
 %% Compute FRC analytically
-options = optimoptions('fsolve', 'MaxFunctionEvaluations', 10000);
-for iAmp = 1:length(f_red)
-    rhoTip = abs(fsolve(@(rho) 1e5*(f_red(iAmp)-(rho*damp(rho))), rhoCal, options));
-    rhoFRC = logspace(log10(rhoTip*0.003), log10(rhoTip), 1000);
-    rhoFRC = [rhoFRC, -fliplr(rhoFRC)];
-    OmegaFRC(iAmp,:) = real(freq(rhoFRC) + -1./rhoFRC.*sqrt(f_red(iAmp)^2-(rhoFRC.*damp(rhoFRC)).^2));
-    uFRC(iAmp,:) = max(abs(SSMFunction(T([rhoFRC;rhoFRC]))));
-    FRC_data.(['F' num2str(iAmp)]) = struct('Freq',OmegaFRC(iAmp,:),'Amp',...
-                uFRC(iAmp,:),'Nf_Amp',rhoFRC,'Nf_Phs',0*rhoFRC,'Stab',ones(size(uFRC)));
-end
-
-%% Compute with data-driven model
-% ddROM = struct('Dim', SSMDim, 'Param', SSMFunction, 'CCtoNormal', Tinv, ...
-%     'ReducedDynNormal', N, 'CCfromNormal', T);
-% FRC_data = getFRC_ddROM(ddROM,f_red,w_span,1);
+FRC_data = computeFRC(f_red, damp, freq, SSMFunction, T, @(y)max(abs(y)));
 
 %% Plot
 figure; hold on; colors = colororder;

@@ -23,7 +23,8 @@ fig = figure;
 nCol = ceil(sqrt(nTraj));
 nRow = nCol - (nCol * nCol - nTraj > nCol - 1);
 tiledlayout(nRow,nCol, 'TileSpacing', 'compact')
-maxAmp = max(max(horzcat(yData{:,2})));
+allData = horzcat(yData{:,2});
+maxAmp = max(allData(plotCoord,:));
 minTime = min(min(horzcat(yData{:,1})));
 maxTime = max(max(horzcat(yData{:,1})));
 

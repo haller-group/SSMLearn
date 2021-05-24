@@ -1,8 +1,8 @@
-function f_red = computeFRCForce(yCal, Omega, V, Tinv, damp, freq)
+function f_red = calibrateFRC(yCal, Omega, V, Tinv, damp, freq)
 
 for iAmp = 1:size(yCal,2)
-    zCal = Tinv(V.'*yCal{iAmp});
-    rhoCal = mean(abs(zCal(1,:)));
+    zCal = Tinv(V.'*yCal(:,iAmp));
+    rhoCal = abs(zCal(1,:));
     f_red(iAmp) = sqrt(rhoCal^2*(freq(rhoCal)-Omega(iAmp))^2+rhoCal^2*(damp(rhoCal))^2);
 end
 

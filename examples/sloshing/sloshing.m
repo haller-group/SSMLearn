@@ -18,6 +18,7 @@ expPhase{4} = load('FRC_experimental_Phase0.64.csv');
 amplitudes = [0.09 0.17, 0.32, 0.64];
 csvfiles = dir([datadir,'*.csv']);
 ii = 0;
+rawData = cell(length(csvfiles),1);
 for file = csvfiles'
     ii = ii + 1;
     rawData{ii} = load([datadir, file.name]);
@@ -28,12 +29,14 @@ end
 width = 500;
 nTraj = numel(rawData);
 rawColInds = [3];
-% rawColInds = [3 5:100:1500];
+% rawColInds = [3 5:250:1500];
 
 for iTraj = 1:nTraj
-    xData{iTraj,1} = rawData{iTraj}(:,1)';
-    xData{iTraj,2} = sgolayfilt(100*rawData{iTraj}(:,rawColInds)/width,7,29)';
-%     xData{iTraj,2} = 100*rawData{iTraj}(:,rawColInds)'/width;
+    cutoffPoint = find(abs(diff(rawData{iTraj}(1:100,2)')) + ...
+        [abs(diff(rawData{iTraj}(1:100,2)',2)),0] < 0.01, 1, 'first');
+    xData{iTraj,1} = rawData{iTraj}(cutoffPoint:end,1)';
+    xData{iTraj,2} = sgolayfilt(100*rawData{iTraj}(cutoffPoint:end,rawColInds)/width,7,29)';
+%     xData{iTraj,2} = 100*rawData{iTraj}(cutoffPoint:end,rawColInds)'/width;
     xData{iTraj,1} = xData{iTraj,1} - xData{iTraj,1}(1);
     tEnd = xData{iTraj,1}(end);
     nSamp = length(xData{iTraj,1});
@@ -42,7 +45,7 @@ for iTraj = 1:nTraj
 end
 % clear rawData
 
-indTrain = [17 19];
+indTrain = 10:27;
 % indTrain = 1:nTraj;
 indTest = indTrain;
 
@@ -51,21 +54,22 @@ indTest = indTrain;
 
 SSMDim = 2;
 overEmbed = 0;
+if length(rawColInds) > 1; overEmbed = 4; end
 [yData, opts_embd] = coordinates_embedding(xData, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
 embedDim = size(yData{1,2},1)/length(rawColInds);
+outdof = floor(embedDim/2)*length(rawColInds)+1;
 %% 
 
-sliceInt = [1.9, Inf];
+sliceInt = [0.0, Inf];
 yDataTrunc = sliceTrajectories(yData, sliceInt);
-% Datadriven manifold fitting
 
 SSMOrder = 3;
 [V, SSMFunction, mfdInfo] = IMparametrization(yDataTrunc(indTrain,:), SSMDim, SSMOrder);
-% Plot and validation
+%% Plot and validation
 
 etaData = getProjectedTrajs(yData, V);
 etaDataTrunc = getProjectedTrajs(yDataTrunc, V);
-plotReducedCoords(etaData);
+plotReducedCoords(etaDataTrunc);
 plotSSMWithTrajectories(yDataTrunc(indTrain,:), SSMFunction, 1, V, 10, 'SSMDimension', SSMDim)
 %% Reduced order model
 
@@ -84,23 +88,23 @@ etaRec = transformComplex(T, zRec);
 [reducedTrajDist, fullTrajDist, fullAmpError] = computeRecDynErrors(etaRec, yRec, etaDataTrunc, yDataTrunc);
 RRMSE_normal = mean(fullTrajDist(indTest))
 %
-plotReducedCoords(etaDataTrunc(indTest(1),:))%, etaRec(indTest(1),:))
+plotReducedCoords(etaDataTrunc(indTest,:))%, etaRec(indTest(1),:))
 legend({'Test set (truncated)', 'Prediction'});
 
-indPlots = [17];
-ppw = length(indPlots);
+indPlots = indTrain;
+ppw = length(indTrain);
 for ii = 0:floor(length(indPlots)/ppw-1)
     inds = ppw*ii+1:min(length(indPlots),ppw*ii+ppw);
-    plotReconstructedTrajectory(yData(indPlots(inds),:), yRec(indPlots(inds),:), 1, 'm', ...
+    plotReconstructedTrajectory(yData(indPlots(inds),:), yRec(indPlots(inds),:), outdof, 'm', ...
         titles(indPlots(inds)))
-    ylabel('$\hat{Y} \, [\%]$','Interpreter','latex'); title('');
+    ylabel('$\hat{X} \, [\%]$','Interpreter','latex'); title('');
 end
 s=findobj('type','legend');
 delete(s)
 % savepic(['figs/',num2str(indTrain)])
 %%
-plotTrajs(xData(indTrain,:), 'styles', {'-','-'}, 'colors', {'r','k'}, 'legendnames', titles(indTrain))
-savepic(['figs/',num2str(indTrain)])
+% plotTrajs(xData(indTrain,:), 'styles', {'-','-'}, 'colors', {'r','k'}, 'legendnames', titles(indTrain))
+% savepic(['figs/',num2str(indTrain)])
 %%
 normalFormEigenvalues = computeEigenvaluesFlow(NormalFormInfo)
 lambda = normalFormEigenvalues;
@@ -117,53 +121,43 @@ subplot(122); ylabel('$\hat{X} \, [\%]$','Interpreter','latex')
 frq = frq/7.8;
 
 %%
+clear yCal
 w_span = [0.77, 1.06]*7.8;
+yObservable = @(y) abs(y(outdof,:));
 for iAmp = 1:length(amplitudes)
     [uCal, pos] = max(expAmp{iAmp}(:,2));
     if iAmp == 4; [uCal, pos] = min(expAmp{iAmp}(:,2)); end
     Omega(iAmp) = expAmp{iAmp}(pos,1)*7.8;
-    yCal{iAmp} = uCal*V(:,1)./V(floor(embedDim/2)*length(rawColInds)+1,1);
+    yCal(:,iAmp) = uCal*V(:,1)./V(outdof,1);
 end
-f_red = computeFRCForce(yCal, Omega, V, Tinv, damp, freq);
+f_red = calibrateFRC(yCal, Omega, V, Tinv, damp, freq);
 
-% Compute FRC analytically
-options = optimoptions('fsolve', 'MaxFunctionEvaluations', 10000);
+FRC_data = computeFRC(f_red, damp, freq, SSMFunction, T, yObservable);
 for iAmp = 1:length(amplitudes)
-    rhoTip = abs(fsolve(@(rho) 1e5*(f_red(iAmp)-(rho*damp(rho))), rhoCal, options));
-    rhoFRC = logspace(log10(rhoTip*0.03), log10(rhoTip),1000);
-    rhoFRC = [rhoFRC, -fliplr(rhoFRC)];
-    OmegaFRC(iAmp,:) = 1/7.8*real(freq(rhoFRC) + -1./rhoFRC.*sqrt(f_red(iAmp)^2-(rhoFRC.*damp(rhoFRC)).^2));
-    xFRC = SSMFunction(T([rhoFRC;rhoFRC]));
-    uFRC(iAmp,:) = abs(xFRC(floor(embedDim/2)*length(rawColInds)+1,:));
-    psiFRC(iAmp,:) = acos((7.8*OmegaFRC(iAmp,:) - freq(rhoFRC)).*rhoFRC.*sign(rhoFRC)./f_red(iAmp));
+    FRC_data.(['F',num2str(iAmp)]).Freq = FRC_data.(['F',num2str(iAmp)]).Freq/7.8;
+    FRC_data.(['F',num2str(iAmp)]).Nf_Phs = -180+180/pi*FRC_data.(['F',num2str(iAmp)]).Nf_Phs;
 end
 
 %% Plot
-figure(100); hold on; colors = colororder;
+figure(100); hold on; colors = colororder; colors = colors(2:end,:);
 plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
-figure(101); hold on; colors = colororder;
-% plot_FRC(FRC_data, 'b', 'SSMLearn')
+figure(101); hold on;
 for iAmp = 1:length(amplitudes)
+    labels{iAmp} = ['A = ', num2str(amplitudes(iAmp)), ' %'];
     figure(100);
-    plot(OmegaFRC(iAmp,:), uFRC(iAmp,:), 'LineWidth', 2, 'Color', colors(iAmp+1,:),...
-        'DisplayName', ['SSMLearn A = ', num2str(amplitudes(iAmp)), ' %'])
     plot(expAmp{iAmp}(:,1), expAmp{iAmp}(:,2), '.', 'MarkerSize', 12, ...
-        'Color', colors(iAmp+1,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'],...
+        'Color', colors(iAmp,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'],...
         'MarkerSize', 14)
     figure(101);
-    plot(OmegaFRC(iAmp,:), 180*(psiFRC(iAmp,:)-pi)/pi, 'LineWidth', 2, 'Color', colors(iAmp+1,:),...
-        'DisplayName', ['SSMLearn A = ', num2str(amplitudes(iAmp)), ' %'])
     plot(expPhase{iAmp}(:,1), expPhase{iAmp}(:,2), '.', 'MarkerSize', 12, ...
-        'Color', colors(iAmp+1,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'])
+        'Color', colors(iAmp,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'])
 end
 figure(100)
+plotFRC(FRC_data, colors, labels)
 xlim(w_span/7.8)
-ylim([0,10]); %max(vertcat(expAmp{1,:})*[0;1])*1.4]
+ylim([0,10]);
 xlabel('Excitation frequency $\Omega$ [normalized]', 'Interpreter', 'latex')
 ylabel('Amplitude $\hat{X}$ (\%)', 'Interpreter', 'latex')
-set(gca, 'fontname', 'times')
-set(gca, 'fontsize', 18)
-legend('location', 'SW')
 p = 1;
 if p ~=1
     plot(freq(linspace(0,rhoMax))*p/7.8, ...
@@ -172,10 +166,8 @@ if p ~=1
     xlim([min(p*w_span(1),w_span(1)),max(p*w_span(2),w_span(2))]/7.8)
 end
 figure(101)
+plotFRC(FRC_data, colors, labels, 'y', 'Phase')
 xlim(w_span/7.8)
-ylim([-180,0]); %max(vertcat(expAmp{1,:})*[0;1])*1.4]
+ylim([-180,0]);
 xlabel('Excitation frequency $\Omega$ [normalized]', 'Interpreter', 'latex')
 ylabel('Phase difference $\phi$', 'Interpreter', 'latex')
-set(gca, 'fontname', 'times')
-set(gca, 'fontsize', 18)
-legend('location', 'SW')
