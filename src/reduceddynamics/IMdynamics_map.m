@@ -8,7 +8,7 @@ function [R,iT,N,T,Maps_info] = IMdynamics_map(X_traj,varargin)
 % performed on random folds or on the trajectories.
 % Upon request, the dynamics is returned via a coordinate change, i.e.
 %
-%                         R = iT o N o T
+%                         R = T o N o iT
 %
 % where iT, T and N depend on the selected style.
 % If the style is selected as modal, then the coordinate change is a linear
@@ -196,7 +196,8 @@ switch options.style
         T_info = assemble_struct(@(x) x,eye(k),@(x) x,eye(k));
         iT_info = T_info; N_info = R_info;
 end
-Maps_info = struct('R',R_info,'iT',iT_info,'N',N_info,'T',T_info);
+RMS = mean(vecnorm((R(X) - X_1).*L2)) / mean(vecnorm(X_1.*L2));
+Maps_info = struct('R',R_info,'iT',iT_info,'N',N_info,'T',T_info,'error',RMS);
 end
 
 %---------------------------Subfunctions-----------------------------------

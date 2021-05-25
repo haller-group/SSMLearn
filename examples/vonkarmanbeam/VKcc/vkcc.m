@@ -72,6 +72,7 @@ for iOrder = 1:length(ROMOrders)
 ROMOrder = ROMOrders(iOrder);
 [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), ...
     'R_PolyOrd', ROMOrder, 'style', 'normalform', 'l_vals', [0,1e-4,1e-2,1e0], 'n_folds', 5);
+% [~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc(indTrain,:));
 
 zData = transformComplex(Tinv, etaData);
 zDataTrunc = transformComplex(Tinv, etaDataTrunc);
@@ -133,8 +134,8 @@ if integrationBasedCalibration
     yCal = yCalFull{1,2}(:,indMax);
 else
     % calibrate at FRC point
-    Omega(1) = FRC_NI.omega(30);
-    uCal(1) = FRC_NI.amp(30);
+    Omega(1) = FRC_NI.omega(50);
+    uCal(1) = FRC_NI.amp(50);
     yCal(:,1) = uCal*cos(Omega*dt*((1:size(V,1))-ceil(0.5*size(V,1)))).';
 end
 

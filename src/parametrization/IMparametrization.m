@@ -181,9 +181,10 @@ else % UNKNOWN V
         IM_para = @(q) V * q + H * phi(q);
     end
 end
+RMS = mean(vecnorm((X - IM_para(V.'*X)).*L)) / mean(vecnorm(X.*L));
 IM_param_info = struct('IMparametrization',IM_para,'V',V,'H',H,...
     'Exponents',Exp_mat,'l',opts_para.l,...
-    'c1',opts_para.c1,'c2',opts_para.c2);
+    'c1',opts_para.c1,'c2',opts_para.c2,'error',RMS);
 end
 
 % Default options

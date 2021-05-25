@@ -79,6 +79,7 @@ plotSSMWithTrajectories(yDataTrunc(indTrain,:), SSMFunction, 1, V, 10, 'SSMDimen
 ROMOrder = 3;
 [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:),...
     'R_PolyOrd',ROMOrder,'style', 'normalform');
+% [~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc(indTrain,:));
 
 zData = transformComplex(Tinv, etaData);
 zDataTrunc = transformComplex(Tinv, etaDataTrunc);
