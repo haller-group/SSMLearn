@@ -72,7 +72,8 @@ for iOrder = 1:length(ROMOrders)
 ROMOrder = ROMOrders(iOrder);
 [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), ...
     'R_PolyOrd', ROMOrder, 'style', 'normalform', 'l_vals', [0,1e-4,1e-2,1e0], 'n_folds', 5);
-% [~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc(indTrain,:));
+% [~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc(indTrain,:),...
+%     'MaxOrder', 9);
 
 zData = transformComplex(Tinv, etaData);
 zDataTrunc = transformComplex(Tinv, etaDataTrunc);
