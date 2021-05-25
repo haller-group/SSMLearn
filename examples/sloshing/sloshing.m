@@ -15,6 +15,10 @@ expPhase{1} = load('FRC_experimental_Phase0.09.csv');
 expPhase{2} = load('FRC_experimental_Phase0.17.csv');
 expPhase{3} = load('FRC_experimental_Phase0.32.csv');
 expPhase{4} = load('FRC_experimental_Phase0.64.csv');
+expWall{1} = load('FRC_experimental_Wall0.09.csv');
+expWall{2} = load('FRC_experimental_Wall0.17.csv');
+expWall{3} = load('FRC_experimental_Wall0.32.csv');
+expWall{4} = load('FRC_experimental_Wall0.64.csv');
 amplitudes = [0.09 0.17, 0.32, 0.64];
 csvfiles = dir([datadir,'*.csv']);
 ii = 0;
@@ -63,7 +67,7 @@ outdof = floor(embedDim/2)*length(rawColInds)+1;
 sliceInt = [0.0, Inf];
 yDataTrunc = sliceTrajectories(yData, sliceInt);
 
-SSMOrder = 3;
+SSMOrder = 1;
 [V, SSMFunction, mfdInfo] = IMparametrization(yDataTrunc(indTrain,:), SSMDim, SSMOrder);
 %% Plot and validation
 
