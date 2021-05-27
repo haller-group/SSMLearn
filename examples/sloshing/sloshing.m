@@ -7,10 +7,10 @@ clc
 
 %% Example setup
 datadir = 'decaydata/';
-expAmp{1} = load('FRC_experimental_Amplitude0.09.csv');
-expAmp{2} = load('FRC_experimental_Amplitude0.17.csv');
-expAmp{3} = load('FRC_experimental_Amplitude0.32.csv');
-expAmp{4} = load('FRC_experimental_Amplitude0.64.csv');
+expAmpC{1} = load('FRC_experimental_Amplitude0.09.csv');
+expAmpC{2} = load('FRC_experimental_Amplitude0.17.csv');
+expAmpC{3} = load('FRC_experimental_Amplitude0.32.csv');
+expAmpC{4} = load('FRC_experimental_Amplitude0.64.csv');
 expPhase{1} = load('FRC_experimental_Phase0.09.csv');
 expPhase{2} = load('FRC_experimental_Phase0.17.csv');
 expPhase{3} = load('FRC_experimental_Phase0.32.csv');
@@ -32,8 +32,17 @@ end
 %%
 width = 500;
 nTraj = numel(rawData);
-rawColInds = [3];
+% rawColInds = [3];
 % rawColInds = [3 5:250:1500];
+rawColInds = [5];
+if rawColInds(1) == 5
+    expAmp = expWall;
+    for ii=1:4
+        expAmp{ii}(:,2) = 100*expAmp{ii}(:,2);
+    end
+else
+    expAmp = expAmpC;
+end
 
 for iTraj = 1:nTraj
     cutoffPoint = find(abs(diff(rawData{iTraj}(1:100,2)')) + ...
@@ -81,8 +90,8 @@ plotSSMWithTrajectories(yDataTrunc(indTrain,:), SSMFunction, 1, V, 10, 'SSMDimen
 % [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:),...
 %     'R_PolyOrd',ROMOrder,'style', 'normalform', 'l_vals', [0.1]);
 ROMOrder = 3;
-[~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:),...
-    'R_PolyOrd',ROMOrder,'style', 'normalform');
+[~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), ...
+    'R_PolyOrd', ROMOrder, 'style', 'normalform');
 % [~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc(indTrain,:));
 
 zData = transformComplex(Tinv, etaData);
@@ -97,7 +106,7 @@ plotReducedCoords(etaDataTrunc(indTest,:))%, etaRec(indTest(1),:))
 legend({'Test set (truncated)', 'Prediction'});
 
 indPlots = indTrain;
-ppw = length(indTrain);
+ppw = 9;%length(indTrain);
 for ii = 0:floor(length(indPlots)/ppw-1)
     inds = ppw*ii+1:min(length(indPlots),ppw*ii+ppw);
     plotReconstructedTrajectory(yData(indPlots(inds),:), yRec(indPlots(inds),:), outdof, 'm', ...
@@ -130,7 +139,7 @@ clear yCal
 w_span = [0.77, 1.06]*7.8;
 yObservable = @(y) abs(y(outdof,:));
 for iAmp = 1:length(amplitudes)
-    [uCal, pos] = max(expAmp{iAmp}(:,2));
+    [uCal, pos] = min(expAmp{iAmp}(:,2));
     if iAmp == 4; [uCal, pos] = min(expAmp{iAmp}(:,2)); end
     Omega(iAmp) = expAmp{iAmp}(pos,1)*7.8;
     yCal(:,iAmp) = uCal*V(:,1)./V(outdof,1);
@@ -160,7 +169,7 @@ end
 figure(100)
 plotFRC(FRC_data, colors, labels)
 xlim(w_span/7.8)
-ylim([0,10]);
+ylim([0,50]);
 xlabel('Excitation frequency $\Omega$ [normalized]', 'Interpreter', 'latex')
 ylabel('Amplitude $\hat{X}$ (\%)', 'Interpreter', 'latex')
 p = 1;
