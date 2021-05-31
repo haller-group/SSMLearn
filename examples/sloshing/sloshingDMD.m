@@ -1,4 +1,4 @@
-%% Finding a 2D SSM from sloshing data
+%% DMD analysis from sloshing data
 % 
 
 clearvars
@@ -20,16 +20,8 @@ end
 %%
 width = 500;
 nTraj = numel(rawData);
-rawColInds = [3];
-% rawColInds = [5:1:1500];
-if rawColInds(1) == 5
-    expAmp = expWall;
-    for ii=1:4
-        expAmp{ii}(:,2) = 100*expAmp{ii}(:,2);
-    end
-else
-    expAmp = expAmpC;
-end
+% rawColInds = [3];
+rawColInds = [5:1:1535];
 
 for iTraj = 1:nTraj
     cutoffPoint = find(abs(diff(rawData{iTraj}(1:100,2)')) + ...
