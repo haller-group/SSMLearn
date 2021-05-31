@@ -31,8 +31,8 @@ end
 width = 500;
 nTraj = numel(rawData);
 % rawColInds = [3];
-% rawColInds = [3 5:250:1500];
-rawColInds = [5:150:1500];
+% rawColInds = [3 round(linspace(5,1535,6))];
+rawColInds = round(linspace(5,1535,30));
 if rawColInds(1) == 5
     expAmp = expWall;
     for ii=1:4
@@ -57,13 +57,13 @@ for iTraj = 1:nTraj
 end
 % clear rawData
 
-indTrain = [17 19 37 38];
+indTrain = [17 19];
 % indTrain = 1:nTraj;
 indTest = indTrain;
 
 %% Delay embedding
 
-SSMDim = 4;
+SSMDim = 2;
 overEmbed = 0;
 if length(rawColInds) > 1; overEmbed = 9; end
 [yData, opts_embd] = coordinates_embedding(xData, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
@@ -78,6 +78,8 @@ SSMOrder = 3;
 [V, SSMFunction, mfdInfo] = IMparametrization(yDataTrunc(indTrain,:), SSMDim, SSMOrder);
 %% Plot and validation
 
+surfV(V, embedDim, 1)
+%%
 etaData = getProjectedTrajs(yData, V);
 etaDataTrunc = getProjectedTrajs(yDataTrunc, V);
 plotReducedCoords(etaDataTrunc);
@@ -108,7 +110,7 @@ ppw = length(indTrain);
 for ii = 0:floor(length(indPlots)/ppw-1)
     inds = ppw*ii+1:min(length(indPlots),ppw*ii+ppw);
     plotReconstructedTrajectory(yData(indPlots(inds),:), yRec(indPlots(inds),:),...
-        outdof, 'k', titles(indPlots(inds)))
+        outdof, 'm', titles(indPlots(inds)))
     ylabel('$\hat{X} \, [\%]$','Interpreter','latex'); title('');
 end
 % s=findobj('type','legend');
@@ -195,7 +197,7 @@ for iAmp = length(amplitudes)
         'MarkerSize', 14)
 end
 [omegaPFF, xPFF] = getFRCTrajectory(xData);
-for iTraj = 1:nTraj
+for iTraj = indTrain
     plot(omegaPFF{iTraj}'/7.8, xPFF{iTraj}', '-o');
 end
 plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
