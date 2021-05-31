@@ -7,6 +7,7 @@ validMode = @(x) strcmp(x,'Amplitude') || strcmp(x,'Phase');
 addOptional(p, 'color', [0,0,0]);
 addOptional(p, 'datalabel', 'FRC', validStringOrCell);
 addParameter(p, 'y', 'Amplitude', validMode);
+addParameter(p, 'curves', 1:length(fieldnames(FRC)));
 parse(p, varargin{:});
 oneLabelOnly = 0;
 if validString(p.Results.datalabel)
@@ -18,7 +19,7 @@ end
 
 % Plot
 hold on; grid on; box on;
-for ii = 1:length(fieldnames(FRC))
+for ii = p.Results.curves
     freq_i = FRC.(['F' num2str(ii)]).Freq;
     if strcmp(p.Results.y, 'Amplitude')
         plot_i  = FRC.(['F' num2str(ii)]).Amp;

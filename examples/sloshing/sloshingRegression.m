@@ -61,6 +61,7 @@ for iAmp = 1:length(amplitudes)
         'Color', colors(iAmp+1,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'])
 end
 xlim(w_span/7.8)
+ylim([0,10])
 xlabel('Excitation frequency $\Omega$ [normalized]', 'Interpreter', 'latex')
 ylabel('Amplitude $\hat{X}$ (\%)', 'Interpreter', 'latex')
 set(gca, 'fontname', 'times')

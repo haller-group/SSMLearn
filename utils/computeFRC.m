@@ -7,8 +7,11 @@ for iAmp = 1:length(f_red)
     rho = [rho, -fliplr(rho)];
     Omega = real(freq(rho) + -1./rho.*sqrt(f_red(iAmp)^2-(rho.*damp(rho)).^2));
     rho = abs(rho);
-    y = SSMFunction(T([rho;rho]));
-    u = yObservable(y);
+    eitheta = exp(1i*linspace(-pi,pi,51)); eitheta(end) = [];
+    for iRho = 1:length(rho)
+        y = SSMFunction(T([rho(iRho)*eitheta;rho(iRho)*conj(eitheta)]));
+        u(iRho) = max(abs(yObservable(y)));
+    end
     
     psi = acos((Omega - freq(rho)).*rho./f_red(iAmp));
     

@@ -47,7 +47,7 @@ end
 % F = @(t,x) [0,1;-7.8^2,-0.1]*x - [0;1]*2.*x(1).^3 - [0;1]*0.0003.*x(2).^3;
 % xData(17,:) = integrateTrajectories(F, @(x)x(1,:), 80, 80/dt+1, 1, [4;0])
 
-indTrain = [17];
+indTrain = [17 19];
 % indTrain = 1:nTraj;
 indTest = indTrain;
 
@@ -55,7 +55,7 @@ indTest = indTrain;
 %% Delay embedding
 
 SSMDim = 2;
-overEmbed = 199;
+overEmbed = 95;
 if length(rawColInds) > 1; overEmbed = 4; end
 [yData, opts_embd] = coordinates_embedding(xData(indTrain,:), SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
 embedDim = size(yData{1,2},1)/length(rawColInds);

@@ -50,9 +50,9 @@ end
 damp = diff(amp)./diff(time); damp = [damp damp(end)]./amp;
 
 % Cleaning with moving mean
-% kmean = 3;
-% freq = movmean(freq,kmean);
-% damp = movmean(damp,kmean);
+kmean = 3;
+freq = movmean(freq,kmean);
+damp = movmean(damp,kmean);
 end
 
 
