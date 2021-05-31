@@ -125,7 +125,6 @@ lambda = normalFormEigenvalues;
 %% Backbone curves
 
 N_info = NormalFormInfo.N;
-% N_info.coeff = [-0.055 + 7.81i  -0.09 - 2i]
 [damp, freq] = polarnormalform(N_info.coeff, N_info.exponents, N_info.phi);
 figure
 rhoMax = 1.*max(abs(zDataTrunc{17,2}(1,:)));

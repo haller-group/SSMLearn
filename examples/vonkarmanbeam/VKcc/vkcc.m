@@ -16,7 +16,7 @@ n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
 [F, lambda] = functionFromTensors(M, C, K, fnl);
 %% Generation of Synthetic Data
 
-loads = [2];
+loads = [1.75 2];
 nTraj = size(loads, 2);
 indTest = [1];
 indTrain = 1;
@@ -27,7 +27,7 @@ IC = getStaticResponse(K, M, F, loadvector, 1, PlotFieldonDefMesh);
 
 %% 
 
-new_meas = 0;
+new_meas = 1;
 observable = @(x) x(outdof,:);
 if new_meas == 1
     tEnd = 30;
@@ -69,11 +69,11 @@ etaDataTrunc = getProjectedTrajs(yDataTrunc, V);
 %% Reduced order model
 ROMOrders = [7];
 for iOrder = 1:length(ROMOrders)
-ROMOrder = ROMOrders(iOrder);
-[~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), ...
-    'R_PolyOrd', ROMOrder, 'style', 'normalform', 'l_vals', [0,1e-4,1e-2,1e0], 'n_folds', 5);
-% [~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc(indTrain,:),...
-%     'MaxOrder', 9);
+% ROMOrder = ROMOrders(iOrder);
+% [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), ...
+%     'R_PolyOrd', ROMOrder, 'style', 'normalform', 'l_vals', [0,1e-4,1e-2,1e0], 'n_folds', 5);
+[~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc,...
+    'MaxOrder', 13);
 
 zData = transformComplex(Tinv, etaData);
 zDataTrunc = transformComplex(Tinv, etaDataTrunc);

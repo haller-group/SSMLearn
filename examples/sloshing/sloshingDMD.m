@@ -1,4 +1,4 @@
-%% Finding a 2D SSM from sloshing data
+%% DMD analysis from sloshing data
 % 
 
 clearvars
@@ -89,17 +89,18 @@ modes = Phi\X1;
 plotModes = 2;
 dim = size(Phi,1);
 yscale = max(max(abs(Phi)));
-for iMode = 1:plotModes
+for iMode = 1:length(plotModes)
+    modeN = plotModes(iMode);
     figure(2)
     subplot(plotModes,1,iMode)
-    plot(linspace(0,1,dim),real(Phi(1:dim,2*iMode)), 'LineWidth', 2)
-    ylabel(['Real($\Phi_',num2str(iMode),'$)'], 'Interpreter', 'latex')
+    plot(linspace(0,1,dim),real(Phi(1:dim,2*modeN)), 'LineWidth', 2)
+    ylabel(['Real($\Phi_',num2str(modeN),'$)'], 'Interpreter', 'latex')
     ylim([-yscale,yscale])
     set(gca,'fontsize',10)
     figure(3)
     subplot(plotModes,1,iMode)
-    plot(linspace(0,1,dim),imag(Phi(1:dim,2*iMode)), 'LineWidth', 2)
-    ylabel(['Imag($\Phi_',num2str(iMode),'$)'], 'Interpreter', 'latex')
+    plot(linspace(0,1,dim),imag(Phi(1:dim,2*modeN)), 'LineWidth', 2)
+    ylabel(['Imag($\Phi_',num2str(modeN),'$)'], 'Interpreter', 'latex')
     ylim([-yscale,yscale])
     set(gca,'fontsize',10)
 end
