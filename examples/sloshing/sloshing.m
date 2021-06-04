@@ -31,7 +31,7 @@ end
 width = 500;
 nTraj = numel(rawData);
 % rawColInds = [3];
-% rawColInds = [3 round(linspace(5,1535,6))];
+% rawColInds = [3 round(linspace(5,1535,10))];
 rawColInds = round(linspace(5,1535,30));
 if rawColInds(1) == 5
     expAmp = expWall;
@@ -47,8 +47,8 @@ for iTraj = 1:nTraj
     cutoffPoint = find(abs(diff(rawData{iTraj}(1:100,2)')) + ...
         [abs(diff(rawData{iTraj}(1:100,2)',2)),0] < 0.01, 1, 'first');
     xData{iTraj,1} = rawData{iTraj}(cutoffPoint:end,1)';
-    xData{iTraj,2} = sgolayfilt(100*rawData{iTraj}(cutoffPoint:end,rawColInds)/width,7,29)';
-%     xData{iTraj,2} = 100*rawData{iTraj}(cutoffPoint:end,rawColInds)'/width;
+%     xData{iTraj,2} = sgolayfilt(100*rawData{iTraj}(cutoffPoint:end,rawColInds)/width,7,29)';
+    xData{iTraj,2} = 100*rawData{iTraj}(cutoffPoint:end,rawColInds)'/width;
     xData{iTraj,1} = xData{iTraj,1} - xData{iTraj,1}(1);
     tEnd = xData{iTraj,1}(end);
     nSamp = length(xData{iTraj,1});
@@ -57,13 +57,13 @@ for iTraj = 1:nTraj
 end
 % clear rawData
 
-indTrain = [17 19];
+indTrain = [17 19 37 38];
 % indTrain = 1:nTraj;
 indTest = indTrain;
 
 %% Delay embedding
 
-SSMDim = 2;
+SSMDim = 4;
 overEmbed = 0;
 if length(rawColInds) > 1; overEmbed = 9; end
 [yData, opts_embd] = coordinates_embedding(xData, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
@@ -78,7 +78,8 @@ SSMOrder = 3;
 [V, SSMFunction, mfdInfo] = IMparametrization(yDataTrunc(indTrain,:), SSMDim, SSMOrder);
 %% Plot and validation
 
-surfV(V, embedDim, 1)
+% surfV(V, embedDim, 1)
+surfV(mfdInfo.H, embedDim, 5, 'H')
 %%
 etaData = getProjectedTrajs(yData, V);
 etaDataTrunc = getProjectedTrajs(yDataTrunc, V);
@@ -106,11 +107,11 @@ plotReducedCoords(etaDataTrunc(indTest,:))%, etaRec(indTest(1),:))
 legend({'Test set (truncated)', 'Prediction'});
 
 indPlots = indTrain;
-ppw = length(indTrain);
+ppw = 1%length(indTrain);
 for ii = 0:floor(length(indPlots)/ppw-1)
     inds = ppw*ii+1:min(length(indPlots),ppw*ii+ppw);
     plotReconstructedTrajectory(yData(indPlots(inds),:), yRec(indPlots(inds),:),...
-        outdof, 'm', titles(indPlots(inds)))
+        outdof, 'k', titles(indPlots(inds)))
     ylabel('$\hat{X} \, [\%]$','Interpreter','latex'); title('');
 end
 % s=findobj('type','legend');

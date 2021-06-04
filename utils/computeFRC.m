@@ -2,7 +2,7 @@ function FRC = computeFRC(f_red, damp, freq, SSMFunction, T, yObservable)
 
 options = optimoptions('fsolve', 'MaxFunctionEvaluations', 10000);
 for iAmp = 1:length(f_red)
-    rhoTip = abs(fsolve(@(rho) 1e5*(f_red(iAmp)-(rho*damp(rho))), f_red(iAmp), options));
+    rhoTip = abs(fsolve(@(rho) 1e5*(f_red(iAmp)-(rho*damp(rho))), -f_red(iAmp)/damp(0), options));
     rho = logspace(log10(rhoTip*0.003), log10(rhoTip), 1000);
     rho = [rho, -fliplr(rho)];
     Omega = real(freq(rho) + -1./rho.*sqrt(f_red(iAmp)^2-(rho.*damp(rho)).^2));
