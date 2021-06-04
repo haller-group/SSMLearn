@@ -10,13 +10,13 @@ close all
 clc
 %% Example setup
 
-nElements = 12;
+nElements = 16;
 [M, C, K, fnl, f_vec, outdof, PlotFieldonDefMesh] = build_model(nElements);
 n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
 [F, lambda] = functionFromTensors(M, C, K, fnl);
 %% Generation of Synthetic Data
 
-loads = [1.75 2];
+loads = [2];
 nTraj = size(loads, 2);
 indTest = [1];
 indTrain = 1;
@@ -69,11 +69,11 @@ etaDataTrunc = getProjectedTrajs(yDataTrunc, V);
 %% Reduced order model
 ROMOrders = [7];
 for iOrder = 1:length(ROMOrders)
-% ROMOrder = ROMOrders(iOrder);
-% [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), ...
-%     'R_PolyOrd', ROMOrder, 'style', 'normalform', 'l_vals', [0,1e-4,1e-2,1e0], 'n_folds', 5);
-[~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc,...
-    'MaxOrder', 13);
+ROMOrder = ROMOrders(iOrder);
+[~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), ...
+    'R_PolyOrd', ROMOrder, 'style', 'normalform', 'l_vals', [0,1e-4,1e-2,1e0], 'n_folds', 5);
+% [~,Tinv,N,T,NormalFormInfo,ROMOrder,ROMerrs] = optimizeDynamicsFlow(etaDataTrunc,...
+%     'MaxOrder', 9);
 
 zData = transformComplex(Tinv, etaData);
 zDataTrunc = transformComplex(Tinv, etaDataTrunc);
@@ -105,7 +105,7 @@ subplot(122); ylabel('$u \, [$m$]$','Interpreter','latex')
 % model.
 
 % Compute with SSMTool
-f_full = 1e-3*[8];
+f_full = 1e-3*[12];
 w_span = abs(imag(lambda(1)))*[0.9 1.3];
 FRC_full = getFRC_full(M, C, K, fnl, f_vec, f_full, outdof, w_span, ROMOrder);
 

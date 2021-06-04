@@ -10,6 +10,7 @@ function RMS = getRMS(yData, SSMFunction, V)
 nTraj = size(yData,1);
 meanDist = zeros(nTraj,1);
 for iTraj = 1:nTraj
-    meanDist(iTraj) = mean(vecnorm(yData{iTraj,2} - SSMFunction(V.'*yData{iTraj,2})));
+    meanDist(iTraj) = mean(vecnorm(SSMFunction(V.'*yData{iTraj,2}) - yData{iTraj,2}))...
+        / mean(vecnorm(yData{iTraj,2}));
 end
 RMS = mean(meanDist);
