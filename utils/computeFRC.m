@@ -1,9 +1,18 @@
-function FRC = computeFRC(f_red, damp, freq, SSMFunction, T, yObservable)
+function FRC = computeFRC(f_red, damp, freq, SSMFunction, T, yObservable, N_info)
 
-options = optimoptions('fsolve', 'MaxFunctionEvaluations', 10000);
+plen = 2*length(N_info.coeff);
+dampcoeffs = zeros(1,plen); freqcoeffs = zeros(1,plen);
+dampcoeffs(plen-sum(N_info.exponents,2)) = real(N_info.coeff);
+freqcoeffs(1+plen-sum(N_info.exponents,2)) = imag(N_info.coeff);
+
 for iAmp = 1:length(f_red)
-    rhoTip = abs(fsolve(@(rho) 1e5*(f_red(iAmp)-(rho*damp(rho))), -f_red(iAmp)/damp(0), options));
-    rho = logspace(log10(rhoTip*0.003), log10(rhoTip), 1000);
+    rhoTip = roots([dampcoeffs(1:end-1),-f_red(iAmp)]);
+    rhoTip = abs(rhoTip(imag(rhoTip)==0));
+    rhoTip = [min(rhoTip)*0.003; sort(rhoTip)];
+    rho = [];
+    for iTip = 1:2:length(rhoTip)
+        rho = [rho, linspace(rhoTip(iTip), rhoTip(iTip+1), 1000)];
+    end
     rho = [rho, -fliplr(rho)];
     Omega = real(freq(rho) + -1./rho.*sqrt(f_red(iAmp)^2-(rho.*damp(rho)).^2));
     rho = abs(rho);

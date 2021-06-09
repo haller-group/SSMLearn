@@ -10,7 +10,7 @@ close all
 clc
 %% Example setup
 
-nElements = 16;
+nElements = 12;
 [M, C, K, fnl, f_vec, outdof, PlotFieldonDefMesh] = build_model(nElements);
 n = size(M,1);    % mechanical dofs (axial def, transverse def, angle)
 [F, lambda] = functionFromTensors(M, C, K, fnl);
@@ -27,7 +27,7 @@ IC = getStaticResponse(K, M, F, loadvector, 1, PlotFieldonDefMesh);
 
 %% 
 
-new_meas = 1;
+new_meas = 0;
 observable = @(x) x(outdof,:);
 if new_meas == 1
     tEnd = 30;
@@ -144,14 +144,13 @@ f_red = calibrateFRC(yCal, Omega, V, Tinv, damp, freq)
 
 
 %% Compute FRC analytically
-FRC_data = computeFRC(f_red, damp, freq, SSMFunction, T, @(y)max(abs(y)));
+FRC_data = computeFRC(f_red, damp, freq, SSMFunction, T, @(y)max(abs(y)), N_info);
 
 %% Plot
 figure; hold on; colors = colororder;
 plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
 plotFRC(FRC_data, colors(1,:), 'SSMLearn')
 plotFRC(FRC_full, colors(2,:), 'SSMTool')
-% plot(OmegaFRC, uFRC, 'Color', colors(3,:), 'LineWidth', 2, 'DisplayName', 'SSMLearn')
 scatter1 = scatter(FRC_NI.omega,FRC_NI.amp,48,'b','MarkerFaceColor','c','DisplayName','Numerical integration');
 scatter1.MarkerFaceAlpha = 0.6;
 scatter1.MarkerEdgeAlpha = 1.0;

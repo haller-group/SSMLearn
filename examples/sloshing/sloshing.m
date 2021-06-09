@@ -148,7 +148,7 @@ for iAmp = 1:length(amplitudes)
 end
 f_red = calibrateFRC(yCal, Omega, V, Tinv, damp, freq);
 
-FRC_data = computeFRC(f_red, damp, freq, SSMFunction, T, yObservable);
+FRC_data = computeFRC(f_red, damp, freq, SSMFunction, T, yObservable, N_info);
 for iAmp = 1:length(amplitudes)
     FRC_data.(['F',num2str(iAmp)]).Freq = FRC_data.(['F',num2str(iAmp)]).Freq/7.8;
     FRC_data.(['F',num2str(iAmp)]).Nf_Phs = -180+180/pi*FRC_data.(['F',num2str(iAmp)]).Nf_Phs;
