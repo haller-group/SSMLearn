@@ -24,7 +24,7 @@ nCol = ceil(sqrt(nTraj));
 nRow = nCol - (nCol * nCol - nTraj > nCol - 1);
 tiledlayout(nRow,nCol, 'TileSpacing', 'compact')
 allData = horzcat(yData{:,2});
-maxAmp = max(allData(plotCoord,:));
+maxAmp = max(abs(allData(plotCoord,:)));
 minTime = min(min(horzcat(yData{:,1})));
 maxTime = max(max(horzcat(yData{:,1})));
 

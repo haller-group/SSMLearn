@@ -28,16 +28,16 @@ for file = csvfiles'
     titles{ii} = ['$\Omega = ', num2str(decayFrequencies(ii)), '$'];
 end
 %%
+filtering = false;
 width = 500;
 nTraj = numel(rawData);
-% rawColInds = [3];
+rawColInds = [3];
 % rawColInds = [3 round(linspace(5,1535,10))];
-rawColInds = round(linspace(5,1535,30));
+% rawColInds = round(linspace(5,1535,10));
 if rawColInds(1) == 5
     expAmp = expWall;
     for ii=1:4
         expAmp{ii}(:,2) = 100*expAmp{ii}(:,2);
-%         expPhase{ii}(:,2) = expAmpC{ii}(:,3);
     end
 else
     expAmp = expAmpC;
@@ -47,28 +47,30 @@ for iTraj = 1:nTraj
     cutoffPoint = find(abs(diff(rawData{iTraj}(1:100,2)')) + ...
         [abs(diff(rawData{iTraj}(1:100,2)',2)),0] < 0.01, 1, 'first');
     xData{iTraj,1} = rawData{iTraj}(cutoffPoint:end,1)';
-%     xData{iTraj,2} = sgolayfilt(100*rawData{iTraj}(cutoffPoint:end,rawColInds)/width,7,29)';
-    xData{iTraj,2} = 100*rawData{iTraj}(cutoffPoint:end,rawColInds)'/width;
+    if filtering
+        xData{iTraj,2} = sgolayfilt(100*rawData{iTraj}(cutoffPoint:end,rawColInds)/width,7,29)';
+    else
+        xData{iTraj,2} = 100*rawData{iTraj}(cutoffPoint:end,rawColInds)'/width;
+    end
     xData{iTraj,1} = xData{iTraj,1} - xData{iTraj,1}(1);
     tEnd = xData{iTraj,1}(end);
     nSamp = length(xData{iTraj,1});
     dt = tEnd/(nSamp-1);
     xData{iTraj,1} = 0:dt:tEnd;
 end
-% clear rawData
 
-indTrain = [17 19 37 38];
+indTrain = [17 19];
 % indTrain = 1:nTraj;
 indTest = indTrain;
 
 %% Delay embedding
 
-SSMDim = 4;
+SSMDim = 2;
 overEmbed = 0;
 if length(rawColInds) > 1; overEmbed = 9; end
 [yData, opts_embd] = coordinates_embedding(xData, SSMDim, 'OverEmbedding', overEmbed, 'ShiftSteps', 1);
 embedDim = size(yData{1,2},1)/length(rawColInds);
-outdof = floor(embedDim/2)*length(rawColInds)+4;
+outdof = floor(embedDim/2)*length(rawColInds)+1;
 %% 
 
 sliceInt = [1.0, Inf];
@@ -78,8 +80,8 @@ SSMOrder = 3;
 [V, SSMFunction, mfdInfo] = IMparametrization(yDataTrunc(indTrain,:), SSMDim, SSMOrder);
 %% Plot and validation
 
-% surfV(V, embedDim, 1)
-surfV(mfdInfo.H, embedDim, 5, 'H')
+surfV(V, embedDim, 1)
+% surfV(mfdInfo.H, embedDim, 5, 'H')
 %%
 etaData = getProjectedTrajs(yData, V);
 etaDataTrunc = getProjectedTrajs(yDataTrunc, V);
@@ -103,7 +105,7 @@ etaRec = transformComplex(T, zRec);
 [reducedTrajDist, fullTrajDist, fullAmpError] = computeRecDynErrors(etaRec, yRec, etaDataTrunc, yDataTrunc);
 RRMSE_normal = mean(fullTrajDist(indTest))
 %
-plotReducedCoords(etaDataTrunc(indTest,:))%, etaRec(indTest(1),:))
+plotReducedCoords(etaDataTrunc(indTest,:))
 legend({'Test set (truncated)', 'Prediction'});
 
 indPlots = indTrain;
@@ -111,7 +113,7 @@ ppw = 1%length(indTrain);
 for ii = 0:floor(length(indPlots)/ppw-1)
     inds = ppw*ii+1:min(length(indPlots),ppw*ii+ppw);
     plotReconstructedTrajectory(yData(indPlots(inds),:), yRec(indPlots(inds),:),...
-        outdof, 'k', titles(indPlots(inds)))
+        outdof, 'm', titles(indPlots(inds)))
     ylabel('$\hat{X} \, [\%]$','Interpreter','latex'); title('');
 end
 % s=findobj('type','legend');
@@ -134,7 +136,7 @@ subplot(121); ylabel('$\hat{X} \, [\%]$','Interpreter','latex')
 subplot(122); ylabel('$\hat{X} \, [\%]$','Interpreter','latex')
 frq = frq/7.8;
 
-%%
+%% Compute FRCs
 clear yCal
 w_span = [0.77, 1.06]*7.8;
 yObservable = @(y) abs(y(outdof,:));
@@ -152,7 +154,7 @@ for iAmp = 1:length(amplitudes)
     FRC_data.(['F',num2str(iAmp)]).Nf_Phs = -180+180/pi*FRC_data.(['F',num2str(iAmp)]).Nf_Phs;
 end
 
-%% Plot
+%% Plot FRCs
 figure(100); hold on; colors = colororder; colors = colors(2:end,:);
 plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
 figure(101); hold on;
@@ -162,14 +164,17 @@ for iAmp = 1:length(amplitudes)
     plot(expAmp{iAmp}(:,1), expAmp{iAmp}(:,2), '.', 'MarkerSize', 12, ...
         'Color', colors(iAmp,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'],...
         'MarkerSize', 14)
-    figure(101);
-%     plot(expAmp{iAmp}(:,1), expAmp{iAmp}(:,3), '.', 'MarkerSize', 12, ...
-%         'Color', colors(iAmp,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'])
+    if size(expAmp{iAmp}, 2) > 2
+        figure(101);
+        plot(expAmp{iAmp}(:,1), expAmp{iAmp}(:,3), '.', 'MarkerSize', 12, ...
+            'Color', colors(iAmp,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'])
+    end
 end
 figure(100)
 plotFRC(FRC_data, colors, labels)
 xlim(w_span/7.8)
 ylim([0,10]);
+if rawColInds(1) == 5; ylim([0,50]); end
 xlabel('Excitation frequency $\Omega$ [normalized]', 'Interpreter', 'latex')
 ylabel('Amplitude $\hat{X}$ (\%)', 'Interpreter', 'latex')
 ps = [1];
@@ -187,7 +192,7 @@ ylim([-180,0]);
 xlabel('Excitation frequency $\Omega$ [normalized]', 'Interpreter', 'latex')
 ylabel('Phase difference $\phi$', 'Interpreter', 'latex')
 
-%%
+%% Plot decay of trajectories
 figure(102);
 hold on
 for iAmp = length(amplitudes)
@@ -196,12 +201,11 @@ for iAmp = length(amplitudes)
         'Color', colors(iAmp,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'],...
         'MarkerSize', 14)
 end
-[omegaPFF, xPFF] = getFRCTrajectory(xData);
-for iTraj = indTrain
+[omegaPFF, xPFF] = getFRCTrajectory(xData(indTrain,:));
+for iTraj = 1:length(omegaPFF)
     plot(omegaPFF{iTraj}'/7.8, xPFF{iTraj}', '-o');
 end
 plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
-% plotFRC(FRC_data, colors, labels, 'curves', 4)
 xlim([0.87,1.13])
 ylim([0,7]);
 xlabel('Instantaneous frequency $\omega$ [normalized]', 'Interpreter', 'latex')
