@@ -6,11 +6,11 @@ close all
 clc
 
 %% Example setup
-expAmp{1} = load('FRC_experimental_Amplitude0.09.csv');
-expAmp{2} = load('FRC_experimental_Amplitude0.17.csv');
-expAmp{3} = load('FRC_experimental_Amplitude0.32.csv');
-% expAmp{4} = load('FRC_experimental_Amplitude0.64.csv');
-% expAmp{4} = expAmp{4}(expAmp{4}(:,2)<14.5,:)
+frcdir = 'frcdata/';
+expAmp{1} = load([frcdir,'Measurements_A=0.09%.txt']);
+expAmp{2} = load([frcdir,'Measurements_A=0.17%.txt']);
+expAmp{3} = load([frcdir,'Measurements_A=0.32%.txt']);
+% expAmp{4} = load([frcdir,'Measurements_A=0.64%.txt']);
 amplitudes = [0.09 0.17, 0.32];
 % amplitudes = [0.09 0.17, 0.32, 0.64];
 
@@ -34,7 +34,7 @@ damp = @(x) zOpt(1) + zOpt(3)*x.^2;
 freq = @(x) zOpt(2) + zOpt(4)*x.^2;
 f_red = zOpt(4+1:4+3);
 f_red(4) = 0.64
-expAmp{4} = load('FRC_experimental_Amplitude0.64.csv');
+expAmp{4} = load([frcdir,'Measurements_A=0.64%.txt']);
 
 %%
 w_span = [0.77, 1.06]*7.8;
