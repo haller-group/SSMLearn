@@ -148,9 +148,9 @@ for iAmp = 1:length(amplitudes)
 end
 f_red = calibrateFRC(yCal, Omega, V, Tinv, damp, freq);
 
-FRC_data = computeFRC(f_red, damp, freq, SSMFunction, T, yObservable, N_info);
+FRC_data = computeFRC2DSSM(f_red, damp, freq, SSMFunction, T, yObservable, N_info);
 for iAmp = 1:length(amplitudes)
-    FRC_data.(['F',num2str(iAmp)]).Freq = FRC_data.(['F',num2str(iAmp)]).Freq/7.8;
+%     FRC_data.(['F',num2str(iAmp)]).Freq = FRC_data.(['F',num2str(iAmp)]).Freq/7.8;
     FRC_data.(['F',num2str(iAmp)]).Nf_Phs = -180+180/pi*FRC_data.(['F',num2str(iAmp)]).Nf_Phs;
 end
 
@@ -171,7 +171,7 @@ for iAmp = 1:length(amplitudes)
     end
 end
 figure(100)
-plotFRC(FRC_data, colors, labels)
+plotFRC2DSSM(FRC_data, colors, labels, 'freqscale', 7.8)
 xlim(w_span/7.8)
 ylim([0,10]);
 if rawColInds(1) == 5; ylim([0,50]); end
@@ -186,7 +186,7 @@ for p = ps(ps~=1)
     xlim([min([ps*w_span(1),w_span(1)]),max([ps*w_span(2),w_span(2)])]/7.8)
 end
 figure(101)
-plotFRC(FRC_data, colors, labels, 'y', 'Phase')
+plotFRC2DSSM(FRC_data, colors, labels, 'y', 'Phase', 'freqscale', 7.8)
 xlim(w_span/7.8)
 ylim([-180,0]);
 xlabel('Excitation frequency $\Omega$ [normalized]', 'Interpreter', 'latex')

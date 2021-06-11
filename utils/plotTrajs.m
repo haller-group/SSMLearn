@@ -18,6 +18,6 @@ end
 legend('Interpreter', 'latex')
 xlim([minTime, maxTime])
 xlabel('Time [s]','Interpreter','latex')
-ylabel('$\hat{X}$ [\%]','Interpreter','latex')
+ylabel('$x$','Interpreter','latex')
 set(gca,'fontname','times')
 set(gca,'fontsize',18)

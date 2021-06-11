@@ -67,7 +67,7 @@ SSMOrder = 1;
 etaData = getProjectedTrajs(yData, V);
 etaDataTrunc = getProjectedTrajs(yDataTrunc, V);
 %% Reduced order model
-ROMOrders = [7];
+ROMOrders = [11];
 for iOrder = 1:length(ROMOrders)
 ROMOrder = ROMOrders(iOrder);
 [~,Tinv,N,T,NormalFormInfo] = IMdynamics_flow(etaDataTrunc(indTrain,:), ...
@@ -144,13 +144,15 @@ f_red = calibrateFRC(yCal, Omega, V, Tinv, damp, freq)
 
 
 %% Compute FRC analytically
-FRC_data = computeFRC(f_red, damp, freq, SSMFunction, T, @(y)max(abs(y)), N_info);
+FRC_data = computeFRC2DSSM(f_red, damp, freq, SSMFunction, T, @(y)max(abs(y)), N_info);
 
 %% Plot
 figure; hold on; colors = colororder;
 plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
-plotFRC(FRC_data, colors(1,:), 'SSMLearn')
-plotFRC(FRC_full, colors(2,:), 'SSMTool')
+% plotFRC(FRC_data, colors(1,:), 'SSMLearn')
+plotFRC2DSSM(FRC_data, colors(1,:), 'SSMLearn')
+% plotFRCFRC_full, colors(2,:), 'SSMTool')
+plotFRC2DSSM(FRC_full, colors(2,:), 'SSMTool')
 scatter1 = scatter(FRC_NI.omega,FRC_NI.amp,48,'b','MarkerFaceColor','c','DisplayName','Numerical integration');
 scatter1.MarkerFaceAlpha = 0.6;
 scatter1.MarkerEdgeAlpha = 1.0;
