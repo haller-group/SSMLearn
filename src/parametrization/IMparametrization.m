@@ -29,7 +29,7 @@ function [V,IM_para,IM_param_info] = IMparametrization(X,k,M,varargin)
 %
 % REQUIRED INPUT
 %    X    - matrix of dimension n x N, where n is the number of features
-%           and N that of the number of data-points or a cell array of 
+%           and N that of the number of data-points or a cell array of
 %           dimension (N_traj,2) where the first column contains time
 %           instances (1 x mi each) and the second column the trajectories
 %           (n x mi each)
@@ -88,11 +88,11 @@ if nargin > 4
     end
 end
 if iscell(X)==1
-X_cell = X; X = []; t = [];
-  for ii = 1:size(X_cell,1)
-     X = [X [X_cell{ii,2}]]; t = [t [X_cell{ii,1}]];
-  end
-  opts_para.t = t;
+    X_cell = X; X = []; t = [];
+    for ii = 1:size(X_cell,1)
+        X = [X [X_cell{ii,2}]]; t = [t [X_cell{ii,1}]];
+    end
+    opts_para.t = t;
 end
 L = (1+opts_para.c1*exp(-opts_para.c2*opts_para.t)).^(-1);
 
@@ -109,16 +109,25 @@ if isempty(opts_para.V) == 0 % KNOWN V
     else
         % Construct phi and the projection coordinates q
         [phi,Exp_mat] = multivariate_polynomial(k,2,M);
-        Q = transpose(V) * X; Phi = phi(Q); 
-        lI = (opts_para.l).*(max(abs(Phi),[],2).^(-2));
-        % Perform regression
-        H = constrainedridgeregression(transpose(Phi),...
-                           transpose(X-V*Q),transpose(Phi.*L),opts_para.l,V);
+        Q = transpose(V) * X; Phi = phi(Q);
+        idxs = sum(V==1,2);
+        if sum(idxs) == k
+            idxs = idxs==0;
+            % Perform simple regression
+            
+            [H1,~,~] = ridgeregression(Phi,X(idxs,:),L,[],opts_para.l);
+            H = zeros(size(X,1),size(Phi,1)); H(idxs,:) = H1;
+        else
+            % Perform constrained regression
+            lI = (opts_para.l).*(max(abs(Phi),[],2).^(-2));
+            H = constrainedridgeregression(transpose(Phi),...
+                transpose(X-V*Q),transpose(Phi.*L),opts_para.l,V);
+        end
         IM_para=@(q) V*q + H*phi(q);
     end
 else % UNKNOWN V
     if M < 2 % Classic (weighted) PCA if polynomial degree = 1
-        [~,~,V]=svds(transpose(X.*L),k); 
+        [~,~,V]=svds(transpose(X.*L),k);
         IM_para = @(q) V * q; H = []; Exp_mat = [];
     else
         % Optimization over V and H.
@@ -138,22 +147,22 @@ else % UNKNOWN V
             V0 = opts_para.V0;
         end
         Q0 = transpose(V0) * X; Phi_0 = phi(Q0);
-        if opts_para.l~= 0; opts_para.Phi_n = max(abs(Phi_0),[],2); 
+        if opts_para.l~= 0; opts_para.Phi_n = max(abs(Phi_0),[],2);
             lI = (opts_para.l).*(max(abs(Phi_0),[],2).^(-2));
         else
             lI = zeros(phi_dim,1);
         end
         if isempty(opts_para.H0)==1
             H0 = constrainedridgeregression(transpose(Phi_0),...
-                       transpose(X-V0*Q0),transpose(Phi_0.*L),lI,V0);
+                transpose(X-V0*Q0),transpose(Phi_0.*L),lI,V0);
             H0 = H0(:);
         else
-            H0 = opts_para.H0; 
+            H0 = opts_para.H0;
         end
         H0 = H0(:); z_0 = [reshape(V0,n*k,1); H0(1:n*phi_dim)];
         % Define function to minimize
         fun = @(z) f_minimize(z,X,n,k,phi,phi_dim,D_phi_info,L,...
-                                                repmat(transpose(lI),n,1));
+            repmat(transpose(lI),n,1));
         
         % Define constraints
         % Linear constraints: ensure alignment with the initial guess for V
