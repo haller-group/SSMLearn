@@ -149,9 +149,7 @@ FRC_data = computeFRC2DSSM(f_red, damp, freq, SSMFunction, T, @(y)max(abs(y)), N
 %% Plot
 figure; hold on; colors = colororder;
 plot(frq, amp,'k','DisplayName', 'Backbone - SSMlearn')
-% plotFRC(FRC_data, colors(1,:), 'SSMLearn')
 plotFRC2DSSM(FRC_data, colors(1,:), 'SSMLearn')
-% plotFRCFRC_full, colors(2,:), 'SSMTool')
 plotFRC2DSSM(FRC_full, colors(2,:), 'SSMTool')
 scatter1 = scatter(FRC_NI.omega,FRC_NI.amp,48,'b','MarkerFaceColor','c','DisplayName','Numerical integration');
 scatter1.MarkerFaceAlpha = 0.6;

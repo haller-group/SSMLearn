@@ -5,10 +5,10 @@ validString = @(x) isstring(x)||ischar(x);
 validStringOrCell = @(x) validString(x)||iscell(x);
 validMode = @(x) strcmp(x,'Amplitude') || strcmp(x,'Phase');
 addOptional(p, 'color', [0,0,0]);
-addOptional(p, 'datalabel', 'FRC', validStringOrCell);
+addOptional(p, 'datalabel', '', validStringOrCell);
 addParameter(p, 'y', 'Amplitude', validMode);
 addParameter(p, 'curves', 1:length(fieldnames(FRC)));
-addParameter(p, 'freqscale', 1); % pass 2*pi to get Hertz
+addParameter(p, 'freqscale', 1); % pass 2*pi to get hertz
 parse(p, varargin{:});
 if validString(p.Results.datalabel)
     datalabel = {p.Results.datalabel};
