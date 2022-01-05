@@ -18,7 +18,6 @@ Once the normal form dynamics has been determined, the code can run analytics an
 
 We have included a demonstration of SSM identification on the following examples.
 
-- Oscillator chain: *n* degrees of freedom with trajectories on or off specific SSMs;
 - Von Kármán straight beam in 2D: geometrically nonlinear finite element model from SSMTool, with reduced order models constructed using different observables;
 - Vortex Shedding behind a cylinder: data from CFD simulations, projected on a low-dimensional linear subspace of the phase space;
 - Liquid sloshing of a water tank: data from experimental measurements.
@@ -36,14 +35,5 @@ This package uses the following external open-source packages for some of the ex
 2. If external packages are not yet installed, download SSMTool from the link above, which also include coco, and install it. 
 3. (optional) Figure specifications can be edited in the function customFigure.m located in the src folder.
 4. You are ready.
-
-## References
-Please consider to cite this article when using this code:
-
-- M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. *Submitted* (2021).
-
-Additional works appear in the references:
-
-- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. [Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems](https://arxiv.org/pdf/2110.01929.pdf),  *arXiv:2110.01929* (2021). 
 
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch)
