@@ -1,6 +1,6 @@
 <img src="docs/images/SSMLearnLogo.jpg" width="290" align="right">
 
-<h1 style="font-family:Helvetica;" align="center">
+<h1 style="font-family:Helvetica;" align="left">
     SSMLearn
 </h1>
 
@@ -31,7 +31,7 @@ This package uses the following external open-source packages for some of the ex
 ## Installation
 1. Once located in the main folder, install the package:  
     ```sh
-    install;
+    install
     ```
 2. If external packages are not yet installed, download SSMTool from the link above, which also include coco, and install it. 
 3. (optional) Figure specifications can be edited in the function customFigure.m located in the src folder.
@@ -42,8 +42,8 @@ Please consider to cite this article when using this code:
 
 - M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. *Submitted* (2021).
 
-Additional works appears in the references:
+Additional works appear in the references:
 
-- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems,  *[arXiv:2110.01929](https://arxiv.org/pdf/2110.01929.pdf)* (2021). 
+- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. [Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems](https://arxiv.org/pdf/2110.01929.pdf),  *arXiv:2110.01929* (2021). 
 
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch)
