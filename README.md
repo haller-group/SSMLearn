@@ -1,1 +1,1 @@
-# SSMLearn repo
+# SSMLearn repository
