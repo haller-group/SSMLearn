@@ -22,15 +22,13 @@ end
 % spectrogram(x, 'yaxis');
 powerdensity = abs(stfourier);
 
-figure
+fig = customFigure();
 surf(times, frequencies, powerdensity)
 set(gca,'ColorScale','log')
 xlim([min(times), max(times)])
 ylim([min(frequencies), max(frequencies)])
-xlabel('$t \, [$s$]$', 'Interpreter', 'latex')
-ylabel('$f \, [$Hz$]$', 'Interpreter', 'latex')
-set(gca,'fontname', 'times')
-set(gca,'fontsize', 18)
+xlabel('time [s]')
+ylabel('frequency [1/s]')
 view(2)
 shading interp
 c = colorbar;

@@ -1,4 +1,4 @@
-function [damps,freqs,str_eqn] = polarnormalform(coeff,exponents,phi,varargin)
+function [NInfo,damps,freqs,str_eqn] = polarNormalForm(NInfo,optPlot,varargin)
 % Compute instantanueous damping and frequency as well as display the
 % normal form.
 %
@@ -19,9 +19,12 @@ function [damps,freqs,str_eqn] = polarnormalform(coeff,exponents,phi,varargin)
 % If varargin is nonempty, the function assumes to deal with a map
 % and varargin is set to be the sampling time Dt.
 
+coeff = NInfo.coefficients;
+exponents = NInfo.exponents;
+phi = NInfo.phi;
 
 % Dynamics in terms of amplitude and frequencies
-ndof = size(coeff,1); r = sym('r',[1 ndof]); pos_coeff = abs(coeff)>0;
+ndof = size(coeff,1); r = sym('r',[1 ndof],'real'); pos_coeff = abs(coeff)>0;
 amp_exponents = exponents-transpose([pos_coeff; zeros(size(coeff))]);
 disc_phase = sum(sum(abs(amp_exponents(:,1:ndof)-amp_exponents(:,ndof+1:end))));
 if disc_phase>0
@@ -52,7 +55,9 @@ end
 
 % Plot normal form in latex style on matlab figure (only for flows)
 if isempty(varargin)==1 % Flow case
-    disp('Plotting figure with the polar normal form equations ...')
+    if optPlot==1
+        disp('Plotting figure with the polar normal form equations ...')
+    end
     % Transform coeffs for amps and phase
     amp_exponents = exponents(:,1:ndof)+exponents(:,ndof+1:end);
     phase_coefficients = exponents(:,1:ndof)-exponents(:,ndof+1:end);
@@ -73,7 +78,7 @@ if isempty(varargin)==1 % Flow case
                 % Get the term
                 if sum(abs(phase_coefficients_i(jj,:))>0)==0 % Only amp. dependence
                     coeff_class  = [coeff_class; 1];
-                    monomial = monomial_pnf(amp_exponents_i(jj,:));
+                    monomial = monomialPNF(amp_exponents_i(jj,:));
                     if sign(real(coeff(ii,jj))) == 1
                         terms_cell{cc,ii} = ['+' num2str(abs(real(coeff(ii,jj)))) monomial];
                     else
@@ -86,7 +91,7 @@ if isempty(varargin)==1 % Flow case
                     end
                 else
                     coeff_class  = [coeff_class; 2];
-                    monomial = monomial_pnf(amp_exponents_i(jj,:),phase_coefficients_i(jj,:));
+                    monomial = monomialPNF(amp_exponents_i(jj,:),phase_coefficients_i(jj,:));
                     terms_cell{cc,ii} = ['+\mathrm{Re}((' num2str(coeff(ii,jj)) ')' monomial ')'];
                     terms_cell{cc,ii+ndof} = ['+\mathrm{Im}((' num2str(coeff(ii,jj)) ')' monomial ')'];
                 end
@@ -188,7 +193,7 @@ if isempty(varargin)==1 % Flow case
         case 2
             str_not = '$z_1 = \rho_1 e^{i\theta_1}, \, z_2 = \rho_2 e^{i\theta_2}$';
         otherwise
-            str_not = ['$z\in\mathbf{C}^' num2str(k_r) ', \,\, z_j = \rho_j e^{i\theta_j}\,\,$ for $j = 1,...,\,' num2str(k_r) '$'];
+            str_not = ['$z\in\mathbf{C}^' num2str(ndof) ', \,\, z_j = \rho_j e^{i\theta_j}\,\,$ for $j = 1,...,\,' num2str(ndof) '$'];
             
     end
     s_begin = '\begin{array}{rl}'; s_end = '\end{array}';
@@ -213,23 +218,28 @@ if isempty(varargin)==1 % Flow case
             str_eqn_plot = 0;
         end
     end
-    if length(str_eqn_plot)>1
-        figure;
-        h = plot(0,0);
-        set(gcf,'color','w');
-        str_above = ['Using the notation ' str_not ', the normal form reads'];
-        annotation('textbox','FontSize',18,'Interpreter','latex','FaceAlpha','1','EdgeColor','w','Position',[0.01 0.1 0.99 0.9], 'String',str_above);
-        annotation('textbox','FontSize',18,'Interpreter','latex','FaceAlpha','1','EdgeColor','w','Position',[0.02 0.12 0.98 0.76],'String',['$' str_eqn_plot '$']);
-        delete(h);
-        set(gca,'Visible','off')
-    else
-        disp('System of equations too large for complete plotting. See the variable for the full system.')
+    if optPlot==1
+        if length(str_eqn_plot)>1
+            figure;
+            h = plot(0,0);
+            set(gcf,'color','w');
+            str_above = ['Using the notation ' str_not ', the normal form reads'];
+            annotation('textbox','FontSize',18,'Interpreter','latex','FaceAlpha','1','EdgeColor','w','Position',[0.01 0.1 0.99 0.9], 'String',str_above);
+            annotation('textbox','FontSize',18,'Interpreter','latex','FaceAlpha','1','EdgeColor','w','Position',[0.02 0.12 0.98 0.76],'String',['$' str_eqn_plot '$']);
+            delete(h);
+            set(gca,'Visible','off')
+        else
+            disp('System of equations too large for complete plotting. See the variable for the full system.')
+        end
     end
+    NInfo.LaTeXPolar = str_eqn;
 end
+NInfo.damping = damps;
+NInfo.frequency = freqs;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function monomial = monomial_pnf(amp_exponents,varargin)
+function monomial = monomialPNF(amp_exponents,varargin)
 ndof = length(amp_exponents); monomial = [];
 if isempty(varargin) == 1
     if ndof == 1
