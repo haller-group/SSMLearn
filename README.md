@@ -6,7 +6,7 @@
 
 ### Data-driven Reduced Order Models for Nonlinear Dynamical Systems
 
-This package perform data-driven identification of reduced order model based on spectral submanifolds (SSMs). The required input consists of trajectory data close to an SSM for generic system observables, the SSM dimension and the polynomial orders for approximation of the parametrization and reduced dynamics.
+This package perform data-driven identification of reduced order model based on spectral submanifolds (SSMs). The required input consists of trajectory data of generic system observables close to an SSM, the SSM dimension and the polynomial orders for approximation of the parametrization and reduced dynamics.
 
 The computational steps for achieving a reduced-order model are:
 
