@@ -6,22 +6,22 @@
 
 ### Data-driven Reduced Order Models for Nonlinear Dynamical Systems
 
-This package perform data-driven identification of reduced order model based on spectral submanifolds (SSMs). The required input consists of trajectory data for generic system observables, the SSM dimension and the polynomial orders for approximation of the parametrization and reduced dynamics. The code implicitly assumes that the data lays close to an autonomous SSM of the system.
+This package perform data-driven identification of reduced order model based on spectral submanifolds (SSMs). The required input consists of trajectory data close to an SSM for generic system observables, the SSM dimension and the polynomial orders for approximation of the parametrization and reduced dynamics.
 
 The computational steps for achieving a reduced-order model are:
 
-1. Embedding of the measurements in a suitable observable space
-2. Computation of the invariant manifold parametrization and its reduced order coordinates
-3. Identification of the reduced dynamics and its normal form
+1. Embedding of the measurements in a suitable observable space;
+2. Computation of the invariant manifold parametrization and its reduced order coordinates;
+3. Identification of the reduced dynamics and its normal form.
 
-Once the normal form dynamics has been determined, the code can run analytics and predictions on the reduced-order model, such as backbone curves and forced responses, as shown in our examples. There are no constraints on the types of masurements, on the kind of nonlinearities or on the problem dimensions.
+Once the normal form dynamics has been determined, the code can run analytics and predictions on the reduced-order model, such as backbone curves and forced responses, as shown in our examples. There are no constraints on the types of measurements, on the kind of nonlinearities or on the problem dimensions.
 
-We have included a demonstration of SSM computation over the following examples.
+We have included a demonstration of SSM identification on the following examples.
 
-- Stuart-Landau: trivial example for a 1D dynamical system
-- Oscillator chain: n degrees of freedom with trajectories on or off specific SSMs
-- Von Kármán straight beam in 2D: model from SSMTool, with reduced order models constructed using different observables
-- Vortex Shedding behind a cylinder: data from CFD simulations, projected on a low-dimensional linear subspace of the phase space
+- Oscillator chain: *n* degrees of freedom with trajectories on or off specific SSMs;
+- Von Kármán straight beam in 2D: geometrically nonlinear finite element model from SSMTool, with reduced order models constructed using different observables;
+- Vortex Shedding behind a cylinder: data from CFD simulations, projected on a low-dimensional linear subspace of the phase space;
+- Liquid sloshing of a water tank: data from experimental measurements.
 
 This package uses the following external open-source packages for some of the examples and post-processing capabilities:
 
