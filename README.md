@@ -1,4 +1,4 @@
-<img src="docs/images/SSMLearnLogoBlack.jpg" width="290" align="right">
+<img src="docs/images/SSMLearnLogo.png" width="290" align="right">
 
 <h1 style="font-family:Helvetica;" align="left">
     SSMLearn
