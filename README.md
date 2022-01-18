@@ -1,4 +1,4 @@
-<img src="docs/images/SSMLearnLogo.png" width="290" align="right">
+<img src="docs/images/SSMLearnLogo.png" width="350" align="right">
 
 <h1 style="font-family:Helvetica;" align="left">
     SSMLearn
@@ -35,5 +35,10 @@ This package uses the following external open-source packages for some of the ex
 2. If external packages are not yet installed, download SSMTool from the link above, which also include coco, and install it. 
 3. (optional) Figure specifications can be edited in the function customFigure.m located in the src folder.
 4. You are ready.
+
+## References
+Please consider to cite this article when using this code:
+
+- M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. [*arXiv:2201.04976*](https://arxiv.org/pdf/2201.04976.pdf),  (2022).
 
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch)
