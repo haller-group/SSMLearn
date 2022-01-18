@@ -1,4 +1,4 @@
-function [NInfo,damps,freqs,str_eqn] = polarNormalForm(NInfo,optPlot,varargin)
+function [NInfo,damps,freqs,str_eqn] = polarNormalForm(NInfo,optPlot,varargin) 
 % Compute instantanueous damping and frequency as well as display the
 % normal form.
 %
