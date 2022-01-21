@@ -1,4 +1,4 @@
-function FRC = analyticalFRCf(IMInfoF, RDInfoF, fRed, amplitudeFunction, varargin)
+function FRC = analyticalFRC(IMInfoF, RDInfoF, fRed, amplitudeFunction, varargin)
 %   FRC = analyticalFRCf(IMInfo, RDInfo, fRed, amplitudeFunction)
 %   Compute the forced response curves on a 2D SSM analytically for each
 %   normal form forcing amplitude in fRed.
