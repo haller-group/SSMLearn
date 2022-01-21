@@ -30,8 +30,8 @@ damp = RDInfoF.conjugateDynamics.damping;
 freq = RDInfoF.conjugateDynamics.frequency;
 T = RDInfoF.transformation.map;
 fscale = abs(RDInfoF.conjugateDynamics.forcingVectors);
-zTemp = RDInfoF.conjugateDynamics.forcingVectors / 1i / fscale ;
-fphase = atan2(imag(zTemp), real(zTemp));
+zfTemp = RDInfoF.conjugateDynamics.forcingVectors / 1i / fscale ;
+fphase = atan2(imag(zfTemp), real(zfTemp));
 coeffs = RDInfoF.conjugateDynamics.coefficients;
 exponents = RDInfoF.conjugateDynamics.exponents;
 
@@ -108,8 +108,8 @@ for iAmp = 1:length(fRed)
                    yAmplitudeFunction = amplitudeFunction(y);
                    zTemp(iRho) = zEval(1);
                    uTemp(iRho) = max(abs(yAmplitudeFunction));
-                   zTemp = normTimeEval(2)* sum( yAmplitudeFunction.*(cPhi-1i*sPhi ) );
-                   uPhaseTemp(iRho) = atan2(imag(zTemp), real(zTemp));
+                   zfTemp = normTimeEval(2)* sum( yAmplitudeFunction.*(cPhi-1i*sPhi ) );
+                   uPhaseTemp(iRho) = atan2(imag(zfTemp), real(zfTemp));
                end
                z = [z; zTemp]; u = [u; uTemp]; uPhase = [uPhase; uPhaseTemp]; 
            end
