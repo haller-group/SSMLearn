@@ -19,7 +19,7 @@ addpath(genpath('src'))
 % end
 % disp('Done.')
 
-savepath
+% savepath % Uncomment if you would like to add SSMLearn in the Matlab default path. Run the command restoredefaultpath to restore the default path 
 end
 
 
