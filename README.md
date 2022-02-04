@@ -18,7 +18,10 @@ Once the normal form dynamics has been determined, the code can run analytics an
 
 We have included a demonstration of SSM identification on the following examples.
 
+- Oscillator chain: *n* degrees of freedom with trajectories on or off specific SSMs;
 - Von Kármán straight beam in 2D: geometrically nonlinear finite element model from SSMTool, with reduced order models constructed using different observables;
+- Brake-Reuss beam: benchmark system for the dynamics of jointed structures, data from experimental measurements (DIC and accelerometers);
+- Resonant double beam: structure with a 1:2 internal resonance, data from laser vibrometry;
 - Vortex Shedding behind a cylinder: data from CFD simulations, projected on a low-dimensional linear subspace of the phase space;
 - Liquid sloshing of a water tank: data from experimental measurements.
 
@@ -39,6 +42,10 @@ This package uses the following external open-source packages for some of the ex
 ## References
 Please consider to cite this article when using this code:
 
-- M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. *Nature Communications*, to appear (2022). Preprint: [*arXiv:2201.04976*](https://arxiv.org/pdf/2201.04976.pdf).
+- M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. [*arXiv:2201.04976*](https://arxiv.org/pdf/2201.04976.pdf),  (2022).
+
+Additional works appear in the references:
+
+- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. [Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems](https://arxiv.org/pdf/2110.01929.pdf),  *arXiv:2110.01929* (2021). 
 
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch)

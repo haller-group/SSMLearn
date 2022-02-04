@@ -228,7 +228,7 @@ if isempty(NFT) == 1
     x_SSM = IMParam(U);
 else
    U = U_std*max(abs(Q(1,:)));
-   x_SSM = IMParam(NFT(U));
+   x_SSM = IMParam(NFT(transformationComplexConj(U(1,:)+1i*U(2,:))));
 end
 
 % Coordinates to plot
