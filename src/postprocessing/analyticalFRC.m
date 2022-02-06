@@ -1,11 +1,11 @@
 function FRC = analyticalFRC(IMInfoF, RDInfoF, fRed, amplitudeFunction, varargin)
-%   FRC = analyticalFRCf(IMInfo, RDInfo, fRed, amplitudeFunction)
+%   FRC = analyticalFRCf(IMInfoF, RDInfoF, fRed, amplitudeFunction)
 %   Compute the forced response curves on a 2D SSM analytically for each
 %   normal form forcing amplitude in fRed.
 %
 %   INPUT
-%   IMInfo             struct            Time-periodic manifold.
-%   RDInfo             struct            Time-periodic reduced dynamics.
+%   IMInfoF            struct            Time-periodic manifold.
+%   RDInfoF            struct            Time-periodic reduced dynamics.
 %   f_red              (1 x nAmp)        Normal form forcing constants.
 %   amplitudeFunction  function handle   Map from y to (signed) scalar. Can
 %                                        be used to predict forced response

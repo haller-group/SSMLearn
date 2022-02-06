@@ -1,7 +1,5 @@
 function [data, res] = add_slot_IP(prob, data, command, varargin)
-%DUFF_ADD_IP   Slot function: Add to bifurcation data.
-%
-% Store initial point on first trajectory segment to bifurcation data
+% Store initial point on first trajectory segment
 
 res = {};
 switch command
