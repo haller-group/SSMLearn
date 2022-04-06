@@ -42,10 +42,10 @@ This package uses the following external open-source packages for some of the ex
 ## References
 Please consider to cite this article when using this code:
 
-- M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. *Nature Communications*, to appear (2022). Preprint available on [*arXiv:2201.04976*](https://arxiv.org/pdf/2201.04976.pdf).
+- M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. *Nature Communications*, **13** (2022) 872. [<span style="font-variant:small-caps;">doi</span>: 10.1038/s41467-022-28518-y](https://doi.org/10.1038/s41467-022-28518-y) [[PDF]](https://www.nature.com/articles/s41467-022-28518-y.pdf)
 
 Additional works appear in the references:
 
-- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems, [*arXiv:2110.01929*](https://arxiv.org/pdf/2110.01929.pdf) (2021). 
+- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems, *Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences* (2022) in press. [[PDF]](https://arxiv.org/pdf/2110.01929.pdf) 
 
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch)
