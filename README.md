@@ -46,6 +46,6 @@ Please consider to cite this article when using this code:
 
 Additional works appear in the references:
 
-- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems, *Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences* (2022) in press. [[PDF]](https://arxiv.org/pdf/2110.01929.pdf) 
+- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems, *Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences* **380** (2022) 20210194. [<span style="font-variant:small-caps;">doi</span>: 10.1098/rsta.2021.0194](https://doi.org/10.1038/s41467-022-28518-y) [[PDF]](https://arxiv.org/pdf/2110.01929.pdf) 
 
-Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch)
+Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch).
