@@ -42,12 +42,12 @@ This package uses the following external open-source packages for some of the ex
 ## References
 Please consider to cite this article when using this code:
 
-- M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. *Nature Communications*, **13** (2022) 872. [<span style="font-variant:small-caps;">doi</span>: 10.1038/s41467-022-28518-y](https://doi.org/10.1038/s41467-022-28518-y) [[PDF]](https://www.nature.com/articles/s41467-022-28518-y.pdf) [[Supplementary Information]](https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-022-28518-y/MediaObjects/41467_2022_28518_MOESM1_ESM.pdf)
+- M. Cenedese, J. Axås, B. Bäuerlein, K. Avila and G. Haller. Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds. [*Nature Communications*](https://doi.org/10.1038/s41467-022-28518-y), **13** (2022) 872. [[PDF]](https://www.nature.com/articles/s41467-022-28518-y.pdf) [[Supplementary Information]](https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-022-28518-y/MediaObjects/41467_2022_28518_MOESM1_ESM.pdf)
 
 Additional works appear in the references:
 
-- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems, *Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences* **380** (2022) 20210194. [<span style="font-variant:small-caps;">doi</span>: 10.1098/rsta.2021.0194](https://doi.org/10.1038/s41467-022-28518-y) [[PDF]](http://www.georgehaller.com/reprints/Cenedeseetal_DataDrivenNonlinearModelReduction.pdf) 
+- M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems, [*Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences*](https://doi.org/10.1038/s41467-022-28518-y) **380** (2022) 20210194. [[PDF]](http://www.georgehaller.com/reprints/Cenedeseetal_DataDrivenNonlinearModelReduction.pdf) 
 
-- G. Haller, S. Jain and M. Cenedese. Dynamics-based machine learning for nonlinearizable phenomena. Data-driven reduced models on spectral submanifolds, *SIAM News* **55/5** (2022) 20210194. [[Article]](https://sinews.siam.org/Details-Page/dynamics-based-machine-learning-for-nonlinearizable-phenomena)) [[PDF]](http://www.georgehaller.com/reprints/HallerJainCenedese_dynamics_based_machine_learning.pdf) 
+- G. Haller, S. Jain and M. Cenedese. Dynamics-based machine learning for nonlinearizable phenomena. Data-driven reduced models on spectral submanifolds, [*SIAM News*](https://sinews.siam.org/Details-Page/dynamics-based-machine-learning-for-nonlinearizable-phenomena) **55/5** (2022) 20210194. [[PDF]](http://www.georgehaller.com/reprints/HallerJainCenedese_dynamics_based_machine_learning.pdf) 
 
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch).
