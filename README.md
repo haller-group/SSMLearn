@@ -24,6 +24,7 @@ We have included a demonstration of SSM identification on the following examples
 - Resonant double beam: structure with a 1:2 internal resonance, data from laser vibrometry;
 - Vortex Shedding behind a cylinder: data from CFD simulations, projected on a low-dimensional linear subspace of the phase space;
 - Liquid sloshing of a water tank: data from experimental measurements.
+- Reduced order modeling of transitions between exact coherent states in plane Couette flow
 
 This package uses the following external open-source packages for some of the examples and post-processing capabilities:
 
@@ -49,5 +50,7 @@ Additional works appear in the references:
 - M. Cenedese, J. Axås, H. Yang, M. Eriten and G. Haller. Data-driven nonlinear model reduction to spectral submanifolds in mechanical systems, [*Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences*](https://doi.org/10.1038/s41467-022-28518-y) **380** (2022) 20210194. [[PDF]](http://www.georgehaller.com/reprints/Cenedeseetal_DataDrivenNonlinearModelReduction.pdf) 
 
 - G. Haller, S. Jain and M. Cenedese. Dynamics-based machine learning for nonlinearizable phenomena. Data-driven reduced models on spectral submanifolds, [*SIAM News*](https://sinews.siam.org/Details-Page/dynamics-based-machine-learning-for-nonlinearizable-phenomena) **55/5** (2022) 20210194. [[PDF]](http://www.georgehaller.com/reprints/HallerJainCenedese_dynamics_based_machine_learning.pdf) 
+
+- B. Kaszás, M. Cenedese & G. Haller, ***Dynamics-based machine learning of transitions in Couette flow***, *Physical Review Fluids*, in press (2022). [[PDF]](https://arxiv.org/pdf/2203.13098.pdf) Preprint available on [*arXiv:2203.13098*](http://arxiv.org/abs/2203.13098)
 
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch).
