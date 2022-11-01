@@ -6,7 +6,7 @@ function FRC = analyticalFRC(IMInfoF, RDInfoF, fRed, amplitudeFunction, varargin
 %   INPUT
 %   IMInfoF            struct            Time-periodic manifold.
 %   RDInfoF            struct            Time-periodic reduced dynamics.
-%   f_red              (1 x nAmp)        Normal form forcing constants.
+%   fRed               (1 x nAmp)        Normal form forcing constants.
 %   amplitudeFunction  function handle   Map from y to (signed) scalar. Can
 %                                        be used to predict forced response
 %                                        for a given component or quantity.
@@ -60,7 +60,7 @@ cPhi = cos(phiEval); sPhi = sin(phiEval);
 nEvalInt = 301; 
 chebyNodes = (cos([(nEvalInt-1):-1:0]/(nEvalInt-1)*pi)+1)/2;
 
-% Ierate for each forcing
+% Iterate for each forcing
 for iAmp = 1:length(fRed)
     % Compute roots of the sqrt argument ( (f/r)^2 - a^2(r) )
     rhoSol = roots([fliplr(dampcoeffs(1:end-1)),-(fRed(iAmp)*fscale)]);

@@ -13,7 +13,7 @@ function fig = customFigure(varargin)
 
 %   clf; hold on; grid on; box on;
 %   fontName = 'helvetica';
-%   fontSize = 18;
+%   fontSize = 16;
 
 fontName = 'helvetica';
 fontSize = 16;
