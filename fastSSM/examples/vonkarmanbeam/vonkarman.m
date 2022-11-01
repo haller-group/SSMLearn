@@ -1,5 +1,15 @@
+%% Learning a 2D SSM with fastSSMplus from FE simulation data
+% This is an example of how to reconstruct a slow 2D SSM of a mechanical system using synthetic measurements of a scalar quantity. 
+% In this example, we measure the midpoint displacement of a clamped-clamped von Kármán beam. [1]
+% We use fastSSMplus to predict backbone curves and forced response.
+%
+% [1] S. Jain, P. Tiso, and G. Haller, Exact nonlinear model reduction for a von Kármán beam: slow-fast decomposition and spectral 
+% submanifolds, Journal of Sound and Vibration 423 (2018) 195-211. https://doi.org/10.1016/j.jsv.2018.01.049 
+%
+
 clearvars
 close all
+addpath tools
 
 nElements = 12;
 [M, C, K, fnl, fExt, obsdof, PlotFieldonDefMesh] = buildModel(nElements);

@@ -23,6 +23,7 @@ You can then run the following three examples:
 
 fastSSM and fastSSMplus are open-source and free to use.
 Please consider citing this article when using the code:
+
 [1] J. Axås, M. Cenedese, and G. Haller. Fast data-driven model reduction for nonlinear dynamical systems. Nonlinear Dynamics, 2022.
 
 Nov 1st, 2022

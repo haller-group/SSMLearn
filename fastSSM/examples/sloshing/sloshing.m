@@ -1,5 +1,12 @@
-%% Finding a 2D SSM from sloshing data
+%% Learning a 2D SSM with fastSSM from high-dimensional experimental sloshing data
+% This is an example of how a slow 2D SSM can be fitted to experiment data to predict the system's forced response. 
+% This example uses measurements of the center of mass displacement of the liquid in a horizontally excited sloshing tank [1].
+% [1] B. Bäuerlein and K. Avila, Phase-lag predicts nonlinear response maxima in liquid-sloshing experiments, 
+%     Journal of Fluid Mechanics 925 (2021) A22. https://doi.org/10.1017/jfm.2021.576
 % 
+% The data consists of two decaying surface profile measurements, along with data points of the forced response at three 
+% forcing amplitudes. fastSSM is trained only on the decaying data in the first trajectory and predicts a forced response 
+% that agrees well with the data points from the forced system.
 
 clearvars
 close all
