@@ -6,7 +6,8 @@
 
 ### Data-driven Reduced Order Models for Nonlinear Dynamical Systems
 
-This package perform data-driven identification of reduced order model based on spectral submanifolds (SSMs). The required input consists of trajectory data of generic system observables close to an SSM, the SSM dimension and the polynomial orders for approximation of the parametrization and reduced dynamics.
+This package identifies reduced-order models on spectral submanifolds (SSMs) from data. The required input consists of trajectory data of generic system observables close to an SSM, the SSM dimension, and the polynomial orders of approximation for the parametrization and reduced dynamics.
+In addition, an alternative simplified method, fastSSM, is included. See the fastSSM subfolder for documentation.
 
 The computational steps for achieving a reduced-order model are:
 
@@ -14,8 +15,7 @@ The computational steps for achieving a reduced-order model are:
 2. Computation of the invariant manifold parametrization and its reduced order coordinates;
 3. Identification of the reduced dynamics and its normal form.
 
-Once the normal form dynamics has been determined, the code can run analytics and predictions on the reduced-order model, such as backbone curves and forced responses, as shown in our examples. There are no constraints on the types of measurements, on the kind of nonlinearities or on the problem dimensions.
-
+Once the normal form dynamics has been determined, the code can run analytics and predictions on the reduced-order model, such as backbone curves and forced responses, as shown in our examples.
 We have included a demonstration of SSM identification on the following examples.
 
 - Oscillator chain: *n* degrees of freedom with trajectories on or off specific SSMs;
