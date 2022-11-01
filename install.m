@@ -8,19 +8,7 @@ function install
 addpath(genpath('src'))
 addpath('fastSSM')
 
-% disp('Installing external packages ...')
-% prompt = 'Do you want to install SSMTool and coco? Y/N [Y]: ';
-% str = input(prompt,'s');
-% if isempty(str)
-%     str = 'Y';
-% end
-% if strcmp(str,'Y') == 1
-%     % Install all external packages 
-%     run([pwd '/ext/SSMTool/install.m']);
-% end
-% disp('Done.')
-
-savepath % Uncomment if you would like to add SSMLearn in the Matlab default path. Run the command restoredefaultpath to restore the default path 
+% savepath % Uncomment if you would like to add SSMLearn in the Matlab default path. Run the command restoredefaultpath to restore the default path 
 end
 
 
