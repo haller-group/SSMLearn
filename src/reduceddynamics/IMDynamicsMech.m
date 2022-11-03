@@ -112,13 +112,25 @@ options = setfield(options,'L2',L2);
 
 % Construct phi and ridge regression
 [phi,Expmat] = multivariatePolynomial(k,1,options.R_PolyOrd); 
+disp('Estimation of the reduced dynamics... ')
 if isempty(options.R_coeff) == 1
-    disp('Estimation of the reduced dynamics... ')
     [W_r,l_opt,Err] = ridgeRegression(phi(X),dXdt(ndof+1:end,:),...
                               options.L2,options.idx_folds,options.l_vals);
     W_r = [zeros(ndof) eye(ndof) zeros(ndof,size(W_r,2)-2*ndof); W_r];
 else
-    W_r =  options.R_coeff; l_opt = 0; Err = 0;
+    W_r_known = options.R_coeff;
+    nCoefs = size(W_r_known,2);
+    if nCoefs == size(Expmat,1)
+        W_r =  options.R_coeff; l_opt = 0; Err = 0;
+    else
+       Xtransformed = phi(X);
+       Xreg = Xtransformed(nCoefs+1:end,:);
+       Yreg = dXdt(ndof+1:end,:)-W_r_known(ndof+1:end,:)*Xtransformed(1:nCoefs,:);
+       [W_r_unknown,l_opt,Err] = ridgeRegression(Xreg,Yreg,...
+                              options.L2,options.idx_folds,options.l_vals);
+                          
+        W_r = [W_r_known [zeros(ndof,size(W_r_unknown,2)); W_r_unknown]]; 
+    end
 end
 R = @(x) W_r*phi(x);  
 R_info = assembleStruct(@(x) W_r*phi(x),W_r,phi,Expmat,l_opt,Err);
