@@ -53,4 +53,6 @@ Additional works appear in the references:
 
 - B. Kaszás, M. Cenedese & G. Haller, Dynamics-based machine learning of transitions in Couette flow, [*Physical Review Fluids*](https://doi.org/10.1103/PhysRevFluids.7.L082402) **7** (2022) L082402. [[PDF]](http://www.georgehaller.com/reprints/dynamicsbasedmachinelearning.pdf) [[Supplemental Material]](https://journals.aps.org/prfluids/supplemental/10.1103/PhysRevFluids.7.L082402/supplemental_couette.pdf)
 
+- J. Axås, M. Cenedese & G. Haller, Fast data-driven model reduction for nonlinear dynamical systems, [*Nonlinear Dynamics*](https://doi.org/10.1007/s11071-022-08014-0) (2022). [[PDF]](https://link.springer.com/content/pdf/10.1007/s11071-022-08014-0.pdf)
+
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch).
