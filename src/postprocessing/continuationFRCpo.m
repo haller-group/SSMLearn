@@ -18,8 +18,12 @@ function FRC_data = continuationFRCpo(IMInfoF, RDInfoF, reducedForcing, ...
 %                                   fRed
 
 % Definitions and Inputs
-N = RDInfoF.conjugateDynamics.map;
-T = RDInfoF.transformation.map;
+if strcmp(RDInfoF.conjugacyStyle,'normalform') == 1
+    N = RDInfoF.conjugateDynamics.map;
+    T = RDInfoF.transformation.map;
+else
+    N = RDInfoF.reducedDynamics.map;
+end
 SSMFunction = IMInfoF.parametrization.map;
 k = length(RDInfoF.eigenvaluesLinPartFlow);
 Tspan = sort(2*pi./frequencySpan);

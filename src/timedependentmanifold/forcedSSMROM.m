@@ -58,8 +58,13 @@ if isempty(p.Results.forcingVectors) == 1
 else
     flagNonModalForcing = 1; % Assume to observe the full state space and know the linear part
     ROMForcing = p.Results.We*p.Results.forcingVectors;
-    modalForcing = RDInfo.inverseTransformation.lintransf * ROMForcing;
+    if strcmp(RDInfo.conjugacyStyle,'default')==1
+        modalForcing = RDInfo.eigenvectorsLinPart \ ROMForcing; 
+    else
+        modalForcing = RDInfo.inverseTransformation.lintransf * ROMForcing;
+    end
     modalForcing = 0.5*modalForcing(1:ndof,:);
+            
     % Setup 
     if isempty(p.Results.Lo) == 1
         error('Outer linearized dynamics needed.');

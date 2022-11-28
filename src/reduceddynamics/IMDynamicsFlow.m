@@ -116,18 +116,29 @@ options = setfield(options,'L2',L2);
 [phi,Expmat] = multivariatePolynomial(k,1,options.R_PolyOrd);
 if isempty(options.R_coeff) == 1
     if options.fig_disp_nfp ~= -1
-    disp('Estimation of the reduced dynamics... ')
+        disp('Estimation of the reduced dynamics... ')
     end
     [W_r,l_opt,Err] = ridgeRegression(phi(X),dXdt,options.L2,...
         options.idx_folds,options.l_vals);
 else
-    W_r =  options.R_coeff; l_opt = 0; Err = 0;
+    W_r_known = options.R_coeff;
+    nCoefs = size(W_r_known,2);
+    if nCoefs == size(Expmat,1)
+        W_r =  options.R_coeff; l_opt = 0; Err = 0;
+    else
+        Xtransformed = phi(X);
+        Xreg = Xtransformed(nCoefs+1:end,:);
+        Yreg = dXdt-W_r_known*Xtransformed(1:nCoefs,:);
+        [W_r_unknown,l_opt,Err] = ridgeRegression(Xreg,Yreg,...
+            options.L2,options.idx_folds,options.l_vals);
+        W_r = [W_r_known W_r_unknown];
+    end
 end
 R = @(x) W_r*phi(x);
 R_info = assembleStruct(@(x) W_r*phi(x),W_r,phi,Expmat,l_opt,Err);
 options.l = l_opt;
 if options.fig_disp_nfp ~= -1
-fprintf('\b Done. \n')
+    fprintf('\b Done. \n')
 end
 [V,D,d] = eigSorted(W_r(:,1:k));
 % Find the change of coordinates desired
@@ -142,10 +153,10 @@ switch options.style
         V_M = multivariatePolynomialLinTransf(V,k,options.R_PolyOrd);
         W_n = V\W_r*V_M; N = @(y) V\(W_r*phi(V*y));
         N_info = assembleStruct(N,W_n,phi,Expmat);
-        
+        iT_info.lintransf = inv(V); T_info.lintransf = V;
     case 'normalform'
         if options.fig_disp_nfp ~= -1
-        disp('Estimation of the reduced dynamics in normal form...')
+            disp('Estimation of the reduced dynamics in normal form...')
         end
         n_real_eig = sum(imag(d)==0);
         if n_real_eig>0
@@ -167,10 +178,26 @@ switch options.style
                 v_rescale = max(abs(V\X),[],2);
                 V = 2*V*diag(v_rescale);
             end
-            % Initialize the normal form
-            Maps_info_opt=initialize_nf_flow(V,D,d,W_r,etaData,options);
-            % Get normal form mappings T, N and T^{-1}
-            Maps = dynamicsCoordChangeNF(Maps_info_opt,options);
+            switch options.N_PolyOrd
+                case 1
+                    phi_lin = @(x) x(1);
+                    eye_red = eye(k); k_red = k/2; eye_red = eye_red(1:k_red,:); 
+                    dr = diag(D); 
+                    iT_info = struct('Map',@(x) V\x,'coeff',inv(V),'phi',phi_lin,'Exponents',...
+                        eye_red);
+                    T_info = struct('Map',@(z) real(V*z),'coeff',V,'phi',phi_lin,'Exponents',...
+                        eye_red);
+                    N_info = struct('Map',@(z) transformationComplexConj(D(1:k_red,:)*z),'coeff',dr(1:k_red),'phi',phi_lin,'Exponents',...
+                        eye_red);
+                    Maps = struct('iT',iT_info,'N',N_info,'T',T_info,'V',V);
+                case 2
+                    error('Normal form available with order > 2.')
+                otherwise
+                    % Initialize the normal form
+                    Maps_info_opt=initialize_nf_flow(V,D,d,W_r,etaData,options);
+                    % Get normal form mappings T, N and T^{-1}
+                    Maps = dynamicsCoordChangeNF(Maps_info_opt,options);
+            end
             % Final output
             T_info_opt = Maps.T; N_info_opt = Maps.N;
             iT_info_opt = Maps.iT;
@@ -231,9 +258,9 @@ switch options.style
         iT_info = T_info; N_info = R_info;
 end
 RDInfo = struct('reducedDynamics',R_info,'inverseTransformation',...
-             iT_info,'conjugateDynamics',N_info,'transformation',T_info,...
-             'conjugacyStyle',options.style,'dynamicsType','flow',...
-             'eigenvaluesLinPartFlow',d,'eigenvectorsLinPart',V);
+    iT_info,'conjugateDynamics',N_info,'transformation',T_info,...
+    'conjugacyStyle',options.style,'dynamicsType','flow',...
+    'eigenvaluesLinPartFlow',d,'eigenvectorsLinPart',V);
 end
 
 %---------------------------Subfunctions-----------------------------------
@@ -242,11 +269,11 @@ function str_out = assembleStruct(fun,W,phi,Emat,varargin)
 PolyOrder = sum(Emat(end,:));
 if isempty(varargin) == 0
     str_out = struct('map',fun,'coefficients',W,'polynomialOrder',...
-    PolyOrder,'phi',phi,'exponents',Emat,'l_opt',varargin{1},...
-    'CV_error',varargin{2});
+        PolyOrder,'phi',phi,'exponents',Emat,'l_opt',varargin{1},...
+        'CV_error',varargin{2});
 else
-   str_out = struct('map',fun,'coefficients',W,'polynomialOrder',...
-                    PolyOrder,'phi',phi,'exponents',Emat);    
+    str_out = struct('map',fun,'coefficients',W,'polynomialOrder',...
+        PolyOrder,'phi',phi,'exponents',Emat);
 end
 end
 
