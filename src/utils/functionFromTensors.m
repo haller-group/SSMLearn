@@ -1,4 +1,4 @@
-function [F, lambda, V] = functionFromTensors(M, C, K, fnl, varargin)
+function [F, lambda, V, G, DG] = functionFromTensors(M, C, K, fnl, varargin)
 % functionFromTensors(M, C, K, fnl)
 % functionFromTensors(M, C, K, fnl, fExt, Omega)
 % Creates an anonymous function for the evolution of a mechanical system.
@@ -52,14 +52,20 @@ for iT = 1:length(fnl)
         qdot(idx(i,1)) = qdot(idx(i,1)) + Fi(idx(i,:))*prod(q(idx(i,2:end)));
     end
 end
+dqdot = sym(zeros(n,2*n));
+for ii = 1:2*n
+   dqdot(:,ii) = diff(qdot,q(ii));
+end
 g = matlabFunction(qdot, 'vars', {q});
+Dg = matlabFunction(dqdot, 'vars', {q});
 
 Minv = inv(M);
 A = [zeros(n), eye(n);
     -Minv*K,  -Minv*C];
 G = @(x) [zeros(n,1);
          -Minv*g(x)];
-     
+DG = @(x) [zeros(n,2*n);
+         -Minv*Dg(x)];     
 if forced
     H = @(t,x) [zeros(n,1);
         -Minv*fExt*cos(Omega*t)];
