@@ -6,11 +6,11 @@ To add fastSSM(plus) to the matlab path, run the following matlab commands:
     cd SSMLearn/
     install
 
-fastSSM runs without any dependencies. To run fastSSMplus, SSMTool is needed.
-The latest version of SSMTool is available at https://github.com/haller-group
+fastSSM runs without any dependencies. To run fastSSMplus, SSMTool 2.2 is needed.
+The latest version of SSMTool is available at github.com/jain-shobhit/SSMTool
 At the time of writing, the following commands work:
 
-    git clone https://github.com/haller-group/SSMTool-2.1.git
+    git clone https://github.com/jain-shobhit/SSMTool.git
     cd SSMTool/
     install
 
