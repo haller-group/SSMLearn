@@ -21,7 +21,7 @@ disp('Building FE model')
 try
     myMaterial  = KirchoffMaterial();
 catch
-    error('SSMTool not installed, cf. readme file - Finite element code missing. Clone from https://github.com/jain-shobhit/SSMTool')
+    error('SSMTool not installed, cf. readme file - Finite element code missing. Clone from github.com/jain-shobhit/SSMTool')
 end
 set(myMaterial,'YOUNGS_MODULUS',E,'DENSITY',rho,'POISSONS_RATIO',nu,'DAMPING_MODULUS',kappa);
 % Element
