@@ -29,7 +29,7 @@ We have included a demonstration of SSM identification on the following examples
 This package uses the following external open-source packages for some of the examples and post-processing capabilities:
 
 1. Continuation core (coco) https://sourceforge.net/projects/cocotools/
-2. SSMTool 2.1: Computation of invariant manifolds & their reduced dynamics in high-dimensional mechanics problems https://github.com/haller-group/SSMTool-2.1
+2. SSMTool 2.3: Computation of invariant manifolds & their reduced dynamics in high-dimensional mechanics problems https://github.com/haller-group/SSMTool-2.3
 
 ## Installation
 1. Once located in the main folder, install the package:  

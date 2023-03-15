@@ -18,7 +18,11 @@ kappa   = 1e6; % material damping modulus 1e8
 %% FE model
 disp('Building FE model')
 % Material
-myMaterial  = KirchoffMaterial();
+try
+    myMaterial  = KirchoffMaterial();
+catch
+    error('SSMTool not installed, cf. readme file - Finite element code missing. Clone from https://github.com/jain-shobhit/SSMTool')
+end
 set(myMaterial,'YOUNGS_MODULUS',E,'DENSITY',rho,'POISSONS_RATIO',nu,'DAMPING_MODULUS',kappa);
 % Element
 myElementConstructor = @()BeamElement(b, h, myMaterial); % same element all across the domain

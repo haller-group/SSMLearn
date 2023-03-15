@@ -22,6 +22,7 @@ function [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, m
 % [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, 2, 1, 1, 1)
 
 %% Input, settings
+if ~exist('DynamicalSystem', 'file'); error('SSMTool not installed, cf. readme file. Clone from https://github.com/jain-shobhit/SSMTool'); end
 t = horzcat(yData{:,1}); Y = horzcat(yData{:,2});
 iStart = 1;
 for iTraj = 1:size(yData,1); iStart(iTraj+1) = iStart(iTraj)+size(yData{iTraj,1},2); end

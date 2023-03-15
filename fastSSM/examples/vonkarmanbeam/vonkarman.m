@@ -1,6 +1,7 @@
 %% Learning a 2D SSM with fastSSMplus from FE simulation data
-% This is an example of how to reconstruct a slow 2D SSM of a mechanical system using synthetic measurements of a scalar quantity. 
-% In this example, we measure the midpoint displacement of a clamped-clamped von Kármán beam. [1]
+% In this example, we measure the midpoint displacement of a
+% clamped-clamped von Kármán beam [1] and reconstruct the slowest 2D SSM. 
+% The FE code requires installation of SSMTool.
 % We use fastSSMplus to predict backbone curves and forced response.
 %
 % [1] S. Jain, P. Tiso, and G. Haller, Exact nonlinear model reduction for a von Kármán beam: slow-fast decomposition and spectral 
