@@ -1,4 +1,4 @@
-function [M, C, K, fnl, fext, outdof, PlotFieldonDefMesh] = build_model(nElements)
+function [M, C, K, fnl, fext, outdof, PlotFieldonDefMesh] = buildModel(nElements)
 %% Finite Element Setup
 % Geometry
 startLIN = tic;
