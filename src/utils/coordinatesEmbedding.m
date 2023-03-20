@@ -1,4 +1,6 @@
 function [yData, optsEmbd] = coordinatesEmbedding(xData, SSMDim, varargin)
+% [yData, optsEmbd] = coordinatesEmbedding(xData, SSMDim)
+% [yData, optsEmbd] = coordinatesEmbedding(xData, SSMDim, "OverEmbedding", oe, "ForceEmbedding", true, "ShiftSteps", ss)
 % Returns the n-dim. time series x into a time series of properly embedded
 % coordinate system y of dimension p. Optional inputs to be specified as
 % 'field_name','field value'
