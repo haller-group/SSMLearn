@@ -1,7 +1,8 @@
 function [dXdt,X,t] = finiteTimeDifference(X_in,t_in,halfw)
+% [dXdt,X,t] = finiteTimeDifference(X_in,t_in,halfw)
 % Central finite time difference with uniform monodimensional grid spacing
 % of customized accuracy, equal to 2*halfw. X is a matrix of n_variables 
-% x n_instances. Thefore, the finite difference is implemented columnwise.
+% x n_instances. Therefore, the finite difference is implemented columnwise.
 
 if halfw>4
     disp('The cofficients for this accuracy are not present in the current implementation. The finite difference is computed with accuracy O(Dt^8)')
