@@ -24,7 +24,8 @@ We have included a demonstration of SSM identification on the following examples
 - Resonant double beam: structure with a 1:2 internal resonance, data from laser vibrometry;
 - Vortex Shedding behind a cylinder: data from CFD simulations, projected on a low-dimensional linear subspace of the phase space;
 - Plane Couette flow: reduced order modeling of transitions between exact coherent states;
-- Liquid sloshing of a water tank: data from experimental measurements.
+- Liquid sloshing of a water tank: data from experimental measurements;
+- Buckling beam: finite-element simulation of an axially loaded beam undergoing mechanical failure.
 
 This package uses the following external open-source packages for some of the examples and post-processing capabilities:
 
