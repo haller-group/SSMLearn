@@ -74,7 +74,7 @@ iTmap = @(xi) iT*phi(xi, 1:nforder);
 options = struct('isauto', 1, 'isdamped', 1, 'numDigits', 3);
 symexp = reduced_dynamics_symbolic(DS.spectrum.Lambda(1:mfddim), Ncoeff, options);
 sympref('FloatingPointOutput',true);
-fprintf('\\dot{\\rho}_%u =\n\\rho_{%u}\\dot{\\theta_%u} =\n', ceil(0.1:1/3:mfddim/2))
+fprintf('\\dot{\\rho}_%u =\n\\dot{\\theta_%u} =\n', ceil(0.1:1/2:mfddim/2))
 disp(symexp)
 
 [~, zRec] = ode45(Nflow, t(iStart(1):iStart(2)-1), iTmap(Xi(:,1)), odeset('RelTol', 1e-6));
