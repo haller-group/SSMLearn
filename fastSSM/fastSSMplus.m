@@ -1,15 +1,20 @@
-function [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder)
+function [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder, varargin)
 % [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder)
+% [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder, invstyle)
+% [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder, invstyle, tanspace)
 % Computes an SSM and normal form from data with SSMTool. By Joar Axas (jgoeransson@ethz.ch)
 %
 % INPUT:                                 OUTPUT:
 % yData    {Nx2}  cell array with time   Mmap    function  SSM parametrization y=M(xi)^{1:m}
 %                values (1xn) and        iMmap   function  SSM chart
 %                trajectories (pxn)      Tmap    function  normal form transformation xi=T(z)
-% mfddim   int    SSM dimension          iTmap   function  inverse normal form transformation
+% mfddim   int    SSM dimension d        iTmap   function  inverse normal form transformation
 % mfdorder int    SSM polynomial order   Nflow   function  normal form dynamics zdot=N(z)
 % romorder int    reduced dynamics order yRec    (pxn)     fastSSMplus reconstruction of yData{1,2}
 % nforder  int    normal form order      BBCInfo struct    computed backbone curves (only 2D)
+% invstyle 'poly' optional inverse 
+%       or 'mini'  transformation style (default polynomial)
+% tanspace (pxd)  optional tangent space
 %
 % Input should have the form {[t_1(1),t_1(2),t_1(3),...], [y_1(1),y_1(2),y_1(3),...];
 %                             [t_2(1),t_2(2),t_2(3),...], [y_2(1),y_2(2),y_2(3),...];
@@ -26,11 +31,17 @@ if ~exist('reduced_dynamics_symbolic', 'file'); error('SSMTool 2.2 not installed
 t = horzcat(yData{:,1}); Y = horzcat(yData{:,2});
 iStart = 1;
 for iTraj = 1:size(yData,1); iStart(iTraj+1) = iStart(iTraj)+size(yData{iTraj,1},2); end
+invertstyle = 'poly';
+if nargin>=6; invertstyle = varargin{1}; end
 
 %% Fit manifold
-[u,s,v] = svds(Y, mfddim);
-V = (s\u'./max(abs(v'),[],2))'; % tangent space
-iMmap = @(y) V'*y;
+if nargin < 7 % use SVD for tangent space
+    [u,s,v] = svds(Y, mfddim);
+    V = max(abs(v'),[],2).'.*u*s;
+else % use user-supplied matrix as tangent space
+    V = varargin{2}.*max((varargin{2}\Y)');
+end
+iMmap = @(y) V\y;
 Xi = iMmap(Y);
 M = Y/phi(Xi, 1:mfdorder);
 Mmap = @(xi) M*phi(xi, 1:mfdorder);
@@ -66,9 +77,14 @@ Nflow = @(t,z) tpoly(Ncoeff, z);
 
 %% Approximate inverse to the normal form transformation
 [W, Lambda] = eig(R(1:mfddim,1:mfddim));
-invpoints = W\Xi;
-iT = invpoints/phi(Tmap(invpoints),1:nforder);
-iTmap = @(xi) iT*phi(xi, 1:nforder);
+if strcmpi(invertstyle, 'poly')
+    invpoints = W\Xi;
+    iT = invpoints/phi(Tmap(invpoints),1:nforder);
+    iTmap = @(xi) iT*phi(xi, 1:nforder);
+elseif strcmpi(invertstyle, 'mini')
+    conjtransform = @(rz) reshape([rz(1:end/2)+1i*rz(end/2+1:end), rz(1:end/2)-1i*rz(end/2+1:end)].', [], size(rz,2));
+    iTmap = @(eta) conjtransform(fsolve(@(z)Tmap(conjtransform(z))-eta, zeros(size(eta)), optimset('Display','off')));
+end
 
 %% Evaluate model
 options = struct('isauto', 1, 'isdamped', 1, 'numDigits', 3);
