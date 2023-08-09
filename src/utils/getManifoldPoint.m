@@ -6,11 +6,11 @@ function p = getManifoldPoint(mfd, z)
 %       SSMTool-2.0
 % z     (dim x 1) reduced coordinates in complex form
     
-    n = size(mfd{1}.coeffs,1);
+    n = size(mfd(1).coeffs,1);
     p = zeros(n,1);
     for i=1:length(mfd)
-        if ~isempty(mfd{i}.coeffs)
-            p = p + mfd{i}.coeffs*phi(z,i);
+        if ~isempty(mfd(i).coeffs)
+            p = p + mfd(i).coeffs*phi(z,i);
         end
     end
 

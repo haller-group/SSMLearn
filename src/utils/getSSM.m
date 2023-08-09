@@ -23,8 +23,8 @@ end
 
 DS = DynamicalSystem();
 set(DS, 'M', M, 'C', C, 'K', K, 'fnl', fnl);
-set(DS.Options, 'Emax', 5, 'Nmax', 10, 'notation', 'multiindex')
+set(DS.Options, 'Emax', 5, 'Nmax', 10, 'notation', 'tensor')
 S = SSM(DS);
-set(S.Options, 'reltol', 0.1, 'notation', 'multiindex')
+set(S.Options, 'reltol', 0.1, 'notation', 'tensor')
 S.choose_E(E);
 mfd = S.compute_whisker(mfdOrder);
