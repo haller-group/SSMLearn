@@ -6,7 +6,7 @@ To add fastSSM(plus) to the matlab path, run the following matlab commands:
     cd SSMLearn/
     install
 
-fastSSM runs without any dependencies. To run fastSSMplus, SSMTool 2.2 is needed.
+fastSSM runs without any dependencies. To run fastSSMplus, SSMTool 2.4 is needed.
 The latest version of SSMTool is available at github.com/jain-shobhit/SSMTool
 At the time of writing, the following commands work:
 
@@ -21,7 +21,7 @@ You can then run the following examples:
         vonkarmanbeam/vonkarman.m
         resonantbeam/resonantdoublebeam.m
         
- These examples cover how to employ Vandermonde matrices for delay-embedded data: [2]
+The following examples cover how to employ Vandermonde matrices for delay-embedded data: [2]
     
     examples/
         oscillator/oscillator.m
@@ -35,5 +35,5 @@ Please consider citing this work when using the code:
 
 [2] J. Axås and G. Haller. Model reduction for nonlinearizable dynamics via delay-embedded spectral submanifolds. Nonlinear Dynamics, 2023.
 
-Aug 7th, 2023
+Aug 10th, 2023
 Joar Axås
