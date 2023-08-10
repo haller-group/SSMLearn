@@ -33,7 +33,7 @@ Please consider citing this work when using the code:
 
 [1] J. Axås, M. Cenedese, and G. Haller. Fast data-driven model reduction for nonlinear dynamical systems. Nonlinear Dynamics, 2022.
 
-[2] J. Axås and G. Haller.Model reduction for nonlinearizable dynamics via delay-embedded spectral submanifolds. Nonlinear Dynamics, 2023.
+[2] J. Axås and G. Haller. Model reduction for nonlinearizable dynamics via delay-embedded spectral submanifolds. Nonlinear Dynamics, 2023.
 
 Aug 7th, 2023
 Joar Axås

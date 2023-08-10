@@ -32,7 +32,7 @@ t = horzcat(yData{:,1}); Y = horzcat(yData{:,2});
 iStart = 1;
 for iTraj = 1:size(yData,1); iStart(iTraj+1) = iStart(iTraj)+size(yData{iTraj,1},2); end
 invertstyle = 'poly';
-if nargin>=6; invertstyle = varargin{1}; end
+if nargin>=6; invertstyle = lower(varargin{1}); assert(strcmpi(invertstyle, 'poly')||strcmpi(invertstyle, 'mini'), "invstyle argument must be 'poly' or 'mini'"); end
 
 %% Fit manifold
 if nargin < 7 % use SVD for tangent space
@@ -77,11 +77,11 @@ Nflow = @(t,z) tpoly(Ncoeff, z);
 
 %% Approximate inverse to the normal form transformation
 [W, Lambda] = eig(R(1:mfddim,1:mfddim));
-if strcmpi(invertstyle, 'poly')
+if strcmpi(invertstyle, 'poly') % faster
     invpoints = W\Xi;
     iT = invpoints/phi(Tmap(invpoints),1:nforder);
     iTmap = @(xi) iT*phi(xi, 1:nforder);
-elseif strcmpi(invertstyle, 'mini')
+elseif strcmpi(invertstyle, 'mini') % more accurate
     conjtransform = @(rz) reshape([rz(1:end/2)+1i*rz(end/2+1:end), rz(1:end/2)-1i*rz(end/2+1:end)].', [], size(rz,2));
     iTmap = @(eta) conjtransform(fsolve(@(z)Tmap(conjtransform(z))-eta, zeros(size(eta)), optimset('Display','off')));
 end
