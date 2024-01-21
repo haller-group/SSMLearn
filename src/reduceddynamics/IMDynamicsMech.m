@@ -111,7 +111,7 @@ L2 = (1+options.c1*exp(-options.c2*t)).^(-2);
 options = setfield(options,'L2',L2);
 
 % Construct phi and ridge regression
-[phi,Expmat] = multivariatePolynomial(k,1,options.R_PolyOrd); 
+[phi,Expmat] = multivariatePolynomial(k,1,options.R_PolyOrd);
 disp('Estimation of the reduced dynamics... ')
 if isempty(options.R_coeff) == 1
     [W_r,l_opt,Err] = ridgeRegression(phi(X),dXdt(ndof+1:end,:),...
@@ -162,10 +162,10 @@ switch options.style
             W_n = V\W_r*V_M; N = @(y) V\(W_r*phi(V*y));
             N_info = assembleStruct(N,W_n,phi,Expmat);
         else
-            for iMode = 1:(k/2)
-               V(:,iMode) = V(:,iMode)/V(iMode,iMode);
-               V(:,iMode+k/2) = V(:,iMode+k/2)/V(iMode,iMode+k/2);
-            end
+%             for iMode = 1:(k/2)
+%                V(:,iMode) = V(:,iMode)/V(iMode,iMode);
+%                V(:,iMode+k/2) = V(:,iMode+k/2)/V(iMode,iMode+k/2);
+%             end
             if options.rescale == 1
                v_rescale = max(abs(V\X),[],2); 
                V = 2*V*diag(max(v_rescale(1:k/2))*ones(1,k));

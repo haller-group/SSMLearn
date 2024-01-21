@@ -25,7 +25,8 @@ We have included a demonstration of SSM identification on the following examples
 - Vortex Shedding behind a cylinder: data from CFD simulations, projected on a low-dimensional linear subspace of the phase space;
 - Plane Couette flow: reduced order modeling of transitions between exact coherent states;
 - Liquid sloshing of a water tank: data from experimental measurements;
-- Buckling beam: finite-element simulation of an axially loaded beam undergoing mechanical failure.
+- Buckling beam: finite-element simulation of an axially loaded beam undergoing mechanical failure;
+- Prismatic beam in 3D: geometrically nonlinear finite element model from SSMTool with 1:3 internal resonance.
 
 This package uses the following external open-source packages for some of the examples and post-processing capabilities:
 

@@ -7,15 +7,16 @@ function plotFRC(FRC, varargin)
 %   
 %   INPUT
 %   FRC           struct            Forced response curve with one field F1, 
-%                                   F2, ... for each forcing amplitude.
+%                                   F2, ... for each forcing amplitude.         
 %   color         (nAmp x 3)        Optional RGB colors, one row per curve, 
 %                                   or pass a single row vector for all
 %                                   curves.
 %   datalabel     string or cell    Optional legend names for curves.
 %                 of strings
+%   outamp        integer           request amplitude output 
 %   KEYWORD ARGUMENTS
 %   y             'Amplitude' or    What to plot on the y axis (default
-%                 'Phase'           'Amplitude').
+%                 'Phase'           'Amplitude'). 
 %   curves        int array         Plot only forces with these indices.
 %   freqscale     real              Scale the x axis. For example, pass 
 %                                   2*pi to plot frequencies in hertz.
@@ -29,6 +30,7 @@ addOptional(p, 'datalabel', '', validStringOrCell);
 addParameter(p, 'y', 'Amplitude', validMode);
 addParameter(p, 'curves', 1:length(fieldnames(FRC)));
 addParameter(p, 'freqscale', 1); % pass 2*pi to get hertz
+addParameter(p, 'outamp', 1); % output amplitude function
 parse(p, varargin{:});
 if validString(p.Results.datalabel)
     datalabel = {p.Results.datalabel};
@@ -52,7 +54,10 @@ for jj = p.Results.curves
     if strcmp(p.Results.y, 'Amplitude')
         Plot_i  = FRC.(['F' num2str(jj)]).Amp;
     elseif strcmp(p.Results.y, 'Phase')
-        Plot_i  = FRC.(['F' num2str(jj)]).Nf_Phs;
+        Plot_i  = mod(FRC.(['F' num2str(jj)]).Nf_Phs,2*pi)-2*pi;
+    end
+    if size(Plot_i,3) > 1
+       Plot_i = Plot_i(:,:,p.Results.outamp); 
     end
     Stab_i = FRC.(['F' num2str(jj)]).Stab;
     for ll = 1:size(Freq_i,1)
