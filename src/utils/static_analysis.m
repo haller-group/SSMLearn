@@ -12,20 +12,20 @@ uLinear = Model.constrain_vector(u_lin)*loadCoefficients;
 uNonlinearOut = uNonlinear(outdof,:);
 uLinearOut = uLinear(outdof,:);
 % plot results
-figure; hold on; grid on;
+customFigure;
 plot(loadCoefficients,uLinearOut,'r--','DisplayName','Linear')
 plot(loadCoefficients,uNonlinearOut,'-k','DisplayName','Nonlinear')
 legend('location','best')
-ylabel('$$u_{\mathrm{out}}$$ [m]'); 
+ylabel('$$u_{\mathrm{out}}$$ [m]','Interpreter','latex'); 
 xlabel('Normalized load'); 
 title('Static loading analysis');
 axis tight
 
-figure; hold on; grid on;
+customFigure;
 relativeDispDifference = 100*abs(uNonlinearOut-uLinearOut)./abs(uNonlinearOut);
 plot(loadCoefficients,relativeDispDifference,'Linewidth',2)
 axis tight
-ylabel('$$\frac{|u_{\mathrm{out}} - u_{\mathrm{out,linear}}|}{|u_{\mathrm{out}}|}$$ [\%]'); 
+ylabel('$$\frac{|u_{\mathrm{out}} - u_{\mathrm{out,linear}}|}{|u_{\mathrm{out}}|}$$ [\%]','Interpreter','latex'); 
 xlabel('Normalized load'); 
 end
 

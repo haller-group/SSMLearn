@@ -1,4 +1,4 @@
-function [FRCSSMTool] = SSMToolFRC(M,C,K,fnl,fext,outdof,epsilon,masterModes,order,freqRange,mFreqs,oid)
+function [FRCSSMTool] = SSMToolFRCFE(M,C,K,fnl,fext,outdof,epsilon,masterModes,order,freqRange,mFreqs,oid)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
