@@ -4,7 +4,19 @@ function FRC_data = SSMToolFRCcustom(M, C, K, fnl, fext, fcoeffs, outdof, omegaR
 % outdof is the index of the plotted degree of freedom
 % orders is a scalar/vector of the degree of Taylor expansions to be plotted
 
-[DS, S, ~] = getSSM(M, C, K, fnl, 1:2, orders);
+% [DS, S, ~] = getSSM(M, C, K, fnl, 1:2, orders);
+
+% Create
+DS = DynamicalSystem();
+set(DS,'M',M,'C',C,'K',K,'fnl',fnl);
+set(DS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
+
+% SSM setup
+S = SSM(DS);
+set(S.Options, 'reltol', 0.5,'notation','multiindex');
+set(S.FRCOptions, 'nCycle',500, 'initialSolver', 'forward');
+set(S.contOptions, 'PtMX', 300, 'h_max', 0.5);
+set(S.FRCOptions, 'omegaSampStyle', 'cocoBD');
 
 epsilon = 1;
 kappas = [-1; 1];
