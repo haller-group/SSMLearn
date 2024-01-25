@@ -6,7 +6,7 @@ function convertLivescript2Markdown(livescript_name)
 % Link: https://github.com/roslovets/Live-Script-to-Markdown-Converter
 
 % Convert livescript to md
-livescript2markdown(livescript_name,'README.md')
+livescript2markdown(livescript_name,'README.md');
 
 % Read md file 
 txt = fileread('README.md');
