@@ -1911,15 +1911,3 @@ xlim([1 1.06])
 ![figure_27.png
 ](README_images/figure_27.png
 )
-
-```matlab:Code
-% Convert livescript to markdown (optional)
-convertLivescript2Markdown('prismaticbeam.mlx')
-```
-
-```text:Output
-Coverting latex to markdown is complete
-README.md
-Note: Related images are saved in README_images
-ans = "/Users/mattiacenedese/GitHub/SSMLearn/examples/prismaticbeam/README.md"
-```

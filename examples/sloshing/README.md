@@ -238,9 +238,7 @@ NMTE = mean(fullTrajDist(indTest))
 ```
 
 ```text:Output
-NMTE = 
-     0.017055
-
+NMTE = 0.0171
 ```
 
 We plot the measured and predicted center of mass signal for the test trajectory. The reduced model seems to do well on previously unseen data.
@@ -264,10 +262,6 @@ subplot(122); ylabel('$\hat{X} \, [\%]$','Interpreter','latex')
 
 ![figure_3.png
 ](README_images/figure_3.png
-)
-
-![figure_4.png
-](README_images/figure_4.png
 )
 
 # Compute forced response curves
@@ -303,54 +297,11 @@ Forced SSM reduced-order model assumes external forcing only along the tangent (
 
 ```matlab:Code
 FRC = analyticalFRC(IMInfoF, RDInfoF, fRed, yObservable);
-% for iAmp = 1:length(amplitudes)
-%     FRC.(['F',num2str(iAmp)]).Nf_Phs = -180*(max(max(FRC.(['F',num2str(iAmp)]).Nf_Phs2))>0)+...
-%         180/pi*FRC.(['F',num2str(iAmp)]).Nf_Phs2;
-% end
 ```
 
 # Plot FRCs
 
 Comparison of the FRCs from SSMLearn with experimental data shows that our autonomous model also predicts the response of the forced system well at these amplitudes, both in terms of amplitude and phase lag.
-
-```matlab:Code
-figure(100); hold on; colors = colororder; colors = colors(2:end,:);
-plot(BBCInfo.frequency/2/pi, BBCInfo.amplitude,'k','DisplayName', 'Backbone - SSMlearn')
-figure(101); hold on;
-for iAmp = 1:length(amplitudes)
-    labels{iAmp} = ['A = ', num2str(amplitudes(iAmp)), ' %'];
-    figure(100);
-    plot(frcExp{iAmp}(:,1)*7.8/2/pi, frcExp{iAmp}(:,2), '.', 'MarkerSize', 12, ...
-        'Color', colors(iAmp,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'],...
-        'MarkerSize', 14)
-    figure(101);
-    plot(frcExp{iAmp}(:,1)*7.8/2/pi, frcExp{iAmp}(:,3), '.', 'MarkerSize', 12, ...
-        'Color', colors(iAmp,:), 'DisplayName', ['Exp. A = ', num2str(amplitudes(iAmp)), ' %'])
-end
-figure(100)
-plotFRC(FRC, colors, labels, 'freqscale', 2*pi)
-xlim(w_span/2/pi)
-ylim([0,7]);
-xlabel('Excitation frequency $\Omega$ [Hz]', 'Interpreter', 'latex')
-ylabel('Amplitude $\hat{X}$ (\%)', 'Interpreter', 'latex')
-```
-
-![figure_5.png
-](README_images/figure_5.png
-)
-
-```matlab:Code
-figure(101)
-plotFRC(FRC, colors, labels, 'y', 'Phase', 'freqscale', 2*pi)
-xlim(w_span/2/pi)
-ylim([-180,0]);
-xlabel('Excitation frequency $\Omega$ [Hz]', 'Interpreter', 'latex')
-ylabel('Phase difference $\phi$', 'Interpreter', 'latex')
-```
-
-![figure_6.png
-](README_images/figure_6.png
-)
 
 ```matlab:Code
 figure(100); hold on; colors = colororder; colors = colors(2:end,:);
@@ -372,6 +323,13 @@ xlim(w_span/2/pi)
 ylim([0,7]);
 xlabel('Excitation frequency $\Omega$ [Hz]', 'Interpreter', 'latex')
 ylabel('Amplitude $\hat{X}$ (\%)', 'Interpreter', 'latex')
+```
+
+![figure_4.png
+](README_images/figure_4.png
+)
+
+```matlab:Code
 figure(101)
 plotFRC(FRC, colors, labels, 'y', 'Phase', 'freqscale', 2*pi)
 xlim(w_span/2/pi)
@@ -382,13 +340,6 @@ xlabel('Excitation frequency $\Omega$ [Hz]', 'Interpreter', 'latex')
 ylabel('Phase difference $\phi$', 'Interpreter', 'latex')
 ```
 
-```matlab:Code
-% Convert livescript to markdown (optional)
-convertLivescript2Markdown('sloshing.mlx')
-```
-
-```text:Output
-Coverting latex to markdown is complete
-README.md
-Note: Related images are saved in README_images
-```
+![figure_5.png
+](README_images/figure_5.png
+)

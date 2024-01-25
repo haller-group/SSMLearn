@@ -1046,15 +1046,3 @@ xlim([0 200])
 ![figure_4.png
 ](README_images/figure_4.png
 )
-
-```matlab:Code
-% Convert livescript to markdown (optional)
-convertLivescript2Markdown('vortexshedding.mlx')
-```
-
-```text:Output
-Coverting latex to markdown is complete
-README.md
-Note: Related images are saved in README_images
-ans = "/Users/mattiacenedese/GitHub/SSMLearn/examples/vortexshedding/README.md"
-```
