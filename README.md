@@ -26,7 +26,9 @@ We have included a demonstration of SSM identification on the following examples
 - Plane Couette flow: reduced order modeling of transitions between exact coherent states;
 - Liquid sloshing of a water tank: data from experimental measurements;
 - Buckling beam: finite-element simulation of an axially loaded beam undergoing mechanical failure;
-- Prismatic beam in 3D: geometrically nonlinear finite element model from SSMTool with 1:3 internal resonance.
+- Prismatic beam in 3D: geometrically nonlinear finite element model from SSMTool with 1:3 internal resonance;
+- Von Kármán shell: geometrically nonlinear finite element model from SSMTool, with and without internal resonance between the two slowest modes;
+- Von Kármán plate: geometrically nonlinear finite element model from SSMTool with internal resonance on an intermediate SSM.
 
 This package uses the following external open-source packages for some of the examples and post-processing capabilities:
 
@@ -39,8 +41,9 @@ This package uses the following external open-source packages for some of the ex
     install
     ```
 2. If external packages are not yet installed, download SSMTool from the link above, which also include coco, and install it. 
-3. (optional) Figure specifications can be edited in the function customFigure.m located in the src folder.
-4. You are ready.
+3. Download the folder `data` that contains heavy data sets to run high-dimensional examples (i.e., Von Kármán shells and plates) at this [link](https://drive.google.com/drive/folders/1-59f20KnG_rLoH3MWfSlVOGg4Uj5wZFM?usp=sharing) and place it in the main folder of the local repository.
+4. (optional) Figure specifications can be edited in the function customFigure.m located in the src folder.
+5. You are ready.
 
 ## References
 Please consider to cite this article when using this code:
@@ -56,5 +59,7 @@ Additional works appear in the references:
 - B. Kaszás, M. Cenedese & G. Haller, Dynamics-based machine learning of transitions in Couette flow, [*Physical Review Fluids*](https://doi.org/10.1103/PhysRevFluids.7.L082402) **7** (2022) L082402. [[PDF]](http://www.georgehaller.com/reprints/dynamicsbasedmachinelearning.pdf) [[Supplemental Material]](https://journals.aps.org/prfluids/supplemental/10.1103/PhysRevFluids.7.L082402/supplemental_couette.pdf)
 
 - J. Axås, M. Cenedese & G. Haller, Fast data-driven model reduction for nonlinear dynamical systems, [*Nonlinear Dynamics*](https://doi.org/10.1007/s11071-022-08014-0) (2022). [[PDF]](https://link.springer.com/content/pdf/10.1007/s11071-022-08014-0.pdf)
+
+- M. Cenedese, J. Marconi, G. Haller, & S. Jain, Data-assisted non-intrusive model reduction for forced nonlinear finite elements models, [*arXiv: 2311.17865*](https://arxiv.org/abs/2311.17865) (2023). [[PDF]](https://arxiv.org/pdf/2311.17865.pdf)
 
 Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch).
