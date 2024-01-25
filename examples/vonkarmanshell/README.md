@@ -13,6 +13,8 @@ The finite element code taken from the following package:
 
 Jain, S., Marconi, J., Tiso P. (2020). YetAnotherFEcode (Version v1.1). Zenodo. [http://doi.org/10.5281/zenodo.4011282](http://doi.org/10.5281/zenodo.4011282)
 
+See the `README` of the main repository to retrieve simulations data.
+
 ![image_0.png
 ](README_images/image_0.png
 )
@@ -34,6 +36,8 @@ $$
 $$
 
 with
+
+  
 
 $x=\left\lbrack \begin{array}{c}
 q\\
@@ -95,13 +99,13 @@ Solving undamped eigenvalue problem
 ```text:Output
 Using Rayleigh damping
 a = 2x1    
-    0.0000
-    0.4022
+   8.6312e-06
+      0.40215
 
 Assembling external force vector
 Getting nonlinearity coefficients
 Loaded tensors from storage
-Total time spent on model assembly = 00:00:13
+Total time spent on model assembly = 00:00:17
 ```
 
 ```matlab:Code
@@ -140,7 +144,9 @@ else
 end
 ```
 
-# Define master modes and linear part of the dynamics 
+# Define master modes and linear part of the dynamics
+
+We initialize the base properties of the SSM, i.e., its linear part, which we know from the linear dynamics of the model. In this case, we target the slow two-dimensional SSM of the system. 
 
 ```matlab:Code
 masterModes = [1 2]; % Modal displacements and modal velocities
@@ -151,10 +157,8 @@ Ae = full(We*A*Ve) % Reduced, linearized dynamics
 
 ```text:Output
 Ae = 2x2    
-1.0e+04 *
-
-         0    0.0001
-   -2.1743   -0.0001
+            0            1
+       -21743     -0.58982
 
 ```
 
@@ -166,6 +170,8 @@ loadVector = f_0;  %  could also be set as modal ones
 ```
 
 # Load static analysis and plot
+
+We characterize the linear and nonlinear regimes via a static analysis, which serves to pick appropriate initial conditions for the trajectories we need to learn the SSM from data.
 
 ```matlab:Code
 load("StaticDisplacements.mat")
@@ -213,43 +219,34 @@ nonlinearDisplacementReference = max(abs(uNonlinearOut(indIC)));
 desiredAmplitudeDecay = nonlinearDisplacementReference/linearDisplacementReference;
 ```
 
-Define observables and timescales
+# **Generate decaying trajectories via time integration**
+
+We define observables and timescales. The computation of integration time is estimated from the linear decay that gets from the defined nonlinear amplitude to linear regime. We set the sampling time to capture approximately a fixed number points per period on the faster time scale. Then, we integrate using the initial conditions we obtained from the static analysis. Here, we use a pre-computed data set to avoid excessive computations.
 
 ```matlab:Code
 observable = @(x) x; % Observe the full phase space
 slowTimeScale = 2*pi/abs(lambda(1));
 fastTimeScale = 2*pi/abs(lambda(round(SSMDim/2)));
-```
-
-# **Time Integration using Generalized alpha**
-
-The computation of integration time is estimated from the linear decay that gets from the nonlinear amplitude to linear regime.
-
-```matlab:Code
+% The computation of integration time is estimated from the linear decay 
+% that gets from the nonlinear amplitude to linear regime.
 numberPeriodsSlow = floor(log(desiredAmplitudeDecay)/...
     (2*pi*(-real(lambda(1))/abs(lambda(1)))))
 ```
 
 ```text:Output
-numberPeriodsSlow = 201
+numberPeriodsSlow = 
+   201
+
 ```
 
 ```matlab:Code
 endTime = numberPeriodsSlow*slowTimeScale;
-```
-
-Set the sampling time to capture approximately 100 points per period on the faster time scale
-
-```matlab:Code
+% Set the sampling time to capture approximately 100 points per period on 
+% the faster time scale
 numberPeriodsFast = floor(endTime/fastTimeScale);
 numberPointsPerPeriod = 100;
 nSamp = numberPeriodsFast*numberPointsPerPeriod+1;
 dt = endTime/(nSamp-1);
-```
-
-Integrate (here we load the data set to avoid excessive waiting time for integration).
-
-```matlab:Code
 % xData = integrateTrajectoriesGalphaDirect(Model, DS, endTime, IC, nSamp, observable);
 % % xData = integrateTrajectoriesNewmarkDirect(Model, DS, endTime, IC, nSamp, observable);
 % DataInfo = struct('nElements', Model.Mesh.nElements, 'loadShape', loadShape);
@@ -260,17 +257,19 @@ load("../../data/vonkarmanshell/dataVKDecay2DGalphaStatic.mat")
 # Visualize data
 
 ```matlab:Code
-yData = coordinatesEmbedding(xData, SSMDim, 'ForceEmbedding', 1);
+% This step is here not mandatory as we know that the SSM exists in the
+% phase space (no embedding needed)
+xData = coordinatesEmbedding(xData, SSMDim, 'ForceEmbedding', 1);
 ```
 
 ```text:Output
 The embedding coordinates consist of the measured states.
 ```
 
-Data filtering: We need to make sure that the data that we use to identify the slow manifold lies close to it. We can do this by plotting a spectrogram of the beam tip displacement. In general, there may be many vibratory modes present at first, but the faster ones quickly die out.
+Data filtering: We need to make sure that the data that we use to identify the manifold lies close to it. We can do this by plotting a spectrogram of the observables of interest. In general, there may be many vibratory modes present at first, but the faster ones quickly die out.
 
 ```matlab:Code
-showSpectrogram(yData(indTrain,:), outdof);
+showSpectrogram(xData(indTrain,:), outdof);
 ylim([0,abs(lambda(1))/2/pi*5])
 ```
 
@@ -278,7 +277,7 @@ ylim([0,abs(lambda(1))/2/pi*5])
 ](README_images/figure_6.png
 )
 
-We plot the tip displacement over time for closer inspection. 
+We plot theobservables of interest over time for closer inspection. 
 
 ```matlab:Code
 customFigure();
@@ -294,36 +293,36 @@ title('Generated data')
 
 # Truncate transient data from trajectories
 
-Next, we use the information from the spectrogram and plot to remove the first part of the training data. After the first few oscillations have passed, there is one dominant mode left in the frequency spectrum. In this case, faster modes die out very quickly, so we can use almost all of the data. We must however remove the first transient to fulfill the assumption that trajectories lie close to the SSM. We keep only the time interval |sliceInt|.
+We must however remove the first transient to fulfill the assumption that trajectories lie close to the SSM. We keep only the time interval |sliceInt|.
 
 ```matlab:Code
 sliceInt = [5*slowTimeScale, endTime];
-yDataTrunc = sliceTrajectories(yData, sliceInt);
+xDataTrunc = sliceTrajectories(xData, sliceInt);
 ```
 
 # Datadriven manifold fitting
 
-The measured trajectories are assumed to lie close to a two-dimensional manifold that is tangent at the origin to the eigenspace corresponding to the slowest pair of eigenvalues. We now fit a polynomial of order $M$ to the data points to approximate the manifold. Here we use a graph style parametrization, meaning that the manifold is parametrized using coordinates $\eta =W_e y$ of the eigenspace represenation $V_e$. This excludes the possibility of folds on the manifold (however, if necessary we may circumvent this problem by increasing the dimensionality of the observed space). 
+The measured trajectories are initialized to lie close to the manifold of interest that is tangent at the origin to the eigenspace spanned by the columns of $V_e$. 
 
-We seek the $2n\times m_M$ polynomial coefficient matrix $H$ of the manifold on the form
+As we also know the projection $W_e$ to this eigenspace, we define the modal coordinates as $y=W_e x$. These are the reduced coordinates for our graph style parametrization of the manifold, gauranteed to exists near the origin. We then use the data to learn the nonlinear feature of the manifold geometry, represented via polynomials. Indeed, we seek the $2N\times m_M$ polynomial coefficient matrix $H$ of the manifold on the form
 
-$y=V_e V_e^{\top } y+H\phi_{m,2:M} (V_e^{\top } y)$,
+> $x=V_e y+H{{\phi }}_{m,2:M} (y)$,
 
-where the function $\phi_{m,2:M} (q)$ computes a vector of all $m_M$ monomials from orders 2 up to $M$ of an $m$-vector $q$. The coefficients $H$are obtained via regression.
+where the function ${{\phi }}_{m,2:M} (y)$ computes a vector of all $m_M$ monomials from orders 2 up to $M$ of an $m$-vector $y$. From SSM theory, the tangent space of the manifold is $V_e$. The coefficients $H$are obtained via least squares regression.
 
 ```matlab:Code
 SSMOrder = 7;
 
 % Get projection or modal coordinates 
 SSMDim = size(Ve,2);
-etaDataTrunc = yDataTrunc;
-nTraj = size(yDataTrunc,1);
+yDataTrunc = xDataTrunc;
+nTraj = size(xDataTrunc,1);
 for iTraj = 1:nTraj
-    etaDataTrunc{iTraj,2} = We*yDataTrunc{iTraj,2};    
+    yDataTrunc{iTraj,2} = We*xDataTrunc{iTraj,2};    
 end
 
 % Plot reduced coordinates
-plotReducedCoordinates(etaDataTrunc);
+plotReducedCoordinates(yDataTrunc);
 legend({'Test set trajectory', 'Training set trajectory'})
 ```
 
@@ -337,13 +336,13 @@ if SSMDim>2
 end
 
 % Compute nonlinear part of the parametrization
-IMInfo = IMGeometry(yDataTrunc(indTrain,:), SSMDim,SSMOrder,...
-         'reducedCoordinates',etaDataTrunc(indTrain,:),'Ve',Ve,'outdof',outdof); 
+IMInfo = IMGeometry(xDataTrunc(indTrain,:), SSMDim,SSMOrder,...
+         'reducedCoordinates',yDataTrunc(indTrain,:),'Ve',Ve,'outdof',outdof); 
 IMInfo.chart.map = @(x) We*x;                          
 
 % Parametrization error on test trajectory
 normedTrajDist = computeTrajectoryErrors(liftTrajectories(IMInfo,...
-    etaDataTrunc), yDataTrunc);
+    yDataTrunc), xDataTrunc);
 staticNMTE = mean(normedTrajDist(indTest))*100; % in percentage
 
 disp(['Reconstruction error = ' num2str(staticNMTE) '%'])
@@ -359,7 +358,7 @@ We plot the SSM geometry in different coordinates.
 
 ```matlab:Code
 idxPlot = [outdof]; % 3D Plot: eta_1, eta_2 and idxPlot coordinate
-plotSSMandTrajectories(IMInfo, idxPlot, yDataTrunc(indTest,:), etaDataTrunc(indTest,:))
+plotSSMandTrajectories(IMInfo, idxPlot, xDataTrunc(indTest,:), yDataTrunc(indTest,:))
 view(-100,20); legend('off')
 ```
 
@@ -369,7 +368,7 @@ view(-100,20); legend('off')
 
 ```matlab:Code
 gPlot = @(x) W(5,:)*x; % 3D Plot: eta_1, eta_2 and gPlot(x) 
-plotSSMandTrajectories(IMInfo, gPlot, yDataTrunc(indTest,:), etaDataTrunc(indTest,:))
+plotSSMandTrajectories(IMInfo, gPlot, xDataTrunc(indTest,:), yDataTrunc(indTest,:))
 view(-100,20); legend('off')
 ```
 
@@ -379,7 +378,7 @@ view(-100,20); legend('off')
 
 ```matlab:Code
 gPlot = @(x) W([3],:)*x; % 3D Plot with the three values of gPlot(x) 
-plotSSMandTrajectories(IMInfo, gPlot, yDataTrunc(indTest,:), etaDataTrunc(indTest,:))
+plotSSMandTrajectories(IMInfo, gPlot, xDataTrunc(indTest,:), yDataTrunc(indTest,:))
 view(-100,20); legend('off')
 xlabel('$u_1$','interpreter','latex')
 ylabel('$\dot{u}_1$','interpreter','latex')
@@ -392,32 +391,25 @@ zlabel('$u_2$','interpreter','latex')
 
 # Reduced dynamics on the manifold
 
-We compute a model for the reduced dynamics with the truncated training data projected onto the manifold. The function `IMDynamicsFlow` fits a polynomial map = 
+We compute a model for the reduced dynamics with the truncated training data projected onto the manifold. The function `IMDynamicsMech` finds the dynamics (considering that we know the linear part)
+
+> $\dot{y} =A_e y+H_r {{\phi }}_{m,2:M} (y)$,
+
+where ${\phi }(y)$ again computes a vector of all monomials of $u$, and $H_r$ is a matrix of polynomial coefficients of the form
 
 $$
-\dot{\eta} =W_r \phi (\eta )
+H_r =\left\lbrack \begin{array}{c}
+0\\
+W_r 
+\end{array}\right\rbrack
 $$
 
-where $\phi (\eta )$ again computes a vector of all monomials of $\eta$, and  $W_r$ is a matrix of polynomial coefficients. 
-
-We are also specifying that we want the reduced dynamics on a normal form, and seek the Taylor expansion of a map $N$ fulfilling
-
-$$
-\dot{z} =N(z)=Dz+W_n \phi (z)
-$$
-
-with $D$ a diagonal matrix and $W_n$ containing coefficients for the near-resonant nonlinear terms, after a near-identity change of coordinates
-
-$$
-z=T^{-1} (\eta )=\eta +W_t \phi (\eta )
-$$
-
-with $W_t$ containing the coefficients for the nonlinear terms of the coordinate change. Here we fix the linear part.
+Then, we find from data the extended normal form, which expedites system characterization and computation of periodic forced responses.
 
 ```matlab:Code
 ROMOrder = 7;
 
-RDInfo = IMDynamicsMech(etaDataTrunc(indTrain,:), ...
+RDInfo = IMDynamicsMech(yDataTrunc(indTrain,:), ...
     'R_PolyOrd', 1,'N_PolyOrd', ROMOrder, 'style', 'normalform', ...
     'R_coeff',Ae,'rescale',1,'MaxIter',5e3);
 ```
@@ -992,12 +984,12 @@ Plotting figure with the polar normal form equations ... Done.
 % We transform the truncated initial condition of our test trajectory according to 
 % the obtained change of coordinates, and integrate our reduced order evolution rule 
 % to predict the development of the trajectory. 
-[yRec, etaRec, zRec] = advect(IMInfo, RDInfo, yDataTrunc);
+[yRec, etaRec, zRec] = advect(IMInfo, RDInfo, xDataTrunc);
 
 % Evaluation of reduced dynamics
 % The error NMTE is computed as the average distance of the predicted trajectory 
 % to the measured one in the full state space.
-normedTrajDist = computeTrajectoryErrors(yRec, yDataTrunc);
+normedTrajDist = computeTrajectoryErrors(yRec, xDataTrunc);
 NMTE = mean(normedTrajDist(indTest))*100;
 disp(['Normalized mean trajectory error = ' num2str(NMTE) '%'])
 ```
@@ -1009,7 +1001,7 @@ Normalized mean trajectory error = 6.3316%
 ```matlab:Code
 
 % We plot the true test set trajectory in the reduced coordinates and compare it to the prediction. 
-plotReducedCoordinates(etaDataTrunc(indTest,:), etaRec(indTest,:))
+plotReducedCoordinates(yDataTrunc(indTest,:), etaRec(indTest,:))
 legend({'Test set (truncated)', 'Prediction'})
 ```
 
@@ -1020,7 +1012,7 @@ legend({'Test set (truncated)', 'Prediction'})
 ```matlab:Code
 if size(Ae,1)==2
     % Plot SSM with trajectories in the normal form reduced coordinates
-    plotSSMandTrajectories(IMInfo, outdof, yDataTrunc(indTest,:), ...
+    plotSSMandTrajectories(IMInfo, outdof, xDataTrunc(indTest,:), ...
         zRec(indTest,:), 'NFT', RDInfo.transformation.map)
     view(-100,20); legend('off')
 else
@@ -1032,10 +1024,10 @@ end
 ](README_images/figure_14.png
 )
 
-We also plot the measured and predicted tip displacement. The reduced model seems to do well on previously unseen data, provided that it is close to the 2D manifold.
+We plot the model predictions in physical coordinates. The reduced model seems to do well on previously unseen data, provided that it is close to the manifold.
 
 ```matlab:Code
-plotTrajectories(yData(indTest,:), yRec(indTest,:), 'm','PlotCoordinate', outdof(1), 'DisplayName', {'Test set', 'Prediction'})
+plotTrajectories(xData(indTest,:), yRec(indTest,:), 'm','PlotCoordinate', outdof(1), 'DisplayName', {'Test set', 'Prediction'})
 xlabel('$t \, [$s$]$','Interpreter','latex')
 ylabel('$q_A \, [$m$]$','Interpreter','latex')
 ```
@@ -1070,6 +1062,8 @@ Construct time periodic SSM model
 
 # Generate Frequency Responses
 
+We compute them also with SSMTool in order to compare the results (see the papers above for additional validations and comparisons).
+
 ```matlab:Code
 epsilon = [0.1 0.2];
 mFreqs = [1];
@@ -1085,8 +1079,8 @@ omegaSpan = [0.92 1.07]*imag(lambda(1));
     STEP   DAMPING               NORMS              COMPUTATION TIMES
   IT SIT     GAMMA     ||d||     ||f||     ||U||   F(x)  DF(x)  SOLVE
    0                          3.70e-04  2.09e+02    0.0    0.0    0.0
-   1   1  1.00e+00  8.40e-04  5.48e-08  2.09e+02    0.0    0.0    0.0
-   2   1  1.00e+00  1.12e-07  2.88e-15  2.09e+02    0.0    0.0    0.0
+   1   1  1.00e+00  8.40e-04  5.48e-08  2.09e+02    0.1    0.1    0.0
+   2   1  1.00e+00  1.12e-07  2.88e-15  2.09e+02    0.1    0.2    0.0
 
  STEP      TIME        ||U||  LABEL  TYPE            om         rho1          th1          eps
     0  00:00:00   2.0867e+02      1  EP      1.4745e+02   1.1416e-01   5.3150e+00   1.0000e-01
@@ -1094,13 +1088,13 @@ omegaSpan = [0.92 1.07]*imag(lambda(1));
    14  00:00:00   2.0700e+02      3  FP      1.4623e+02   1.8456e-01   6.4671e+00   1.0000e-01
    14  00:00:00   2.0700e+02      4  SN      1.4623e+02   1.8456e-01   6.4671e+00   1.0000e-01
    20  00:00:00   2.0718e+02      5          1.4634e+02   1.6262e-01   6.8494e+00   1.0000e-01
-   27  00:00:00   2.0752e+02      6  SN      1.4656e+02   1.0226e-01   7.3309e+00   1.0000e-01
-   27  00:00:00   2.0752e+02      7  FP      1.4656e+02   1.0226e-01   7.3309e+00   1.0000e-01
-   30  00:00:00   2.0751e+02      8          1.4655e+02   9.1414e-02   7.3955e+00   1.0000e-01
-   40  00:00:00   2.0733e+02      9          1.4641e+02   6.6737e-02   7.5309e+00   1.0000e-01
-   50  00:00:00   2.0458e+02     10          1.4445e+02   2.0906e-02   7.7574e+00   1.0000e-01
-   60  00:00:00   1.9959e+02     11          1.4092e+02   9.5960e-03   7.8109e+00   1.0000e-01
-   70  00:00:00   1.9460e+02     12          1.3738e+02   6.2298e-03   7.8267e+00   1.0000e-01
+   27  00:00:01   2.0752e+02      6  SN      1.4656e+02   1.0226e-01   7.3309e+00   1.0000e-01
+   27  00:00:01   2.0752e+02      7  FP      1.4656e+02   1.0226e-01   7.3309e+00   1.0000e-01
+   30  00:00:01   2.0751e+02      8          1.4655e+02   9.1414e-02   7.3955e+00   1.0000e-01
+   40  00:00:01   2.0733e+02      9          1.4641e+02   6.6737e-02   7.5309e+00   1.0000e-01
+   50  00:00:01   2.0458e+02     10          1.4445e+02   2.0906e-02   7.7574e+00   1.0000e-01
+   60  00:00:01   1.9959e+02     11          1.4092e+02   9.5960e-03   7.8109e+00   1.0000e-01
+   70  00:00:01   1.9460e+02     12          1.3738e+02   6.2298e-03   7.8267e+00   1.0000e-01
    75  00:00:01   1.9217e+02     13  EP      1.3566e+02   5.3207e-03   7.8310e+00   1.0000e-01
 
  STEP      TIME        ||U||  LABEL  TYPE            om         rho1          th1          eps
@@ -1108,7 +1102,7 @@ omegaSpan = [0.92 1.07]*imag(lambda(1));
    10  00:00:01   2.1263e+02     15          1.5028e+02   2.2000e-02   4.8181e+00   1.0000e-01
    20  00:00:01   2.1763e+02     16          1.5381e+02   9.8609e-03   4.7607e+00   1.0000e-01
    30  00:00:01   2.2262e+02     17          1.5735e+02   6.3429e-03   4.7442e+00   1.0000e-01
-   32  00:00:01   2.2323e+02     18  EP      1.5778e+02   6.0789e-03   4.7430e+00   1.0000e-01
+   32  00:00:02   2.2323e+02     18  EP      1.5778e+02   6.0789e-03   4.7430e+00   1.0000e-01
 ```
 
 ![figure_16.png
@@ -1141,12 +1135,12 @@ omegaSpan = [0.92 1.07]*imag(lambda(1));
    50  00:00:00   2.0668e+02     10          1.4595e+02   1.1640e-01   7.5631e+00   2.0000e-01
    60  00:00:00   2.0653e+02     11          1.4584e+02   9.3203e-02   7.6271e+00   2.0000e-01
    70  00:00:00   2.0315e+02     12          1.4344e+02   3.1435e-02   7.7818e+00   2.0000e-01
-   80  00:00:00   1.9816e+02     13          1.3990e+02   1.6632e-02   7.8169e+00   2.0000e-01
-   90  00:00:00   1.9317e+02     14          1.3637e+02   1.1324e-02   7.8294e+00   2.0000e-01
-   93  00:00:00   1.9217e+02     15  EP      1.3566e+02   1.0644e-02   7.8310e+00   2.0000e-01
+   80  00:00:01   1.9816e+02     13          1.3990e+02   1.6632e-02   7.8169e+00   2.0000e-01
+   90  00:00:01   1.9317e+02     14          1.3637e+02   1.1324e-02   7.8294e+00   2.0000e-01
+   93  00:00:01   1.9217e+02     15  EP      1.3566e+02   1.0644e-02   7.8310e+00   2.0000e-01
 
  STEP      TIME        ||U||  LABEL  TYPE            om         rho1          th1          eps
-    0  00:00:00   2.0866e+02     16  EP      1.4745e+02   1.4968e-01   5.1079e+00   2.0000e-01
+    0  00:00:01   2.0866e+02     16  EP      1.4745e+02   1.4968e-01   5.1079e+00   2.0000e-01
    10  00:00:01   2.1276e+02     17          1.5037e+02   4.1978e-02   4.8139e+00   2.0000e-01
    20  00:00:01   2.1776e+02     18          1.5390e+02   1.9408e-02   4.7601e+00   2.0000e-01
    30  00:00:01   2.2275e+02     19          1.5744e+02   1.2562e-02   4.7439e+00   2.0000e-01
@@ -1177,18 +1171,16 @@ modal damping ratio for 5 mode is 2.909530e-03
 the left eigenvectors may be incorrect in case of asymmetry of matrices
 
  The first 10 nonzero eigenvalues are given as 
-   1.0e+02 *
-
-  -0.0029 + 1.4745i
-  -0.0029 - 1.4745i
-  -0.0063 + 3.1598i
-  -0.0063 - 3.1598i
-  -0.0094 + 4.1319i
-  -0.0094 - 4.1319i
-  -0.0148 + 5.4515i
-  -0.0148 - 5.4515i
-  -0.0173 + 5.9601i
-  -0.0173 - 5.9601i
+     -0.29491 +     147.45i
+     -0.29491 -     147.45i
+     -0.63196 +     315.98i
+     -0.63196 -     315.98i
+     -0.93785 +     413.19i
+     -0.93785 -     413.19i
+      -1.4836 +     545.15i
+      -1.4836 -     545.15i
+      -1.7341 +     596.01i
+      -1.7341 -     596.01i
 
 (near) outer resonance detected for the following combination of master eigenvalues
      2     0
@@ -1205,20 +1197,18 @@ the left eigenvectors may be incorrect in case of asymmetry of matrices
      0     4
 
 These are in resonance with the follwing eigenvalues of the slave subspace
-   1.0e+02 *
-
-  -0.0063 + 3.1598i
-  -0.0063 + 3.1598i
-  -0.0063 - 3.1598i
-  -0.0063 - 3.1598i
-  -0.0094 + 4.1319i
-  -0.0094 + 4.1319i
-  -0.0094 - 4.1319i
-  -0.0094 - 4.1319i
-  -0.0148 + 5.4515i
-  -0.0148 - 5.4515i
-  -0.0173 + 5.9601i
-  -0.0173 - 5.9601i
+     -0.63196 +     315.98i
+     -0.63196 +     315.98i
+     -0.63196 -     315.98i
+     -0.63196 -     315.98i
+     -0.93785 +     413.19i
+     -0.93785 +     413.19i
+     -0.93785 -     413.19i
+     -0.93785 -     413.19i
+      -1.4836 +     545.15i
+      -1.4836 -     545.15i
+      -1.7341 +     596.01i
+      -1.7341 -     596.01i
 
 sigma_out = 5
 (near) inner resonance detected for the following combination of master eigenvalues
@@ -1228,27 +1218,25 @@ sigma_out = 5
      2     3
 
 These are in resonance with the follwing eigenvalues of the master subspace
-   1.0e+02 *
-
-  -0.0029 + 1.4745i
-  -0.0029 + 1.4745i
-  -0.0029 - 1.4745i
-  -0.0029 - 1.4745i
+     -0.29491 +     147.45i
+     -0.29491 +     147.45i
+     -0.29491 -     147.45i
+     -0.29491 -     147.45i
 
 sigma_in = 5
 Due to (near) outer resonance, the exisitence of the manifold is questionable and the underlying computation may suffer.
 Attempting manifold computation
 Manifold computation time at order 2 = 00:00:00
 Estimated memory usage at order  2 = 1.30E+01 MB
-Manifold computation time at order 3 = 00:00:00
+Manifold computation time at order 3 = 00:00:01
 Estimated memory usage at order  3 = 1.41E+01 MB
 Manifold computation time at order 4 = 00:00:01
 Estimated memory usage at order  4 = 1.52E+01 MB
 Manifold computation time at order 5 = 00:00:01
 Estimated memory usage at order  5 = 1.70E+01 MB
-Manifold computation time at order 6 = 00:00:02
+Manifold computation time at order 6 = 00:00:03
 Estimated memory usage at order  6 = 1.91E+01 MB
-Manifold computation time at order 7 = 00:00:03
+Manifold computation time at order 7 = 00:00:04
 Estimated memory usage at order  7 = 2.23E+01 MB
 
  Run='SSMToolFRCeps.ep': Continue equilibria with varied epsilon.
@@ -1291,11 +1279,11 @@ Estimated memory usage at order  7 = 2.23E+01 MB
    76  00:00:00   1.9205e+02     13  EP      1.3566e+02   1.8391e-03   6.2582e+00   1.0000e-01
 
  STEP      TIME        ||U||  LABEL  TYPE            om         rho1          th1          eps
-    0  00:00:00   2.0860e+02     14  EP      1.4745e+02   3.9582e-02   3.7344e+00   1.0000e-01
-   10  00:00:00   2.1260e+02     15          1.5030e+02   7.5474e-03   3.2445e+00   1.0000e-01
-   20  00:00:00   2.1760e+02     16          1.5383e+02   3.3968e-03   3.1878e+00   1.0000e-01
-   30  00:00:00   2.2260e+02     17          1.5737e+02   2.1876e-03   3.1713e+00   1.0000e-01
-   32  00:00:00   2.2318e+02     18  EP      1.5778e+02   2.1012e-03   3.1702e+00   1.0000e-01
+    0  00:00:01   2.0860e+02     14  EP      1.4745e+02   3.9582e-02   3.7344e+00   1.0000e-01
+   10  00:00:01   2.1260e+02     15          1.5030e+02   7.5474e-03   3.2445e+00   1.0000e-01
+   20  00:00:01   2.1760e+02     16          1.5383e+02   3.3968e-03   3.1878e+00   1.0000e-01
+   30  00:00:01   2.2260e+02     17          1.5737e+02   2.1876e-03   3.1713e+00   1.0000e-01
+   32  00:00:01   2.2318e+02     18  EP      1.5778e+02   2.1012e-03   3.1702e+00   1.0000e-01
 
  Run='SSMToolFRCeps2.ep': Continue equilibria with varied omega at eps equal to 2.000000e-01.
 
@@ -1317,12 +1305,12 @@ Estimated memory usage at order  7 = 2.23E+01 MB
    60  00:00:00   2.0653e+02     11          1.4592e+02   3.6361e-02   6.0252e+00   2.0000e-01
    70  00:00:00   2.0486e+02     12          1.4473e+02   1.6268e-02   6.1717e+00   2.0000e-01
    80  00:00:00   1.9987e+02     13          1.4119e+02   6.9364e-03   6.2360e+00   2.0000e-01
-   90  00:00:00   1.9488e+02     14          1.3766e+02   4.4293e-03   6.2531e+00   2.0000e-01
-   96  00:00:00   1.9205e+02     15  EP      1.3566e+02   3.6791e-03   6.2582e+00   2.0000e-01
+   90  00:00:01   1.9488e+02     14          1.3766e+02   4.4293e-03   6.2531e+00   2.0000e-01
+   96  00:00:01   1.9205e+02     15  EP      1.3566e+02   3.6791e-03   6.2582e+00   2.0000e-01
 
  STEP      TIME        ||U||  LABEL  TYPE            om         rho1          th1          eps
-    0  00:00:00   2.0859e+02     16  EP      1.4745e+02   5.1962e-02   3.5277e+00   2.0000e-01
-   10  00:00:00   2.1271e+02     17          1.5037e+02   1.4494e-02   3.2408e+00   2.0000e-01
+    0  00:00:01   2.0859e+02     16  EP      1.4745e+02   5.1962e-02   3.5277e+00   2.0000e-01
+   10  00:00:01   2.1271e+02     17          1.5037e+02   1.4494e-02   3.2408e+00   2.0000e-01
    20  00:00:01   2.1770e+02     18          1.5391e+02   6.7051e-03   3.1872e+00   2.0000e-01
    30  00:00:01   2.2270e+02     19          1.5744e+02   4.3408e-03   3.1711e+00   2.0000e-01
    31  00:00:01   2.2318e+02     20  EP      1.5778e+02   4.2007e-03   3.1702e+00   2.0000e-01

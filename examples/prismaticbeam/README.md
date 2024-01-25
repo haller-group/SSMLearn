@@ -3,7 +3,7 @@ This is a preview of the livescript `prismaticbeam.mlx`.
 # Fitting a 4D SSM for an internally resonant (1:3) prismatic beam
   
 
-See [1] for the details of this model, and [2] the description of this example.
+See [1] for the details of this model, and [2] for the description of this example.
 
 [1] Li, M., Jain, S., \& Haller, G. (2021). Nonlinear analysis of forced mechanical systems with internal resonance using spectral submanifolds-Part I: Periodic response and forced response curve. *Nonlinear Dynamics* 110, 1005-1043. [DOI: 10.1007/s11071-022-07714-x](https://doi.org/10.1007/s11071-022-07714-x)
 
@@ -36,6 +36,8 @@ $$
 $$
 
 with
+
+  
 
 $x=\left\lbrack \begin{array}{c}
 q\\
@@ -82,7 +84,7 @@ end
 
 # Define master modes and linear part of the dynamics 
 
-Due to the 1:3 internal resonance, we take the first two complex conjugate pairs of modes as the spectral subspace to SSM. So we have resonant_modes = [1 2 3 4].
+We initialize the base properties of the SSM, i.e., its linear part, which we know from the linear dynamics of the model. In this case, we target the slow four-dimensional SSM of the system, which features an internal resonance.
 
 ```matlab:Code
 masterModes = [1 3 2 4]; % Modal displacements and modal velocities
@@ -110,7 +112,7 @@ loadVector = fext;  %  could also be set as modal ones
 
 # Compare linear and nonlinear response via modal displacement
 
-This is performed in order to obtain initial conditions of the the decaying trajectories.
+We characterize the linear and nonlinear regimes via a static modal analysis, which serves to pick appropriate initial conditions for the trajectories we need to learn the SSM from data.
 
 ```matlab:Code
 Model = struct('M', M ,'K', K, 'F',F); 
@@ -239,7 +241,7 @@ desiredAmplitudeDecay = nonlinearDisplacementReference/linearDisplacementReferen
 
 # **Generate decaying trajectories via time integration**
 
-We use a pre-computed data set.
+We define observables and timescales. The computation of integration time is estimated from the linear decay that gets from the defined nonlinear amplitude to linear regime. We set the sampling time to capture approximately a fixed number points per period on the faster time scale. Then, we integrate using the initial conditions we obtained from the static analysis. Here, we use a pre-computed data set to avoid excessive computations.
 
 ```matlab:Code
 newSimulation = false;
@@ -252,7 +254,7 @@ if newSimulation
     numberPeriodsSlow = floor(log(desiredAmplitudeDecay)/...
         (2*pi*(-real(lambda(1))/abs(lambda(1)))))
     endTime = numberPeriodsSlow*slowTimeScale;
-    % Set the sampling time to capture approximately 100 points per period 
+    % Set the sampling time to capture approximately 50 points per period 
     % on the faster time scale
     numberPeriodsFast = floor(endTime/fastTimeScale);
     numberPointsPerPeriod = 50;
@@ -273,20 +275,22 @@ end
 # Visualize data
 
 ```matlab:Code
-yData = coordinatesEmbedding(xData, SSMDim, 'ForceEmbedding', 1);
+% This step is here not mandatory as we know that the SSM exists in the
+% phase space (no embedding needed)
+xData = coordinatesEmbedding(xData, SSMDim, 'ForceEmbedding', 1);
 ```
 
 ```text:Output
 The embedding coordinates consist of the measured states.
 ```
 
-Data filtering: We need to make sure that the data that we use to identify the slow manifold lies close to it. We can do this by plotting a spectrogram of the beam tip displacement. In general, there may be many vibratory modes present at first, but the faster ones quickly die out.
+Data filtering: We need to make sure that the data that we use to identify the manifold lies close to it. We can do this by plotting a spectrogram of the observables of interest. In general, there may be many vibratory modes present at first, but the faster ones quickly die out.
 
 ```matlab:Code
 indPlot1 = indTrain(2);
 indPlot2 = indTest(2);
 
-showSpectrogram(yData(indPlot1,:), outdof);
+showSpectrogram(xData(indPlot1,:), outdof);
 ylim([0,abs(lambda(1))/2/pi*5])
 ```
 
@@ -294,7 +298,7 @@ ylim([0,abs(lambda(1))/2/pi*5])
 ](README_images/figure_8.png
 )
 
-We plot the tip displacement over time for closer inspection. 
+We plot the observables of interest over time for closer inspection. 
 
 ```matlab:Code
 customFigure();
@@ -310,36 +314,36 @@ title('Generated data')
 
 # Truncate transient data from trajectories
 
-Next, we use the information from the spectrogram and plot to remove the first part of the training data. After the first few oscillations have passed, there is one dominant mode left in the frequency spectrum. In this case, faster modes die out very quickly, so we can use almost all of the data. We must however remove the first transient to fulfill the assumption that trajectories lie close to the SSM. We keep only the time interval |sliceInt|.
+We must however remove the first transient to fulfill the assumption that trajectories lie close to the SSM. We keep only the time interval |sliceInt|.
 
 ```matlab:Code
 sliceInt = [20*slowTimeScale, endTime];
-yDataTrunc = sliceTrajectories(yData, sliceInt);
+xDataTrunc = sliceTrajectories(xData, sliceInt);
 ```
 
 # Datadriven manifold fitting
 
-The measured trajectories are assumed to lie close to a two-dimensional manifold that is tangent at the origin to the eigenspace corresponding to the slowest pair of eigenvalues. We now fit a polynomial of order $M$ to the data points to approximate the manifold. Here we use a graph style parametrization, meaning that the manifold is parametrized using coordinates $\eta =W_e y$ of the eigenspace represenation $V_e$. This excludes the possibility of folds on the manifold (however, if necessary we may circumvent this problem by increasing the dimensionality of the observed space). 
+The measured trajectories are initialized to lie close to the manifold of interest that is tangent at the origin to the eigenspace spanned by the columns of $V_e$. 
 
-We seek the $2n\times m_M$ polynomial coefficient matrix $H$ of the manifold on the form
+As we also know the projection $W_e$ to this eigenspace, we define the modal coordinates as $y=W_e x$. These are the reduced coordinates for our graph style parametrization of the manifold, gauranteed to exists near the origin. We then use the data to learn the nonlinear feature of the manifold geometry, represented via polynomials. Indeed, we seek the $2N\times m_M$ polynomial coefficient matrix $H$ of the manifold on the form
 
-$y=V_e V_e^{\top } y+H\phi_{m,2:M} (V_e^{\top } y)$,
+> $x=V_e y+H{{\phi }}_{m,2:M} (y)$,
 
-where the function $\phi_{m,2:M} (q)$ computes a vector of all $m_M$ monomials from orders 2 up to $M$ of an $m$-vector $q$. The coefficients $H$are obtained via regression.
+where the function ${{\phi }}_{m,2:M} (y)$ computes a vector of all $m_M$ monomials from orders 2 up to $M$ of an $m$-vector $y$. From SSM theory, the tangent space of the manifold is $V_e$. The coefficients $H$are obtained via least squares regression.
 
 ```matlab:Code
 SSMOrder = 3;
 
 % Get projection or modal coordinates 
 SSMDim = size(Ve,2);
-etaDataTrunc = yDataTrunc;
-nTraj = size(yDataTrunc,1);
+yDataTrunc = xDataTrunc;
+nTraj = size(xDataTrunc,1);
 for iTraj = 1:nTraj
-    etaDataTrunc{iTraj,2} = We*yDataTrunc{iTraj,2};    
+    yDataTrunc{iTraj,2} = We*xDataTrunc{iTraj,2};    
 end
 
 % Plot reduced coordinates
-plotReducedCoordinates(etaDataTrunc);
+plotReducedCoordinates(yDataTrunc);
 legend({'Test set trajectory', 'Training set trajectory'})
 if SSMDim>2
    view(3) 
@@ -353,13 +357,13 @@ end
 ```matlab:Code
 
 % Compute nonlinear part of the parametrization
-IMInfo = IMGeometry(yDataTrunc(indTrain,:), SSMDim,SSMOrder,...
-         'reducedCoordinates',etaDataTrunc(indTrain,:),'Ve',Ve,'outdof',outdof); 
+IMInfo = IMGeometry(xDataTrunc(indTrain,:), SSMDim,SSMOrder,...
+         'reducedCoordinates',yDataTrunc(indTrain,:),'Ve',Ve,'outdof',outdof); 
 IMInfo.chart.map = @(x) We*x;                          
 
 % Parametrization error on test trajectory
 normedTrajDist = computeTrajectoryErrors(liftTrajectories(IMInfo,...
-    etaDataTrunc), yDataTrunc);
+    yDataTrunc), xDataTrunc);
 staticNMTE = mean(normedTrajDist(indTest))*100; % in percentage
 
 disp(['Reconstruction error = ' num2str(staticNMTE) '%'])
@@ -373,40 +377,33 @@ Reconstruction error = 0.43707%
 
 if ~isempty(outdof) && SSMDim<=2
 idxPlot = [outdof]; % 3D Plot: eta_1, eta_2 and idxPlot coordinate
-plotSSMandTrajectories(IMInfo, idxPlot, yDataTrunc(indTest,:), etaDataTrunc(indTest,:))
+plotSSMandTrajectories(IMInfo, idxPlot, xDataTrunc(indTest,:), yDataTrunc(indTest,:))
 view(-100,20); legend('off')
 end
 ```
 
 # Reduced dynamics on the manifold
 
-We compute a model for the reduced dynamics with the truncated training data projected onto the manifold. The function `IMDynamicsFlow` fits a polynomial map = 
+We compute a model for the reduced dynamics with the truncated training data projected onto the manifold. The function `IMDynamicsMech` finds the dynamics (considering that we know the linear part)
+
+> $\dot{y} =A_e y+H_r {{\phi }}_{m,2:M} (y)$,
+
+where ${\phi }(y)$ again computes a vector of all monomials of $u$, and $H_r$ is a matrix of polynomial coefficients of the form
 
 $$
-\dot{\eta} =W_r \phi (\eta )
+H_r =\left\lbrack \begin{array}{c}
+0\\
+W_r 
+\end{array}\right\rbrack
 $$
 
-where $\phi (\eta )$ again computes a vector of all monomials of $\eta$, and  $W_r$ is a matrix of polynomial coefficients. 
-
-We are also specifying that we want the reduced dynamics on a normal form, and seek the Taylor expansion of a map $N$ fulfilling
-
-$$
-\dot{z} =N(z)=Dz+W_n \phi (z)
-$$
-
-with $D$ a diagonal matrix and $W_n$ containing coefficients for the near-resonant nonlinear terms, after a near-identity change of coordinates
-
-$$
-z=T^{-1} (\eta )=\eta +W_t \phi (\eta )
-$$
-
-with $W_t$ containing the coefficients for the nonlinear terms of the coordinate change. Here we fix the linear part $A_e$ and prescribe the frequency ratio to help in getting the internally resonant normal form.
+Then, we find from data the extended normal form, which expedites system characterization and computation of periodic forced responses.
 
 ```matlab:Code
 ROMOrder = 3;
 freqNorm = [1 3];
 
-RDInfo = IMDynamicsMech(etaDataTrunc(indTrain,:), ...
+RDInfo = IMDynamicsMech(yDataTrunc(indTrain,:), ...
     'R_PolyOrd', 1,'N_PolyOrd', ROMOrder, 'style', 'normalform', ...
     'R_coeff',Ae,'rescale',1,'frequencies_norm',freqNorm,'MaxIter',5e3);
 ```
@@ -1306,12 +1303,12 @@ Estimation of the reduced dynamics in normal form...
 % We transform the truncated initial condition of our test trajectory according to 
 % the obtained change of coordinates, and integrate our reduced order evolution rule 
 % to predict the development of the trajectory. 
-[yRec, etaRec, zRec] = advect(IMInfo, RDInfo, yDataTrunc);
+[yRec, etaRec, zRec] = advect(IMInfo, RDInfo, xDataTrunc);
 
 % Evaluation of reduced dynamics
 % The error NMTE is computed as the average distance of the predicted trajectory 
 % to the measured one in the full state space.
-normedTrajDist = computeTrajectoryErrors(yRec, yDataTrunc);
+normedTrajDist = computeTrajectoryErrors(yRec, xDataTrunc);
 NMTE = mean(normedTrajDist(indTest))*100;
 disp(['Normalized mean trajectory error = ' num2str(NMTE) '%'])
 ```
@@ -1323,11 +1320,11 @@ Normalized mean trajectory error = 9.7356%
 ```matlab:Code
 
 % We plot the true test set trajectory in the reduced coordinates and compare it to the prediction. 
-plotReducedCoordinates(etaDataTrunc(indTest,:), etaRec(indTest,:))
+plotReducedCoordinates(yDataTrunc(indTest,:), etaRec(indTest,:))
 legend({'Test set (truncated)', 'Prediction'})
 if size(Ae,1)==2
     % Plot SSM with trajectories in the normal form reduced coordinates
-    plotSSMandTrajectories(IMInfo, outdof, yDataTrunc(indTest,:), ...
+    plotSSMandTrajectories(IMInfo, outdof, xDataTrunc(indTest,:), ...
         zRec(indTest,:), 'NFT', RDInfo.transformation.map)
     view(-100,20); legend('off')
 else
@@ -1339,7 +1336,7 @@ end
 ](README_images/figure_12.png
 )
 
-We also plot the measured and predicted tip displacement.
+We plot the model predictions in physical coordinates. The reduced model seems to do well on previously unseen data, provided that it is close to the manifold.
 
 ```matlab:Code
 customFigure('subPlot',[3 2]); ipos = 0;
@@ -1347,11 +1344,11 @@ for iRow = 1:3
     for iCol = 1:2
         ipos = ipos+1;
         subplot(3,2,ipos)
-        plot(yData{indTest(iRow),1},yData{indTest(iRow),2}(iCol,:),'k','Linewidth',1,'Color',colors(colFOM,:))
+        plot(xData{indTest(iRow),1},xData{indTest(iRow),2}(iCol,:),'k','Linewidth',1,'Color',colors(colFOM,:))
         plot(yRec{indTest(iRow),1},yRec{indTest(iRow),2}(iCol,:),':','Linewidth',2,'Color',colors(colSSML,:))
         xlabel('time')
         ylabel(['$u_' num2str(iCol) '$'],'interpreter','latex')
-        xlim([yData{indTest(iRow),1}(1) yData{indTest(iRow),1}(end)])
+        xlim([xData{indTest(iRow),1}(1) xData{indTest(iRow),1}(end)])
     end
 end
 legend('Test trajectory','Prediction')
@@ -1376,6 +1373,8 @@ forcingVectors = [zeros(n,1); M\loadVector];
 ```
 
 # Generate Frequency Responses via SSMLearn \& SSMTool
+
+We compute them also with SSMTool in order to compare the results (see the papers above for additional validations and comparisons).
 
 ```matlab:Code
 mFreqs = [1 3];
@@ -1539,7 +1538,7 @@ Estimated memory usage at order  3 = 1.01E-01 MB
    30  00:00:00   2.0112e+01      9          3.8708e+00   1.2382e+01   6.5764e-03   4.4105e+00   3.7954e+00   4.0000e-01
    40  00:00:00   1.5772e+01     10          3.8720e+00   9.3749e+00   2.8795e-03   3.9495e+00   2.4125e+00   4.0000e-01
    50  00:00:00   1.1508e+01     11          3.8774e+00   5.9951e+00   7.7027e-04   3.6221e+00   1.4300e+00   4.0000e-01
-   60  00:00:00   8.1807e+00     12          3.9052e+00   2.5734e+00   6.7623e-05   3.3413e+00   5.8640e-01   4.0000e-01
+   60  00:00:01   8.1807e+00     12          3.9052e+00   2.5734e+00   6.7623e-05   3.3413e+00   5.8640e-01   4.0000e-01
    69  00:00:01   7.3817e+00     13  EP      4.0866e+00   5.6020e-01   2.3275e-06   3.1848e+00   8.6694e-02   4.0000e-01
 
  Run='SSMToolFRCeps2.ep': Continue equilibria with varied omega at eps equal to 7.000000e-01.

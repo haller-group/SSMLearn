@@ -1,33 +1,33 @@
 % One step prediction error comparison
 
-linSyst = @(eta) Ae*eta;
+linSyst = @(y) Ae*y;
 nMean = 1;
 tMax = 10;
 indTrajs = indTest;
 errors = cell(length(indTrajs),3);
 for ii = 1:length(indTrajs)
     iTraj = indTrajs(ii);
-    idxMax = sum(tCurr<tMax)+1;
-    tCurr = yDataTrunc{iTraj,1}(1:idxMax);   
-    yCurr = yDataTrunc{iTraj,2}(:,1:idxMax); 
-    etaCurr = IMInfo.chart.map(yCurr);
-    normEta = max(vecnorm(etaCurr));
+    idxMax = sum(xDataTrunc{iTraj,1}<tMax)+1;
+    tCurr = xDataTrunc{iTraj,1}(1:idxMax);   
+    xCurr = xDataTrunc{iTraj,2}(:,1:idxMax); 
+    yCurr = IMInfo.chart.map(xCurr);
+    normy = max(vecnorm(yCurr));
     stepping = 1;
     idxStep = 1:stepping:length(tCurr);
     error=zeros(2,length(idxStep)-1);
     for jj = 1:length(idxStep)-1
     
+    xDataCurr = {tCurr(idxStep(jj):idxStep(jj+1)), ...
+                 xCurr(:,idxStep(jj):idxStep(jj+1))};
     yDataCurr = {tCurr(idxStep(jj):idxStep(jj+1)), ...
-                 yCurr(:,idxStep(jj):idxStep(jj+1))};
-    etaDataCurr = {tCurr(idxStep(jj):idxStep(jj+1)), ...
-                   etaCurr(:,idxStep(jj):idxStep(jj+1))};
+                   yCurr(:,idxStep(jj):idxStep(jj+1))};
 
-    [~, etaCurrRecNL, ~] = advect(IMInfo, RDInfo, yDataCurr);
+    [~, yCurrRecNL, ~] = advect(IMInfo, RDInfo, xDataCurr);
 
-    etaCurrRecL= integrateFlows(linSyst, etaDataCurr);
+    yCurrRecL= integrateFlows(linSyst, yDataCurr);
 
-    error(1,jj) = norm(etaCurrRecNL{1,2}(:,end)-etaDataCurr{1,2}(:,end));
-    error(2,jj) = norm(etaCurrRecL{1,2}(:,end)-etaDataCurr{1,2}(:,end));
+    error(1,jj) = norm(yCurrRecNL{1,2}(:,end)-yDataCurr{1,2}(:,end));
+    error(2,jj) = norm(yCurrRecL{1,2}(:,end)-yDataCurr{1,2}(:,end));
     end
     errors{ii,1} = tCurr(1:end-1);
     errors{ii,2} = error;
@@ -43,11 +43,11 @@ errorL = errorNL;
 for ii = 1:length(indTrajs)
     error = errors{ii,2};
 %     if nMean>1
-%         errorL = errorL + movmean(error(2,:)/normEta*100,nMean)/length(indTrajs);
-%         errorNL = errorNL + movmean(error(1,:)/normEta*100,nMean)/length(indTrajs);
+%         errorL = errorL + movmean(error(2,:)/normy*100,nMean)/length(indTrajs);
+%         errorNL = errorNL + movmean(error(1,:)/normy*100,nMean)/length(indTrajs);
 %     else
-        errorL = errorL + interp1(errors{ii,1},error(2,:),tCurr)/normEta*100/length(indTrajs);
-        errorNL = errorNL + interp1(errors{ii,1},error(1,:),tCurr)/normEta*100/length(indTrajs);
+        errorL = errorL + interp1(errors{ii,1},error(2,:),tCurr)/normy*100/length(indTrajs);
+        errorNL = errorNL + interp1(errors{ii,1},error(1,:),tCurr)/normy*100/length(indTrajs);
 %     end
 end
 plot(tCurr,errorL,'k','Linewidth',2)
