@@ -1,6 +1,6 @@
 # Shallow-curved shell structure with geometric nonlinearities
 
-This a preview of the live-script `vonkarmanshell.mlx`. See [1] for the details of this model, and [2] the description of this example.
+This a preview of the livescript `vonkarmanshell.mlx`. See [1] for the details of this model, and [2] the description of this example.
 
 [1] Jain, S., \& Tiso, P. (2018). Simulation-free hyper-reduction for geometrically nonlinear structural dynamics: a quadratic manifold lifting approach. *Journal of Computational and Nonlinear Dynamics*, *13*(7), 071003. [https://doi.org/10.1115/1.4040021](https://doi.org/10.1115/1.4040021)
 
