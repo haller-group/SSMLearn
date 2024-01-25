@@ -31,12 +31,12 @@ The laminar base state at the origin $\mathbf{u}\left(\mathit{\mathbf{x}},t\righ
 
 In this parameter regime, the theory of spectral submanifolds [5] tells us that there exists a unique smoothest invariant manifold tangent to the unstable subspace of the upper branch. This invariant manifold leads to the limit cycle and coincides with the slowest (least stable) spectral submanifold of the limit cycle. We choose to parametrize this manifold using two of the physically observable quantities, the square root of the energy input rate $J=\sqrt{|I|}$ and that of the energy dissipation rate $K=\sqrt{|D|}$, where $I$ and $D$ are defined as
 
-$$
+```math
 \begin{array}{l}
 I=\frac{1}{2L_x L_z }\int_0^{L_x } \int_0^{L_z } \left({\frac{\partial u}{\partial y}\left|\right.}_{y=1} +{\frac{\partial u}{\partial y}\left|\right.}_{y=-1} \right)~\textrm{d}z~\textrm{d}x-1,\\
 D=\frac{1}{2L_x L_z }\int_0^{L_x } \int_{-1}^1 \int_0^{L_z } |\nabla \times u|^2 ~\textrm{d}z~\textrm{d}y~\textrm{d}x-1.
 \end{array}
-$$
+```
 
 With theses definitions, the rate of energy input $I$ and the energy dissipation are equal to zero at the laminar base state. The use the square roots $\left(J,K\right)$ of $\left(I,D\right)$ as parametrizing coordiates of the SSM is motivated in the other live scripts of this example. To describe the limit cycle with an extended normal form, we center $\left(J,K\right)$ on the upper state in this example. The calculation of the reduced order model and the parametrization are both carried out using SSMLearn [6]. We also note that in this data set the velocities are stored as centered at the laminar base state, hence the PCA reconstruction returns $\tilde{\mathbf{u}} \left(\mathit{\mathbf{x}},t\right)=\mathbf{u}\left(\mathit{\mathbf{x}},t\right)-\left(y,0,0\right)$.
 
