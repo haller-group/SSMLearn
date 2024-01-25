@@ -4,7 +4,7 @@ function FRC_data = SSMToolFRC(M, C, K, fnl, fext, fcoeffs, outdof, omegaRange, 
 % outdof is the index of the plotted degree of freedom
 % orders is a scalar/vector of the degree of Taylor expansions to be plotted
 
-SSMOrder = 9;
+SSMOrder = 9; 
 [DS, S, ~] = getSSM(M, C, K, fnl, 1:2, SSMOrder);
 
 epsilon = 1;
