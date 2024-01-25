@@ -48,7 +48,7 @@ With theses definitions, the rate of energy input $I$ and the energy dissipation
 
 [4] J. F. Gibson, Channelflow: A spectral Navier-Stokes simulator in C++, Tech. Rep. (U. New Hampshire, 2014) `Channelflow.org`.
 
-[5] G. Haller \& S. Ponsioen, Exact model reduction by a slow-fast decomposition of nonlinear mechanical systems. *Nonlinear Dynamics ***90, **617-647, (2017) 
+[5] G. Haller \& S. Ponsioen, Exact model reduction by a slow-fast decomposition of nonlinear mechanical systems. *Nonlinear Dynamics* **90**,617-647, (2017) 
 
 [6] M. Cenedese, J. Axås, B. Bäuerlein, K. Avila \& G. Haller, Data-driven modeling and prediction of non-linearizable dynamics via spectral submanifolds *Nat. Commun*. **13** 872.  (2022) 
 
