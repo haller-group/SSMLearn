@@ -1,7 +1,6 @@
 # Shallow-curved shell structure with geometric nonlinearities
-  
 
-See [1] for the details of this model, and [2] the description of this example.
+This a preview of the live-script `vonkarmanshell.mlx`. See [1] for the details of this model, and [2] the description of this example.
 
 [1] Jain, S., \& Tiso, P. (2018). Simulation-free hyper-reduction for geometrically nonlinear structural dynamics: a quadratic manifold lifting approach. *Journal of Computational and Nonlinear Dynamics*, *13*(7), 071003. [https://doi.org/10.1115/1.4040021](https://doi.org/10.1115/1.4040021)
 
@@ -11,8 +10,8 @@ The finite element code taken from the following package:
 
 Jain, S., Marconi, J., Tiso P. (2020). YetAnotherFEcode (Version v1.1). Zenodo. [http://doi.org/10.5281/zenodo.4011282](http://doi.org/10.5281/zenodo.4011282)
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/image_0.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/image_0.png
+![images/image_0.png
+](images/image_0.png
 )
 
 # Example setup
@@ -64,8 +63,8 @@ nDiscretization = 10; % Discretization parameter (#DOFs is proportional to the s
 Building FE model
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_0.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_0.png
+![images/figure_0.png
+](images/figure_0.png
 )
 
 ```text:Output
@@ -74,20 +73,20 @@ Applying boundary conditions
 Solving undamped eigenvalue problem
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_1.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_1.png
+![images/figure_1.png
+](images/figure_1.png
 )
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_2.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_2.png
+![images/figure_2.png
+](images/figure_2.png
 )
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_3.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_3.png
+![images/figure_3.png
+](images/figure_3.png
 )
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_4.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_4.png
+![images/figure_4.png
+](images/figure_4.png
 )
 
 ```text:Output
@@ -185,8 +184,8 @@ title('Static loading analysis');
 axis tight
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_5.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_5.png
+![images/figure_5.png
+](images/figure_5.png
 )
 
 ```matlab:Code
@@ -272,8 +271,8 @@ showSpectrogram(yData(indTrain,:), outdof);
 ylim([0,abs(lambda(1))/2/pi*5])
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_6.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_6.png
+![images/figure_6.png
+](images/figure_6.png
 )
 
 We plot the tip displacement over time for closer inspection. 
@@ -286,8 +285,8 @@ legend({'Trajectory 1', 'Trajectory 2'})
 title('Generated data')
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_7.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_7.png
+![images/figure_7.png
+](images/figure_7.png
 )
 
 # Truncate transient data from trajectories
@@ -325,8 +324,8 @@ plotReducedCoordinates(etaDataTrunc);
 legend({'Test set trajectory', 'Training set trajectory'})
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_8.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_8.png
+![images/figure_8.png
+](images/figure_8.png
 )
 
 ```matlab:Code
@@ -361,8 +360,8 @@ plotSSMandTrajectories(IMInfo, idxPlot, yDataTrunc(indTest,:), etaDataTrunc(indT
 view(-100,20); legend('off')
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_9.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_9.png
+![images/figure_9.png
+](images/figure_9.png
 )
 
 ```matlab:Code
@@ -371,8 +370,8 @@ plotSSMandTrajectories(IMInfo, gPlot, yDataTrunc(indTest,:), etaDataTrunc(indTes
 view(-100,20); legend('off')
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_10.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_10.png
+![images/figure_10.png
+](images/figure_10.png
 )
 
 ```matlab:Code
@@ -384,8 +383,8 @@ ylabel('$\dot{u}_1$','interpreter','latex')
 zlabel('$u_2$','interpreter','latex')
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_11.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_11.png
+![images/figure_11.png
+](images/figure_11.png
 )
 
 # Reduced dynamics on the manifold
@@ -981,8 +980,8 @@ the value of the step size tolerance.
 Plotting figure with the polar normal form equations ... Done. 
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_12.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_12.png
+![images/figure_12.png
+](images/figure_12.png
 )
 
 ```matlab:Code
@@ -1011,8 +1010,8 @@ plotReducedCoordinates(etaDataTrunc(indTest,:), etaRec(indTest,:))
 legend({'Test set (truncated)', 'Prediction'})
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_13.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_13.png
+![images/figure_13.png
+](images/figure_13.png
 )
 
 ```matlab:Code
@@ -1026,8 +1025,8 @@ else
 end
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_14.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_14.png
+![images/figure_14.png
+](images/figure_14.png
 )
 
 We also plot the measured and predicted tip displacement. The reduced model seems to do well on previously unseen data, provided that it is close to the 2D manifold.
@@ -1038,8 +1037,8 @@ xlabel('$t \, [$s$]$','Interpreter','latex')
 ylabel('$q_A \, [$m$]$','Interpreter','latex')
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_15.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_15.png
+![images/figure_15.png
+](images/figure_15.png
 )
 
 # Adding forcing to the ROM
@@ -1109,12 +1108,12 @@ omegaSpan = [0.92 1.07]*imag(lambda(1));
    32  00:00:01   2.2323e+02     18  EP      1.5778e+02   6.0789e-03   4.7430e+00   1.0000e-01
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_16.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_16.png
+![images/figure_16.png
+](images/figure_16.png
 )
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_17.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_17.png
+![images/figure_17.png
+](images/figure_17.png
 )
 
 ```text:Output
@@ -1151,12 +1150,12 @@ omegaSpan = [0.92 1.07]*imag(lambda(1));
    31  00:00:01   2.2323e+02     20  EP      1.5778e+02   1.2153e-02   4.7430e+00   2.0000e-01
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_18.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_18.png
+![images/figure_18.png
+](images/figure_18.png
 )
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_19.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_19.png
+![images/figure_19.png
+](images/figure_19.png
 )
 
 ```matlab:Code
@@ -1575,20 +1574,20 @@ the forcing frequency 1.5744e+02 is nearly resonant with the eigenvalue -2.9491e
 the forcing frequency 1.5778e+02 is nearly resonant with the eigenvalue -2.9491e-01 + i1.4745e+02
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_20.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_20.png
+![images/figure_20.png
+](images/figure_20.png
 )
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_21.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_21.png
+![images/figure_21.png
+](images/figure_21.png
 )
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_22.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_22.png
+![images/figure_22.png
+](images/figure_22.png
 )
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_23.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_23.png
+![images/figure_23.png
+](images/figure_23.png
 )
 
 # **Plot results**
@@ -1616,6 +1615,6 @@ set(gca,'YTickLabel',{'-\pi', '-3\pi/4', '-\pi/2', '-\pi/4', '0'})
 xlim([22 25])
 ```
 
-![/Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_24.png
-](preview_vonkarmanshell_images//Users/mattiacenedese/GitHub/SSMLearn/examples/vonkarmanshell/preview_vonkarmanshell_images/figure_24.png
+![images/figure_24.png
+](images/figure_24.png
 )
