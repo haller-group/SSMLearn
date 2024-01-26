@@ -41,7 +41,7 @@ This package uses the following external open-source packages for some of the ex
     install
     ```
 2. If external packages are not yet installed, download SSMTool from the link above, which also include coco, and install it. 
-3. Download the folder `data` that contains heavy data sets to run high-dimensional examples (i.e., Von Kármán shells and plates) at this [link](https://drive.google.com/drive/folders/1-59f20KnG_rLoH3MWfSlVOGg4Uj5wZFM?usp=sharing) and place it in the main folder of the local repository.
+3. Download the folder `data` that contains heavy data sets to run high-dimensional examples (i.e., Von Kármán shells and plates) at this [link](https://drive.google.com/drive/folders/1--4-tS1zyKCgjIxp0irQAff7S5mTvxRl?usp=drive_link) and place it in the main folder of the local repository.
 4. (optional) Figure specifications can be edited in the function customFigure.m located in the src folder.
 5. You are ready.
 
