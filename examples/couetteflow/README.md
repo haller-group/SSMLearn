@@ -597,9 +597,9 @@ ylabel('$K$', 'Interpreter','latex');
 
 In this section, we parametrize the full flow, compressed in our data set in terms of PCA
 
-$$
+```math
 \tilde{u} \left(x,y,z\right)\approx {{\phi }}_0 \left(x,y,z\right)+\sum_{j=1}^N {{\phi }}_j \left(x,y,z\right)a_j (t)
-$$
+```
 
 and we look for the parametrization
 
@@ -700,15 +700,15 @@ We take as initial data $\left(J,K\right)$, calculate the predicted time evoluti
 
 The error metric is 
 
-$$
+```math
 \textrm{Error}=||u(t)-u_{true} ||=\frac{1}{2L_x L_z }\int_0^{L_x } \int_{-1}^1 \int_0^{L_z } |u(t)-u_{\textrm{true}} (t)|
-$$
+```
 
 in this compressed representation, we approximate the integral by the square sum of the entries in the vector. The relative error is the ratio between the error and the maximal norm of the true trajectory.
 
-$$
+```math
 \textrm{Rel.}\;\textrm{error}=||u(t)-u_{\textrm{true}} (t)||/\max \;||u_{\textrm{true}} (t)||
-$$
+```
 
 ```matlab:Code
 customFigure('latex', true); 
