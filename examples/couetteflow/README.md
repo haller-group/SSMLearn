@@ -33,8 +33,8 @@ In this parameter regime, the theory of spectral submanifolds [5] tells us that 
 
 ```math
 \begin{array}{l}
-I=\frac{1}{2L_x L_z }\int_0^{L_x } \int_0^{L_z } \left({\frac{\partial u}{\partial y}\left|\right.}_{y=1} +{\frac{\partial u}{\partial y}\left|\right.}_{y=-1} \right)~\textrm{d}z~\textrm{d}x-1,\\
-D=\frac{1}{2L_x L_z }\int_0^{L_x } \int_{-1}^1 \int_0^{L_z } |\nabla \times u|^2 ~\textrm{d}z~\textrm{d}y~\textrm{d}x-1.
+\displaystyle I=\frac{1}{2L_x L_z }\int_0^{L_x } \int_0^{L_z } \left({\frac{\partial u}{\partial y}\left|\right.}_{y=1} +{\frac{\partial u}{\partial y}\left|\right.}_{y=-1} \right)~\textrm{d}z~\textrm{d}x-1,\\
+\displaystyle D=\frac{1}{2L_x L_z }\int_0^{L_x } \int_{-1}^1 \int_0^{L_z } |\nabla \times u|^2 ~\textrm{d}z~\textrm{d}y~\textrm{d}x-1.
 \end{array}
 ```
 
@@ -603,10 +603,12 @@ In this section, we parametrize the full flow, compressed in our data set in ter
 
 and we look for the parametrization
 
-$a(t)=w(J(t),K(t))={\sum_{\left|l\right|=1}^M W_l {\left\lbrack \begin{array}{c}
+```math
+a(t)=w(J(t),K(t))={\sum_{\left|l\right|=1}^M W_l {\left\lbrack \begin{array}{c}
 J\left(t\right)\\
 K\left(t\right)
-\end{array}\right\rbrack }^l }$.
+\end{array}\right\rbrack }^l }.
+```
 
 ```matlab:Code
 orderNormalForm = 5;
