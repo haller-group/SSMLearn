@@ -28,8 +28,8 @@ disp('Solving undamped eigenvalue problem')
 n_VMs = 5; % first n_VMs modes with lowest frequency calculated
 [V0,D] = eigs(K,M,n_VMs,'SM');
 phi = V0(:,iMode);
-disp('Mode shape')
-disp(phi)
+% disp('Mode shape')
+% disp(phi)
 disp('Eigenfrequency')
 disp(sqrt(D(iMode, iMode)))
 
