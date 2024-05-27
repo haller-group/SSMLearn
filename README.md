@@ -7,7 +7,7 @@
 ### Data-driven Reduced Order Models for Nonlinear Dynamical Systems
 
 This package identifies reduced-order models on spectral submanifolds (SSMs) from data. The required input consists of trajectory data of generic system observables close to an SSM, the SSM dimension, and the polynomial orders of approximation for the parametrization and reduced dynamics.
-In addition, an alternative simplified method, fastSSM, is included. See the fastSSM subfolder for documentation.
+In addition, an alternative simplified method, `fastSSM`, is included. See the `fastSSM` subfolder for documentation.
 
 The computational steps for achieving a reduced-order model are:
 
@@ -16,7 +16,7 @@ The computational steps for achieving a reduced-order model are:
 3. Identification of the reduced dynamics and its normal form.
 
 Once the normal form dynamics has been determined, the code can run analytics and predictions on the reduced-order model, such as backbone curves and forced responses, as shown in our examples.
-We have included a demonstration of SSM identification on the following examples.
+We have included demonstrations of SSM identifications on the following examples.
 
 - Oscillator chain: *n* degrees of freedom with trajectories on or off specific SSMs;
 - Von Kármán straight beam in 2D: geometrically nonlinear finite element model from SSMTool, with reduced order models constructed using different observables;
@@ -29,6 +29,8 @@ We have included a demonstration of SSM identification on the following examples
 - Prismatic beam in 3D: geometrically nonlinear finite element model from SSMTool with 1:3 internal resonance;
 - Von Kármán shell: geometrically nonlinear finite element model from SSMTool, with and without internal resonance between the two slowest modes;
 - Von Kármán plate: geometrically nonlinear finite element model from SSMTool with internal resonance on an intermediate SSM.
+- Inverted flag: inverted flag water tunnel experiments, with reductions to 2D and 4D SSMs, the latter showing a chaotic flapping regime.
+
 
 This package uses the following external open-source packages for some of the examples and post-processing capabilities:
 
@@ -58,7 +60,15 @@ Additional works appear in the references:
 
 - B. Kaszás, M. Cenedese & G. Haller, Dynamics-based machine learning of transitions in Couette flow, [*Physical Review Fluids*](https://doi.org/10.1103/PhysRevFluids.7.L082402) **7** (2022) L082402. [[PDF]](http://www.georgehaller.com/reprints/dynamicsbasedmachinelearning.pdf) [[Supplemental Material]](https://journals.aps.org/prfluids/supplemental/10.1103/PhysRevFluids.7.L082402/supplemental_couette.pdf)
 
-- J. Axås, M. Cenedese & G. Haller, Fast data-driven model reduction for nonlinear dynamical systems, [*Nonlinear Dynamics*](https://doi.org/10.1007/s11071-022-08014-0) (2022). [[PDF]](https://link.springer.com/content/pdf/10.1007/s11071-022-08014-0.pdf)
+- J. Axås, M. Cenedese & G. Haller, Fast data-driven model reduction for nonlinear dynamical systems, [*Nonlinear Dynamics*](https://doi.org/10.1007/s11071-022-08014-0) **111** (2023) 7941–7957. [[PDF]](https://link.springer.com/content/pdf/10.1007/s11071-022-08014-0.pdf)
+
+- J. Axås & G. Haller, Model reduction for nonlinearizable dynamics via delay-embedded spectral submanifolds, [*Nonlinear Dynamics*](https://doi.org/10.1007/s11071-023-08705-2) **111** (2023) 22079–22099. [[PDF]](https://link.springer.com/content/pdf/10.1007/s11071-023-08705-2.pdf)
+
+- A. Liu, J. Axås & G. Haller, Data-Driven Modeling and Forecasting of Chaotic Dynamics on Inertial Manifolds Constructed as Spectral Submanifolds, [Chaos](https://pubs.aip.org/aip/cha/article/34/3/033140/3279114/Data-driven-modeling-and-forecasting-of-chaotic) **34** (2024) 033140. [[PDF]](https://www.georgehaller.com/reprints/chaotic-dynamics.pdf)
+
+- Z. Xu, B. Kaszás, M. Cenedese, G. Berti, F. Coletti & G. Haller, Data-driven modelling of the regular and chaotic dynamics of an inverted flag from experiments, [*Journal of Fluid Mechanics*](https://doi.org/10.1017/jfm.2024.411) **987** (2024) R7. [[PDF]](https://www.georgehaller.com/reprints/inverted_flag_experiments.pdf)
+
+- L. Bettini, M. Cenedese & G. Haller, Model Reduction to Spectral Submanifolds in Non-Smooth Dynamical Systems, [*International Journal of Non-Linear Mechanics*](https://doi.org/10.1016/j.ijnonlinmec.2024.104753) **163** (2024) 104753. [[PDF]](https://www.georgehaller.com/reprints/smooth_dynamical_systems.pdf)
 
 - M. Cenedese, J. Marconi, G. Haller, & S. Jain, Data-assisted non-intrusive model reduction for forced nonlinear finite elements models, [*arXiv: 2311.17865*](https://arxiv.org/abs/2311.17865) (2023). [[PDF]](https://arxiv.org/pdf/2311.17865.pdf)
 
