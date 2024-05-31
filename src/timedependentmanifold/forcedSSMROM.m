@@ -41,8 +41,9 @@ addOptional(p, 'We', []);
 addOptional(p, 'Lo', []);
 addOptional(p, 'Vo', []);
 addOptional(p, 'Wo', []);
+addOptional(p, 'outdof',[]);
 parse(p, varargin{:});
-
+outdof = p.Results.outdof;
 % Eventual errors
 if strcmp(RDInfo.dynamicsType,'flow')~=1
     error('Forced SSM ROMs are only available for flows.'); end
@@ -64,7 +65,6 @@ else
         modalForcing = RDInfo.inverseTransformation.lintransf * ROMForcing;
     end
     modalForcing = 0.5*modalForcing(1:ndof,:);
-            
     % Setup 
     if isempty(p.Results.Lo) == 1
         error('Outer linearized dynamics needed.');
@@ -90,24 +90,28 @@ else
             end
         end
     end
-    fullNonModalForcing = Wo*p.Results.forcingVectors;
+    fullNonModalForcing = 0.5*Wo*p.Results.forcingVectors;
 end
 % Parametrization correction
 IMInfoF = IMInfo;
 IMInfoF.parametrization.numberForcingFrequencies = p.Results.nForcingFrequencies;
 autParam = IMInfoF.parametrization.map;
-
+autParamOut = IMInfoF.parametrization.mapOut;
 if flagNonModalForcing == 1
     IMInfoF.parametrization.forcingVectors = p.Results.forcingVectors;
     IMInfoF.parametrization.forcingVectorsModal = IMInfoF.parametrization.tangentSpaceAtOrigin*ROMForcing;
     IMInfoF.parametrization.forcingVectorsNonModal = real(Vo*fullNonModalForcing);
-    forcingNonAutParam= @(t,fFreqs,fAmpls,fPhs) real(Vo * ( ( ((fAmpls.*exp(1i*fPhs)).*fullNonModalForcing)./(Lo-1i*fFreqs) ) * exp(+1i*(transpose(fFreqs).*t)) + ( ((fAmpls.*exp(-1i*fPhs)).*fullNonModalForcing)./(Lo+1i*fFreqs) ) * exp(-1i*(transpose(fFreqs).*t))  ) ) ;
+    forcingNonAutParam= @(t,fFreqs,fAmpls,fPhs) -real(Vo * ( ( ((fAmpls.*exp(1i*fPhs)).*fullNonModalForcing)./(Lo-1i*fFreqs) ) * exp(+1i*(transpose(fFreqs).*t)) + ( ((fAmpls.*exp(-1i*fPhs)).*fullNonModalForcing)./(Lo+1i*fFreqs) ) * exp(-1i*(transpose(fFreqs).*t))  ) ) ;
+    forcingNonAutParamOut= @(t,fFreqs,fAmpls,fPhs) -real(Vo(outdof,:) * ( ( ((fAmpls.*exp(1i*fPhs)).*fullNonModalForcing)./(Lo-1i*fFreqs) ) * exp(+1i*(transpose(fFreqs).*t)) + ( ((fAmpls.*exp(-1i*fPhs)).*fullNonModalForcing)./(Lo+1i*fFreqs) ) * exp(-1i*(transpose(fFreqs).*t))  ) ) ;
     nonAutParam = @(t,q,fFreqs,fAmpls,fPhs) autParam(q) + forcingNonAutParam(t,fFreqs,fAmpls,fPhs);
+    nonAutParamOut = @(t,q,fFreqs,fAmpls,fPhs) autParamOut(q) + forcingNonAutParamOut(t,fFreqs,fAmpls,fPhs);
 else
     forcingNonAutParam = @(t,fFreqs,fAmpls,fPhs) 0 ;
     nonAutParam = @(t,q,fFreqs,fAmpls,fPhs) autParam(q);
+    nonAutParamOut = @(t,q,fFreqs,fAmpls,fPhs) autParamOut(q);
 end
 IMInfoF.parametrization.map = nonAutParam;
+IMInfoF.parametrization.mapOut = nonAutParamOut;
 IMInfoF.parametrization.forcingPart = forcingNonAutParam;
 
 % Dynamics correction
@@ -153,3 +157,6 @@ if flagNonModalForcing == 0
     IMInfoF.parametrization.forcingPart = @(t,fFreqs,fAmpls,fPhs) IMInfoF.parametrization.tangentSpaceAtOrigin*forcingNonAutRedDyn(t,fFreqs,fAmpls,fPhs);    
 end
 end
+
+
+

@@ -45,7 +45,8 @@ function [IMInfo, IMChart, IMParam] = IMGeometry(yData, SSMDim, M, varargin)
 
 % Default options and custom ones
 optsGeomtery = struct('l', 0,'c1',0,'c2',0,'t',1,...
-    'style','natural','chart',[],'reducedCoordinates',[],'Ve',[]);
+    'style','natural','chart',[],'reducedCoordinates',[],...
+    'Ve',[],'outdof',[]);
 if rem(length(varargin),2) > 0 && length(varargin) > 1
     error('Error on input arguments. Missing or extra arguments.')
 end
@@ -112,6 +113,12 @@ switch optsGeomtery.style
             'nonlinearCoefficients',H(:,SSMDim+1:end),'phi',phi,...
             'exponents',Exp_mat,'l',optsGeomtery.l,...
             'c1',optsGeomtery.c1,'c2',optsGeomtery.c2);
+        % Outdof parametrization to save memory
+        if ~isempty(optsGeomtery.outdof)
+            HOut = H(optsGeomtery.outdof,:);
+            IMParamOut = @(q) HOut * phi(q);
+            paramInfo.mapOut = IMParamOut;
+        end
 end
 IMInfo = struct('chart',chartInfo,'parametrization',paramInfo);
 end
