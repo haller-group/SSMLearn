@@ -28,14 +28,14 @@ We have included demonstrations of SSM identifications on the following examples
 - Buckling beam: finite-element simulation of an axially loaded beam undergoing mechanical failure;
 - Prismatic beam in 3D: geometrically nonlinear finite element model from SSMTool with 1:3 internal resonance;
 - Von Kármán shell: geometrically nonlinear finite element model from SSMTool, with and without internal resonance between the two slowest modes;
-- Von Kármán plate: geometrically nonlinear finite element model from SSMTool with internal resonance on an intermediate SSM.
-- Inverted flag: inverted flag water tunnel experiments, with reductions to 2D and 4D SSMs, the latter showing a chaotic flapping regime.
-
+- Von Kármán plate: geometrically nonlinear finite element model from SSMTool with internal resonance on an intermediate SSM;
+- Inverted flag: inverted flag water tunnel experiments, with reductions to 2D and 4D SSMs, the latter showing a chaotic flapping regime;
+- Non smooth mechanical systems: data-driven SSM reductions are shown for models with contact and friction.
 
 This package uses the following external open-source packages for some of the examples and post-processing capabilities:
 
 1. Continuation core (coco) https://sourceforge.net/projects/cocotools/
-2. SSMTool 2.4: Computation of invariant manifolds & their reduced dynamics in high-dimensional mechanics problems https://github.com/haller-group/SSMTool-2.4
+2. SSMTool 2.4 or greater: Computation of invariant manifolds & their reduced dynamics in high-dimensional mechanics problems https://github.com/haller-group/SSMTool-2.4
 
 ## Installation
 1. Once located in the main folder, install the package:  
@@ -71,5 +71,3 @@ Additional works appear in the references:
 - L. Bettini, M. Cenedese & G. Haller, Model Reduction to Spectral Submanifolds in Non-Smooth Dynamical Systems, [*International Journal of Non-Linear Mechanics*](https://doi.org/10.1016/j.ijnonlinmec.2024.104753) **163** (2024) 104753. [[PDF]](https://www.georgehaller.com/reprints/smooth_dynamical_systems.pdf)
 
 - M. Cenedese, J. Marconi, G. Haller, & S. Jain, Data-assisted non-intrusive model reduction for forced nonlinear finite elements models, [*arXiv: 2311.17865*](https://arxiv.org/abs/2311.17865) (2023). [[PDF]](https://arxiv.org/pdf/2311.17865.pdf)
-
-Please report any issues/bugs to Mattia Cenedese (mattiac@ethz.ch) or Joar Axås (jgoeransson@ethz.ch).
