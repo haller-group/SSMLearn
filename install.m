@@ -1,7 +1,6 @@
 function install
 % initial notes
     disp('SSMLearn: Data-driven Reduced Order Models for Nonlinear Dynamical Systems')
-    disp('Maintained by Mattia Cenedese (mattiac@ethz.ch) and Joar Axås (jgoeransson@ethz.ch)')
     disp('License: GNUv3.0')
     
 % Install the main software 
@@ -15,9 +14,9 @@ disp(' ')
 % check for SSMTool installation
 disp('Checking SSMTool is installed...')
 if exist('misc/frc_ab', 'file')
-    disp('SSMTool v>=2.4 already installed!')
+    disp('SSMTool v>=2.5 already installed!')
 else
-    warning(['SSMTool 2.4 not installed, cf. readme file. ' ...
+    warning(['SSMTool 2.5 not installed, cf. readme file. ' ...
         'Clone from github.com/jain-shobhit/SSMTool'])
 end
 
