@@ -67,7 +67,8 @@ switch optsGeomtery.style
         [V,IMParam,paramInfo] = IMGeometryGraphT0(yData,SSMDim,M,varargin{:});
         IMChart = @(x) transpose(V)*x;
         chartInfo = struct('map',IMChart,'polynomialOrder',1);
-        
+        paramInfo.mapOut = @(q) q;
+
         % Describe the manifold with user-defined coordinates or their chart
     otherwise
         % Store chart
@@ -118,7 +119,9 @@ switch optsGeomtery.style
             HOut = H(optsGeomtery.outdof,:);
             IMParamOut = @(q) HOut * phi(q);
             paramInfo.mapOut = IMParamOut;
+            
         end
+
 end
 IMInfo = struct('chart',chartInfo,'parametrization',paramInfo);
 end
