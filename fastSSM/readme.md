@@ -1,7 +1,7 @@
 fastSSM and fastSSMplus locate spectral submanifolds (SSMs) from data and 
 compute their reduced dynamics in the normal form. [1]
 
-To add fastSSM(plus) to the matlab path, run the following matlab commands:
+To add fastSSM(plus) to the matlab path, run the following matlab commands from the directory where you cloned this repository:
 
     cd SSMLearn/
     install
@@ -21,12 +21,18 @@ You can then run the following examples:
         vonkarmanbeam/vonkarman.m
         resonantbeam/resonantdoublebeam.m
         
-The following examples cover how to employ Vandermonde matrices for delay-embedded data: [2]
+The following examples cover how to employ Vandermonde matrices for delay-embedded data [2]:
     
     examples/
         oscillator/oscillator.m
         sloshing/sloshingDelay.m
         vonkarmanbeam/vonkarmanDelay.m
+
+This example shows how to recover nonlinear resonances from sloshing experiments [3]:
+
+    examples/
+        sloshing/sloshingResonance.m
+        sloshing/sloshingPoincare.m
 
 fastSSM and fastSSMplus are open-source and free to use.
 Please consider citing this work when using the code:
@@ -35,5 +41,7 @@ Please consider citing this work when using the code:
 
 [2] J. Axås and G. Haller. Model reduction for nonlinearizable dynamics via delay-embedded spectral submanifolds. Nonlinear Dynamics, 2023.
 
-Aug 10th, 2023
+[3] J. Axås, B. Bäuerlein, K. Avila, and G. Haller. Data-driven modeling of subharmonic forced response due to nonlinear resonance. Scientific Reports, 2024.
+
+Oct 30th, 2024
 Joar Axås

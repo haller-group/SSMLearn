@@ -2,6 +2,7 @@ function [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, m
 % [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder)
 % [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder, invstyle)
 % [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder, invstyle, tanspace)
+% [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, mfddim, mfdorder, romorder, nforder, invstyle, tanspace, ridgeparam)
 % Computes an SSM and normal form from data with SSMTool. By Joar Axas (jgoeransson@ethz.ch)
 %
 % INPUT:                                 OUTPUT:
@@ -15,6 +16,7 @@ function [Mmap, iMmap, Tmap, iTmap, Nflow, yRec, BBCInfo] = fastSSMplus(yData, m
 % invstyle 'poly' optional inverse 
 %       or 'mini'  transformation style (default polynomial)
 % tanspace (pxd)  optional tangent space
+% ridgeprm float  optional dynamics ridge regression parameter (default 0)
 %
 % Input should have the form {[t_1(1),t_1(2),t_1(3),...], [y_1(1),y_1(2),y_1(3),...];
 %                             [t_2(1),t_2(2),t_2(3),...], [y_2(1),y_2(2),y_2(3),...];
@@ -33,14 +35,18 @@ iStart = 1;
 for iTraj = 1:size(yData,1); iStart(iTraj+1) = iStart(iTraj)+size(yData{iTraj,1},2); end
 invertstyle = 'poly';
 if nargin>=6; invertstyle = lower(varargin{1}); assert(strcmpi(invertstyle, 'poly')||strcmpi(invertstyle, 'mini'), "invstyle argument must be 'poly' or 'mini'"); end
-
-%% Fit manifold
 if nargin < 7 % use SVD for tangent space
     [u,s,v] = svds(Y, mfddim);
     V = max(abs(v'),[],2).'.*u*s;
 else % use user-supplied matrix as tangent space
     V = varargin{2}.*max((varargin{2}\Y)');
 end
+ridgeparam = 0;
+if nargin >= 8
+    ridgeparam = varargin{3};
+end
+
+%% Fit manifold
 iMmap = @(y) V\y;
 Xi = iMmap(Y);
 M = Y/phi(Xi, 1:mfdorder);
@@ -52,7 +58,8 @@ for iTraj = 1:size(yData,1)
     [Xdot,Xnew] = ftd(Xi(:,iStart(iTraj):iStart(iTraj+1)-1),t);
     Xidot = [Xidot, Xdot]; Xinew = [Xinew, Xnew];
 end
-R = Xidot/phi(Xinew, 1:romorder);
+X = phi(Xinew, 1:romorder);
+R = (inv(X*X'+ridgeparam*eye(size(X,1)))*X*Xidot')';
 
 %% Rearrange coefficients into tensors for SSMTool
 Rcol = 1;
