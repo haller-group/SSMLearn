@@ -101,7 +101,7 @@ if isempty(optsParam.V_e) == 0 % KNOWN V
         V_e = orthogonalizeGramSchmidt(V_e);
     end
     if M < 2
-        IMParam=@(q) V_e*q; H = []; Exp_mat = [];
+        IMParam=@(q) V_e*q; H = []; Exp_mat = []; phi = @(q) [];
     else
         % Construct phi and the projection coordinates q
         [phi,Exp_mat] = multivariatePolynomial(k,2,M);

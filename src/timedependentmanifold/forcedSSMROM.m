@@ -96,22 +96,30 @@ end
 IMInfoF = IMInfo;
 IMInfoF.parametrization.numberForcingFrequencies = p.Results.nForcingFrequencies;
 autParam = IMInfoF.parametrization.map;
-autParamOut = IMInfoF.parametrization.mapOut;
+if isfield(IMInfoF.parametrization,'mapOut')
+    autParamOut = IMInfoF.parametrization.mapOut;
+end
 if flagNonModalForcing == 1
     IMInfoF.parametrization.forcingVectors = p.Results.forcingVectors;
     IMInfoF.parametrization.forcingVectorsModal = IMInfoF.parametrization.tangentSpaceAtOrigin*ROMForcing;
     IMInfoF.parametrization.forcingVectorsNonModal = real(Vo*fullNonModalForcing);
     forcingNonAutParam= @(t,fFreqs,fAmpls,fPhs) -real(Vo * ( ( ((fAmpls.*exp(1i*fPhs)).*fullNonModalForcing)./(Lo-1i*fFreqs) ) * exp(+1i*(transpose(fFreqs).*t)) + ( ((fAmpls.*exp(-1i*fPhs)).*fullNonModalForcing)./(Lo+1i*fFreqs) ) * exp(-1i*(transpose(fFreqs).*t))  ) ) ;
-    forcingNonAutParamOut= @(t,fFreqs,fAmpls,fPhs) -real(Vo(outdof,:) * ( ( ((fAmpls.*exp(1i*fPhs)).*fullNonModalForcing)./(Lo-1i*fFreqs) ) * exp(+1i*(transpose(fFreqs).*t)) + ( ((fAmpls.*exp(-1i*fPhs)).*fullNonModalForcing)./(Lo+1i*fFreqs) ) * exp(-1i*(transpose(fFreqs).*t))  ) ) ;
     nonAutParam = @(t,q,fFreqs,fAmpls,fPhs) autParam(q) + forcingNonAutParam(t,fFreqs,fAmpls,fPhs);
-    nonAutParamOut = @(t,q,fFreqs,fAmpls,fPhs) autParamOut(q) + forcingNonAutParamOut(t,fFreqs,fAmpls,fPhs);
+    if isfield(IMInfoF.parametrization,'mapOut')
+        forcingNonAutParamOut= @(t,fFreqs,fAmpls,fPhs) -real(Vo(outdof,:) * ( ( ((fAmpls.*exp(1i*fPhs)).*fullNonModalForcing)./(Lo-1i*fFreqs) ) * exp(+1i*(transpose(fFreqs).*t)) + ( ((fAmpls.*exp(-1i*fPhs)).*fullNonModalForcing)./(Lo+1i*fFreqs) ) * exp(-1i*(transpose(fFreqs).*t))  ) ) ;
+        nonAutParamOut = @(t,q,fFreqs,fAmpls,fPhs) autParamOut(q) + forcingNonAutParamOut(t,fFreqs,fAmpls,fPhs);
+    end
 else
     forcingNonAutParam = @(t,fFreqs,fAmpls,fPhs) 0 ;
     nonAutParam = @(t,q,fFreqs,fAmpls,fPhs) autParam(q);
-    nonAutParamOut = @(t,q,fFreqs,fAmpls,fPhs) autParamOut(q);
+    if isfield(IMInfoF.parametrization,'mapOut')
+        nonAutParamOut = @(t,q,fFreqs,fAmpls,fPhs) autParamOut(q);
+    end
 end
 IMInfoF.parametrization.map = nonAutParam;
-IMInfoF.parametrization.mapOut = nonAutParamOut;
+if isfield(IMInfoF.parametrization,'mapOut')
+    IMInfoF.parametrization.mapOut = nonAutParamOut;
+end
 IMInfoF.parametrization.forcingPart = forcingNonAutParam;
 
 % Dynamics correction

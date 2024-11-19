@@ -15,9 +15,9 @@ end
 stfourier = 0;
 for iTraj = 1:size(xData, 1)
     t = xData{iTraj,1}; x = xData{iTraj,2}(plotcoord, :);
-    Nwin = round(length(t)/50);
-%     [stf, frequencies, times] = spectrogram(x, Nwin, round(Nwin*0.5), [], 1./(t(2)-t(1)));
-    [stf, frequencies, times] = spectrogram(x, [], round(Nwin*0.5), [], 1./(t(2)-t(1))); % TODO: If timeseries vary between trajectories
+    Nwin = round(length(t)/10);
+    [stf, frequencies, times] = spectrogram(x, Nwin, round(Nwin*0.5), [], 2*pi/(t(2)-t(1)));
+    % [stf, frequencies, times] = spectrogram(x, [], round(Nwin*0.5), [], 1./(t(2)-t(1))); % TODO: If timeseries vary between trajectories
     stfourier = stfourier + stf;
 end
 
@@ -28,7 +28,7 @@ powerdensity = abs(stfourier);
 if fig_opt == 0
     fig = customFigure();
     xlabel('time [s]')
-    ylabel('frequency [1/s]')
+    ylabel('frequency [rad/s]')
     c = colorbar;
     c.Label.String = 'power spectral density [1/Hz]';
 end
