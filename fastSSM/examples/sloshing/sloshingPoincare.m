@@ -14,7 +14,7 @@ nicegray = [0.6,0.6,0.6];
 load sloshingForcedData.mat
 % Note: Data dimensionality has been scaled down 20 times to save repo 
 % space. To retrieve the exact results from Axas et al (2024), download the
-% full dataset from the ETH library (url pending)
+% full dataset from ETH library: https://doi.org/10.3929/ethz-b-000706707
 
 nTraj = size(xData, 1);
 nSurfacePoints = size(xData{1,2}, 1);
