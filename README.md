@@ -68,6 +68,8 @@ Additional works appear in the references:
 
 - Z. Xu, B. Kaszás, M. Cenedese, G. Berti, F. Coletti & G. Haller, Data-driven modelling of the regular and chaotic dynamics of an inverted flag from experiments, [*Journal of Fluid Mechanics*](https://doi.org/10.1017/jfm.2024.411) **987** (2024) R7. [[PDF]](https://www.georgehaller.com/reprints/inverted_flag_experiments.pdf)
 
+- A. Morsy, Z. Xu, P. Tiso & G. Haller, Data-Driven reduction of the finite-element model of a Tribomechadynamics benchmark problem, [*Nonlinear Dynamics*](https://doi.org/10.1007/s11071-025-11378-8) **113** (2025) 24539–24555.
+
 - L. Bettini, M. Cenedese & G. Haller, Model Reduction to Spectral Submanifolds in Non-Smooth Dynamical Systems, [*International Journal of Non-Linear Mechanics*](https://doi.org/10.1016/j.ijnonlinmec.2024.104753) **163** (2024) 104753. [[PDF]](https://www.georgehaller.com/reprints/smooth_dynamical_systems.pdf)
 
 - M. Cenedese, J. Marconi, G. Haller, & S. Jain, Data-assisted non-intrusive model reduction for forced nonlinear finite elements models, [*arXiv: 2311.17865*](https://arxiv.org/abs/2311.17865) (2023). [[PDF]](https://arxiv.org/pdf/2311.17865.pdf)
